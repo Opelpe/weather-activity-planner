@@ -1,0 +1,14 @@
+root = true
+
+[*.{kt,kts}]
+charset = utf-8
+indent_size = 4
+insert_final_newline = true
+max_line_length = 100
+ij_kotlin_align_multiline_parameters_in_calls = true
+ij_kotlin_align_multiline_parameters = true
+ij_kotlin_blank_lines_around_block_when_branches = 0
+ij_kotlin_blank_lines_after_class_header = 1
+ij_kotlin_imports_layout = *
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
