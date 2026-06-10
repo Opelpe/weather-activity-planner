@@ -31,6 +31,7 @@ local.properties
 .idea/libraries/
 .idea/modules.xml
 .idea/deploymentTargetSelector.xml
+.idea/markdown.xml
 
 # macOS
 .DS_Store
