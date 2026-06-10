@@ -1,8 +1,8 @@
 [versions]
 # Build tooling
 agp = "9.2.1"
-kotlin = "2.4.0"
-ksp = "2.3.5"
+kotlin = "2.3.21"
+ksp = "2.3.9"
 
 # AndroidX Core
 appcompat = "1.7.1"
@@ -20,14 +20,14 @@ coroutines = "1.11.0"          # shared by coroutines-core, coroutines-android, 
 
 # DI
 hilt = "2.59.2"
+javaxInject = "1"
 
 # Networking
 retrofit = "3.0.0"
 okhttp = "5.0.0"
-retrofitKotlinxSerializer = "1.0.0"
 
 # Serialization
-kotlinxSerializationJson = "1.11.0"
+moshi = "1.15.2"
 
 # Database
 room = "2.8.4"
@@ -68,6 +68,8 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.2.0" }
+javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
 
 # ── Coroutines ────────────────────────────────────────────────────────────────
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
@@ -77,13 +79,14 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 # ── Networking ────────────────────────────────────────────────────────────────
 retrofit-bom = { group = "com.squareup.retrofit2", name = "retrofit-bom", version.ref = "retrofit" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit" }
-retrofit-kotlinx-serialization = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "retrofitKotlinxSerializer" }
+retrofit-converter-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi" }
 okhttp-bom = { group = "com.squareup.okhttp3", name = "okhttp-bom", version.ref = "okhttp" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor" }
 
-# ── Serialization ─────────────────────────────────────────────────────────────
-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+# ── Serialization — Moshi ─────────────────────────────────────────────────────
+moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
+moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
 
 # ── Database — Room ───────────────────────────────────────────────────────────
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
