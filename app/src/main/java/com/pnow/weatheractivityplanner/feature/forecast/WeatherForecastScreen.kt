@@ -282,33 +282,17 @@ private fun WeatherForecastContentSuccessPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun WeatherForecastContentRefreshingPreview() {
-    WeatherActivityPlannerTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            WeatherForecastContent(
-                state = WeatherForecastPreviewData.SuccessState.copy(isRefreshing = true),
-                onRetry = {},
-                onRefresh = {},
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
 private fun WeatherForecastContentErrorPreview() {
     WeatherActivityPlannerTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            WeatherForecastContent(
-                state = WeatherForecastUiState(
-                    locationName = WeatherForecastPreviewData.CITY_NAME,
-                    locationCountry = WeatherForecastPreviewData.CITY_COUNTRY,
-                    error = UiError.NetworkUnavailable,
-                ),
-                onRetry = {},
-                onRefresh = {},
-            )
-        }
+        WeatherForecastContent(
+            state = WeatherForecastUiState(
+                locationName = WeatherForecastPreviewData.CITY_NAME,
+                locationCountry = WeatherForecastPreviewData.CITY_COUNTRY,
+                error = UiError.NetworkUnavailable,
+            ),
+            onRetry = {},
+            onRefresh = {},
+        )
     }
 }
 
@@ -317,13 +301,11 @@ private fun WeatherForecastContentErrorPreview() {
 @Composable
 private fun WeatherForecastContentLoadingPreview() {
     WeatherActivityPlannerTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            WeatherForecastContent(
-                state = WeatherForecastUiState(isLoading = true),
-                onRetry = {},
-                onRefresh = {},
-            )
-        }
+        WeatherForecastContent(
+            state = WeatherForecastUiState(isLoading = true),
+            onRetry = {},
+            onRefresh = {},
+        )
     }
 }
 

@@ -129,35 +129,18 @@ private fun WeatherRecommendationContentSuccessPreview() {
 
 @Preview(showBackground = true)
 @Composable
-private fun WeatherRecommendationContentRefreshingPreview() {
-    WeatherActivityPlannerTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            WeatherRecommendationContent(
-                state = WeatherRecommendationPreviewData.SuccessState.copy(isRefreshing = true),
-                onRetry = {},
-                onRefresh = {},
-                onWeatherCardClick = {},
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
 private fun WeatherRecommendationContentErrorPreview() {
     WeatherActivityPlannerTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            WeatherRecommendationContent(
-                state = WeatherRecommendationUiState(
-                    locationName = WeatherRecommendationPreviewData.LOCATION_NAME,
-                    locationCountry = WeatherRecommendationPreviewData.LOCATION_COUNTRY,
-                    error = UiError.NetworkUnavailable,
-                ),
-                onRetry = {},
-                onRefresh = {},
-                onWeatherCardClick = {},
-            )
-        }
+        WeatherRecommendationContent(
+            state = WeatherRecommendationUiState(
+                locationName = WeatherRecommendationPreviewData.LOCATION_NAME,
+                locationCountry = WeatherRecommendationPreviewData.LOCATION_COUNTRY,
+                error = UiError.NetworkUnavailable,
+            ),
+            onRetry = {},
+            onRefresh = {},
+            onWeatherCardClick = {},
+        )
     }
 }
 
@@ -165,15 +148,13 @@ private fun WeatherRecommendationContentErrorPreview() {
 @Composable
 private fun WeatherRecommendationContentLoadingPreview() {
     WeatherActivityPlannerTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            WeatherRecommendationContent(
-                state = WeatherRecommendationUiState(
-                    isLoading = true,
-                ),
-                onRetry = {},
-                onRefresh = {},
-                onWeatherCardClick = {},
-            )
-        }
+        WeatherRecommendationContent(
+            state = WeatherRecommendationUiState(
+                isLoading = true,
+            ),
+            onRetry = {},
+            onRefresh = {},
+            onWeatherCardClick = {},
+        )
     }
 }
