@@ -1,14 +1,9 @@
-package com.pnow.weatheractivityplanner.domain.usecase
+package com.pnow.weatheractivityplanner.domain.ranking
 
 import com.pnow.weatheractivityplanner.domain.model.Activities
 import com.pnow.weatheractivityplanner.domain.model.ActivitiesRankingReason
 import com.pnow.weatheractivityplanner.domain.model.DailyForecast
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
-import com.pnow.weatheractivityplanner.domain.ranking.ActivitiesRankingCalculator
-import com.pnow.weatheractivityplanner.domain.ranking.IndoorSightseeingDayScorer
-import com.pnow.weatheractivityplanner.domain.ranking.OutdoorSightseeingDayScorer
-import com.pnow.weatheractivityplanner.domain.ranking.SkiingDayScorer
-import com.pnow.weatheractivityplanner.domain.ranking.SurfingDayScorer
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -40,11 +35,12 @@ private object ActivityRankingCalculatorFixture {
         const val EXPECTED_SKIING_SCORE = 80f
     }
 
-    object HotAndClear {
+    object WarmWindyFog {
 
-        const val TEMPERATURE_CELSIUS = 29.0
-        val CONDITION = WeatherCondition.Clear
-        const val EXPECTED_TIED_SCORE = 55f
+        const val TEMPERATURE_CELSIUS = 24.0
+        const val WIND_SPEED_KPH = 20.0
+        val CONDITION = WeatherCondition.Fog
+        const val EXPECTED_TIED_SCORE = 80f
     }
 
     object MildAndDry {
@@ -85,8 +81,9 @@ class ActivitiesRankingCalculatorTest {
     fun `given forecast that ties surfing and indoor sightseeing, when calculate, then tie is broken alphabetically by activity name`() {
         val daily = listOf(
             buildDailyForecast(
-                temperatureCelsius = ActivityRankingCalculatorFixture.HotAndClear.TEMPERATURE_CELSIUS,
-                condition = ActivityRankingCalculatorFixture.HotAndClear.CONDITION,
+                temperatureCelsius = ActivityRankingCalculatorFixture.WarmWindyFog.TEMPERATURE_CELSIUS,
+                windSpeedKph = ActivityRankingCalculatorFixture.WarmWindyFog.WIND_SPEED_KPH,
+                condition = ActivityRankingCalculatorFixture.WarmWindyFog.CONDITION,
             ),
         )
 
@@ -95,10 +92,10 @@ class ActivitiesRankingCalculatorTest {
         val indoor = rankings.first { it.activities == Activities.INDOOR_SIGHTSEEING }
 
         assertEquals(
-            ActivityRankingCalculatorFixture.HotAndClear.EXPECTED_TIED_SCORE,
+            ActivityRankingCalculatorFixture.WarmWindyFog.EXPECTED_TIED_SCORE,
             surfing.score,
         )
-        assertEquals(ActivityRankingCalculatorFixture.HotAndClear.EXPECTED_TIED_SCORE, indoor.score)
+        assertEquals(ActivityRankingCalculatorFixture.WarmWindyFog.EXPECTED_TIED_SCORE, indoor.score)
         assertTrue(rankings.indexOf(indoor) < rankings.indexOf(surfing))
     }
 

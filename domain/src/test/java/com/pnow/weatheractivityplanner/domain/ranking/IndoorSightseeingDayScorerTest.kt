@@ -1,10 +1,9 @@
-package com.pnow.weatheractivityplanner.domain.usecase
+package com.pnow.weatheractivityplanner.domain.ranking
 
 import com.pnow.weatheractivityplanner.domain.model.ActivitiesRankingReason
 import com.pnow.weatheractivityplanner.domain.model.DailyForecast
 import com.pnow.weatheractivityplanner.domain.model.DayScore
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
-import com.pnow.weatheractivityplanner.domain.ranking.IndoorSightseeingDayScorer
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -24,7 +23,7 @@ private object IndoorSightseeingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 15.0
         const val PRECIPITATION_MM = 5.0
         val CONDITION = WeatherCondition.HeavyRain
-        const val EXPECTED_SCORE = 75f
+        const val EXPECTED_SCORE = 80f
         val EXPECTED_REASON = ActivitiesRankingReason.INDOOR_POOR_OUTDOOR
     }
 
@@ -40,7 +39,7 @@ private object IndoorSightseeingDayScorerFixture {
 
         const val TEMPERATURE_CELSIUS = 22.0
         val CONDITION = WeatherCondition.Clear
-        const val EXPECTED_SCORE = 25f
+        const val EXPECTED_SCORE = 15f
         val EXPECTED_REASON = ActivitiesRankingReason.INDOOR_GREAT_OUTDOOR
     }
 

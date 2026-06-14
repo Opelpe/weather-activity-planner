@@ -1,10 +1,9 @@
-package com.pnow.weatheractivityplanner.domain.usecase
+package com.pnow.weatheractivityplanner.domain.ranking
 
 import com.pnow.weatheractivityplanner.domain.model.ActivitiesRankingReason
 import com.pnow.weatheractivityplanner.domain.model.DailyForecast
 import com.pnow.weatheractivityplanner.domain.model.DayScore
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
-import com.pnow.weatheractivityplanner.domain.ranking.SkiingDayScorer
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

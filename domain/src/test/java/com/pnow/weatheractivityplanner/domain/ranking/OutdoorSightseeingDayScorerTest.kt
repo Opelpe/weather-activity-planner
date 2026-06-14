@@ -1,10 +1,9 @@
-package com.pnow.weatheractivityplanner.domain.usecase
+package com.pnow.weatheractivityplanner.domain.ranking
 
 import com.pnow.weatheractivityplanner.domain.model.ActivitiesRankingReason
 import com.pnow.weatheractivityplanner.domain.model.DailyForecast
 import com.pnow.weatheractivityplanner.domain.model.DayScore
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
-import com.pnow.weatheractivityplanner.domain.ranking.OutdoorSightseeingDayScorer
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -23,7 +22,7 @@ private object OutdoorSightseeingDayScorerFixture {
 
         const val TEMPERATURE_CELSIUS = 22.0
         val CONDITION = WeatherCondition.Clear
-        const val EXPECTED_SCORE = 90f
+        const val EXPECTED_SCORE = 100f
         val EXPECTED_REASON = ActivitiesRankingReason.OUTDOOR_CLEAR_AND_COMFORTABLE
     }
 
@@ -32,7 +31,7 @@ private object OutdoorSightseeingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 15.0
         const val PRECIPITATION_MM = 5.0
         val CONDITION = WeatherCondition.HeavyRain
-        const val EXPECTED_SCORE = 10f
+        const val EXPECTED_SCORE = 20f
         val EXPECTED_REASON = ActivitiesRankingReason.OUTDOOR_RAIN
     }
 
@@ -40,7 +39,7 @@ private object OutdoorSightseeingDayScorerFixture {
 
         const val TEMPERATURE_CELSIUS = 15.0
         val CONDITION = WeatherCondition.Fog
-        const val EXPECTED_SCORE = 35f
+        const val EXPECTED_SCORE = 40f
         val EXPECTED_REASON = ActivitiesRankingReason.OUTDOOR_FOG
     }
 
@@ -48,7 +47,7 @@ private object OutdoorSightseeingDayScorerFixture {
 
         const val TEMPERATURE_CELSIUS = 35.0
         val CONDITION = WeatherCondition.Clear
-        const val EXPECTED_SCORE = 65f
+        const val EXPECTED_SCORE = 75f
         val EXPECTED_REASON = ActivitiesRankingReason.OUTDOOR_CLEAR_ONLY
     }
 
@@ -56,7 +55,7 @@ private object OutdoorSightseeingDayScorerFixture {
 
         const val TEMPERATURE_CELSIUS = 22.0
         val CONDITION = WeatherCondition.Overcast
-        const val EXPECTED_SCORE = 55f
+        const val EXPECTED_SCORE = 65f
         val EXPECTED_REASON = ActivitiesRankingReason.OUTDOOR_NONE
     }
 }

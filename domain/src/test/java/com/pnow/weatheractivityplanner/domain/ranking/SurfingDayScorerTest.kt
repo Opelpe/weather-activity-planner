@@ -1,10 +1,9 @@
-package com.pnow.weatheractivityplanner.domain.usecase
+package com.pnow.weatheractivityplanner.domain.ranking
 
 import com.pnow.weatheractivityplanner.domain.model.ActivitiesRankingReason
 import com.pnow.weatheractivityplanner.domain.model.DailyForecast
 import com.pnow.weatheractivityplanner.domain.model.DayScore
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
-import com.pnow.weatheractivityplanner.domain.ranking.SurfingDayScorer
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -24,7 +23,7 @@ private object SurfingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 24.0
         const val WIND_SPEED_KPH = 25.0
         val CONDITION = WeatherCondition.Overcast
-        const val EXPECTED_SCORE = 90f
+        const val EXPECTED_SCORE = 80f
         val EXPECTED_REASON = ActivitiesRankingReason.SURFING_WARM_AND_WINDY
     }
 
@@ -41,7 +40,7 @@ private object SurfingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 24.0
         const val PRECIPITATION_MM = 5.0
         val CONDITION = WeatherCondition.HeavyRain
-        const val EXPECTED_SCORE = 30f
+        const val EXPECTED_SCORE = 20f
         val EXPECTED_REASON = ActivitiesRankingReason.SURFING_RAIN
     }
 
@@ -50,7 +49,7 @@ private object SurfingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 10.0
         const val WIND_SPEED_KPH = 20.0
         val CONDITION = WeatherCondition.Overcast
-        const val EXPECTED_SCORE = 55f
+        const val EXPECTED_SCORE = 45f
         val EXPECTED_REASON = ActivitiesRankingReason.SURFING_WINDY_ONLY
     }
 
@@ -58,7 +57,7 @@ private object SurfingDayScorerFixture {
 
         const val TEMPERATURE_CELSIUS = 20.0
         val CONDITION = WeatherCondition.Clear
-        const val EXPECTED_SCORE = 55f
+        const val EXPECTED_SCORE = 45f
         val EXPECTED_REASON = ActivitiesRankingReason.SURFING_WARM_ONLY
     }
 
