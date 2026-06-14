@@ -1,6 +1,8 @@
 package com.pnow.weatheractivityplanner.data.mapper
 
 import com.pnow.weatheractivityplanner.domain.error.DomainError
+import com.squareup.moshi.JsonDataException
+import com.squareup.moshi.JsonEncodingException
 import java.io.IOException
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Assert.assertEquals
@@ -16,6 +18,7 @@ private object ResultFixture {
     const val HTTP_ERROR_CODE = 404
     const val HTTP_ERROR_BODY = "Not Found"
     const val UNKNOWN_ERROR_MESSAGE = "boom"
+    const val DESERIALIZATION_ERROR_MESSAGE = "malformed response"
 }
 
 class ResultMappersTest {
@@ -62,6 +65,28 @@ class ResultMappersTest {
         val mapped = result.toDomainResult()
 
         val error = mapped.exceptionOrNull() as DomainError.Unknown
+        assertTrue(error.cause === cause)
+    }
+
+    @Test
+    fun `given JsonDataException, when toDomainResult, then failure is DeserializationError with cause`() {
+        val cause = JsonDataException(ResultFixture.DESERIALIZATION_ERROR_MESSAGE)
+        val result = Result.failure<String>(cause)
+
+        val mapped = result.toDomainResult()
+
+        val error = mapped.exceptionOrNull() as DomainError.DeserializationError
+        assertTrue(error.cause === cause)
+    }
+
+    @Test
+    fun `given JsonEncodingException, when toDomainResult, then failure is DeserializationError with cause`() {
+        val cause = JsonEncodingException(ResultFixture.DESERIALIZATION_ERROR_MESSAGE)
+        val result = Result.failure<String>(cause)
+
+        val mapped = result.toDomainResult()
+
+        val error = mapped.exceptionOrNull() as DomainError.DeserializationError
         assertTrue(error.cause === cause)
     }
 }
