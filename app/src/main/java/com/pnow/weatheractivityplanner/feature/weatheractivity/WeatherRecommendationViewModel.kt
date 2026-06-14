@@ -15,7 +15,6 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -86,7 +85,7 @@ class WeatherRecommendationViewModel @Inject constructor(
     }
 
     private suspend fun fetchRankings(args: ActivitiesRankingArgs) {
-        runCatching { getActivityRankingsUseCase(args.location).first() }
+        getActivityRankingsUseCase(args.location)
             .onSuccess { result ->
                 _state.update {
                     it.copy(

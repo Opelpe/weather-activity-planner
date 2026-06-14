@@ -12,6 +12,7 @@ internal fun ActivitiesRankingReason.toStringRes(): Int = when (this) {
     ActivitiesRankingReason.SKIING_RAIN -> R.string.weather_activity_reason_skiing_rain
     ActivitiesRankingReason.SKIING_NONE -> R.string.weather_activity_reason_skiing_none
     ActivitiesRankingReason.SURFING_THUNDERSTORM -> R.string.weather_activity_reason_surfing_thunderstorm
+    ActivitiesRankingReason.SURFING_RAIN -> R.string.weather_activity_reason_surfing_rain
     ActivitiesRankingReason.SURFING_WARM_AND_WINDY -> R.string.weather_activity_reason_surfing_warm_and_windy
     ActivitiesRankingReason.SURFING_WINDY_ONLY -> R.string.weather_activity_reason_surfing_windy_only
     ActivitiesRankingReason.SURFING_WARM_ONLY -> R.string.weather_activity_reason_surfing_warm_only

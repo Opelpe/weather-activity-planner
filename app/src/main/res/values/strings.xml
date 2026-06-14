@@ -20,6 +20,8 @@
     <string name="weather_activity_city_country_format">%1$s, %2$s</string>
     <string name="weather_activity_view_forecast_hint">Tap to view 7-day forecast</string>
     <string name="weather_activity_view_forecast_content_description">View 7-day forecast for %1$s</string>
+    <string name="weather_activity_ranking_title">Activity suggestions</string>
+    <string name="weather_activity_ranking_subtitle">Ranked using the 7-day weather forecast</string>
     <string name="weather_activity_skiing">Skiing</string>
     <string name="weather_activity_surfing">Surfing</string>
     <string name="weather_activity_outdoor_sightseeing">Outdoor Sightseeing</string>
@@ -27,10 +29,11 @@
 
     <string name="weather_activity_reason_skiing_snow_and_freezing">Snowfall and freezing temperatures make for great skiing conditions</string>
     <string name="weather_activity_reason_skiing_freezing_only">Freezing temperatures, but no fresh snowfall is expected</string>
-    <string name="weather_activity_reason_skiing_snow_only">Snow is falling, but temperatures are too mild for it to settle</string>
+    <string name="weather_activity_reason_skiing_snow_only">Snow is expected, but temperatures are too mild for it to settle</string>
     <string name="weather_activity_reason_skiing_rain">Rain in the forecast makes for poor skiing conditions</string>
     <string name="weather_activity_reason_skiing_none">No snowfall expected, conditions are unfavorable for skiing</string>
-    <string name="weather_activity_reason_surfing_thunderstorm">Thunderstorms make surfing dangerous today</string>
+    <string name="weather_activity_reason_surfing_thunderstorm">Thunderstorms in the forecast make surfing dangerous</string>
+    <string name="weather_activity_reason_surfing_rain">Rain in the forecast could make for a less pleasant surf session</string>
     <string name="weather_activity_reason_surfing_warm_and_windy">Warm temperatures and strong winds are great for catching waves</string>
     <string name="weather_activity_reason_surfing_windy_only">Strong winds but cool water, a wetsuit is recommended</string>
     <string name="weather_activity_reason_surfing_warm_only">Warm conditions, though winds are too light for big waves</string>
@@ -40,7 +43,7 @@
     <string name="weather_activity_reason_outdoor_fog">Foggy conditions may limit visibility for sightseeing</string>
     <string name="weather_activity_reason_outdoor_clear_only">Clear skies, but temperatures are outside the comfortable range</string>
     <string name="weather_activity_reason_outdoor_none">Overcast conditions make outdoor sightseeing less appealing</string>
-    <string name="weather_activity_reason_indoor_poor_outdoor">Poor outdoor conditions make indoor attractions a great choice today</string>
+    <string name="weather_activity_reason_indoor_poor_outdoor">Poor outdoor conditions in the forecast make indoor attractions a great choice</string>
     <string name="weather_activity_reason_indoor_extreme_temp">Extreme temperatures make indoor sightseeing more comfortable</string>
     <string name="weather_activity_reason_indoor_great_outdoor">Great weather outside, but indoor sightseeing is a solid backup plan</string>
     <string name="weather_activity_reason_indoor_none">A reasonable backup option regardless of conditions</string>

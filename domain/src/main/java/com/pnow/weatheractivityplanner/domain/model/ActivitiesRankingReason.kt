@@ -8,6 +8,7 @@ enum class ActivitiesRankingReason {
     SKIING_NONE,
 
     SURFING_THUNDERSTORM,
+    SURFING_RAIN,
     SURFING_WARM_AND_WINDY,
     SURFING_WINDY_ONLY,
     SURFING_WARM_ONLY,

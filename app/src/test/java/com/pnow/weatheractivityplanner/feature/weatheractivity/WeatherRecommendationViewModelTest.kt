@@ -7,10 +7,15 @@ import com.pnow.weatheractivityplanner.domain.model.Activities
 import com.pnow.weatheractivityplanner.domain.model.ActivitiesRanking
 import com.pnow.weatheractivityplanner.domain.model.ActivitiesRankingReason
 import com.pnow.weatheractivityplanner.domain.model.CurrentWeather
+import com.pnow.weatheractivityplanner.domain.model.DailyForecast
 import com.pnow.weatheractivityplanner.domain.model.Forecast
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
+import com.pnow.weatheractivityplanner.domain.ranking.ActivitiesRankingCalculator
+import com.pnow.weatheractivityplanner.domain.ranking.IndoorSightseeingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.OutdoorSightseeingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.SkiingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.SurfingDayScorer
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
-import com.pnow.weatheractivityplanner.domain.usecase.ActivitiesRankingCalculator
 import com.pnow.weatheractivityplanner.domain.usecase.GetActivityRankingsUseCase
 import com.pnow.weatheractivityplanner.domain.usecase.GetForecastUseCase
 import com.pnow.weatheractivityplanner.feature.common.UiError
@@ -37,6 +42,7 @@ private object WeatherActivityViewModelFixture {
     const val LOADING_DELAY_MS = 1L
 
     object Paris {
+
         const val ID = 2L
         const val NAME = "Paris"
         const val COUNTRY = "France"
@@ -51,9 +57,24 @@ private object WeatherActivityViewModelFixture {
         const val WIND_SPEED_KPH = 10.0
     }
 
+    object Day1 {
+
+        const val DATE = "2026-06-15"
+        const val MAX_TEMPERATURE_CELSIUS = 24.0
+        const val MIN_TEMPERATURE_CELSIUS = 14.0
+        const val PRECIPITATION_SUM_MM = 0.0
+        const val PRECIPITATION_PROBABILITY_PERCENT = 10
+        const val SNOWFALL_SUM_CM = 0.0
+        const val WIND_SPEED_MAX_KPH = 12.0
+        const val WIND_GUSTS_MAX_KPH = 20.0
+        const val UV_INDEX_MAX = 5.0
+        const val DAYLIGHT_DURATION_HOURS = 15.5
+    }
+
     val RANKING_REASON = ActivitiesRankingReason.OUTDOOR_NONE
 
     object UniqueTopScore {
+
         const val HIGHEST = 90f
         const val SECOND = 60f
         const val THIRD = 30f
@@ -61,6 +82,7 @@ private object WeatherActivityViewModelFixture {
     }
 
     object TiedTopScore {
+
         const val HIGHEST = 55f
         const val LOWEST = 0f
     }
@@ -70,7 +92,12 @@ private object WeatherActivityViewModelFixture {
 class WeatherRecommendationViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private val calculator = ActivitiesRankingCalculator()
+    private val calculator = ActivitiesRankingCalculator(
+        skiingDayScorer = SkiingDayScorer(),
+        surfingDayScorer = SurfingDayScorer(),
+        outdoorSightseeingDayScorer = OutdoorSightseeingDayScorer(),
+        indoorSightseeingDayScorer = IndoorSightseeingDayScorer(),
+    )
 
     @Before
     fun setUp() {
@@ -96,7 +123,7 @@ class WeatherRecommendationViewModelTest {
                 assertFalse(success.isLoading)
                 assertEquals(forecast.current.toUiModel(), success.currentWeather)
                 assertEquals(
-                    calculator.calculate(forecast.current).toUiModels(),
+                    calculator.calculate(forecast.daily).toUiModels(),
                     success.ranking,
                 )
 
@@ -230,8 +257,14 @@ class WeatherRecommendationViewModelTest {
     @Test
     fun `given rankings with a unique top score, when toUiModels, then only the highest scoring activity is top ranked`() {
         val rankings = listOf(
-            buildRanking(Activities.OUTDOOR_SIGHTSEEING, WeatherActivityViewModelFixture.UniqueTopScore.HIGHEST),
-            buildRanking(Activities.INDOOR_SIGHTSEEING, WeatherActivityViewModelFixture.UniqueTopScore.SECOND),
+            buildRanking(
+                Activities.OUTDOOR_SIGHTSEEING,
+                WeatherActivityViewModelFixture.UniqueTopScore.HIGHEST,
+            ),
+            buildRanking(
+                Activities.INDOOR_SIGHTSEEING,
+                WeatherActivityViewModelFixture.UniqueTopScore.SECOND,
+            ),
             buildRanking(Activities.SURFING, WeatherActivityViewModelFixture.UniqueTopScore.THIRD),
             buildRanking(Activities.SKIING, WeatherActivityViewModelFixture.UniqueTopScore.LOWEST),
         )
@@ -245,7 +278,10 @@ class WeatherRecommendationViewModelTest {
     fun `given rankings with a tie for the top score, when toUiModels, then all tied activities are top ranked`() {
         val rankings = listOf(
             buildRanking(Activities.SURFING, WeatherActivityViewModelFixture.TiedTopScore.HIGHEST),
-            buildRanking(Activities.INDOOR_SIGHTSEEING, WeatherActivityViewModelFixture.TiedTopScore.HIGHEST),
+            buildRanking(
+                Activities.INDOOR_SIGHTSEEING,
+                WeatherActivityViewModelFixture.TiedTopScore.HIGHEST,
+            ),
             buildRanking(Activities.SKIING, WeatherActivityViewModelFixture.TiedTopScore.LOWEST),
         )
 
@@ -254,7 +290,10 @@ class WeatherRecommendationViewModelTest {
         assertEquals(listOf(true, true, false), uiModels.map { it.isTopRanked })
     }
 
-    private fun buildRanking(activities: Activities, score: Float) = ActivitiesRanking(
+    private fun buildRanking(
+        activities: Activities,
+        score: Float,
+    ) = ActivitiesRanking(
         activities = activities,
         score = score,
         reason = WeatherActivityViewModelFixture.RANKING_REASON,
@@ -301,15 +340,33 @@ class WeatherRecommendationViewModelTest {
             condition = WeatherCondition.Clear,
             isDay = true,
         ),
-        daily = emptyList(),
+        daily = listOf(
+            DailyForecast(
+                date = WeatherActivityViewModelFixture.Day1.DATE,
+                maxTemperatureCelsius = WeatherActivityViewModelFixture.Day1.MAX_TEMPERATURE_CELSIUS,
+                minTemperatureCelsius = WeatherActivityViewModelFixture.Day1.MIN_TEMPERATURE_CELSIUS,
+                precipitationSumMm = WeatherActivityViewModelFixture.Day1.PRECIPITATION_SUM_MM,
+                precipitationProbabilityMaxPercent = WeatherActivityViewModelFixture.Day1.PRECIPITATION_PROBABILITY_PERCENT,
+                snowfallSumCm = WeatherActivityViewModelFixture.Day1.SNOWFALL_SUM_CM,
+                windSpeedMaxKph = WeatherActivityViewModelFixture.Day1.WIND_SPEED_MAX_KPH,
+                windGustsMaxKph = WeatherActivityViewModelFixture.Day1.WIND_GUSTS_MAX_KPH,
+                uvIndexMax = WeatherActivityViewModelFixture.Day1.UV_INDEX_MAX,
+                daylightDurationHours = WeatherActivityViewModelFixture.Day1.DAYLIGHT_DURATION_HOURS,
+                condition = WeatherCondition.Clear,
+            ),
+        ),
     )
 
     private class FakeWeatherRepository(
         private val results: List<Result<Forecast>>,
     ) : WeatherRepository {
+
         private var callIndex = 0
 
-        override suspend fun getForecast(latitude: Double, longitude: Double): Result<Forecast> {
+        override suspend fun getForecast(
+            latitude: Double,
+            longitude: Double,
+        ): Result<Forecast> {
             delay(WeatherActivityViewModelFixture.LOADING_DELAY_MS.milliseconds)
             val result = results[callIndex]
             callIndex = minOf(callIndex + 1, results.size - 1)
