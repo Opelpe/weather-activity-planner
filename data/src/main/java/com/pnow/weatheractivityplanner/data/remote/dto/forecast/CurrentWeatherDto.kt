@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class CurrentWeatherDto(
+internal data class CurrentWeatherDto(
     @param:Json(name = "time") val time: String,
     @param:Json(name = "temperature_2m") val temperatureCelsius: Double,
     @param:Json(name = "relative_humidity_2m") val relativeHumidityPercent: Int,
