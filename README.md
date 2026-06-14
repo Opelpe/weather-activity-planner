@@ -6,6 +6,14 @@ A native Android app that lets you search for a city and see a **ranked list of 
 
 ---
 
+## Demo
+
+DEMO:
+
+
+
+---
+
 ## a. Project Overview
 
 The app has three screens:
