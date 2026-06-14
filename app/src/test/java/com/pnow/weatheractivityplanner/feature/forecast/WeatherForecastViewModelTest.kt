@@ -46,6 +46,7 @@ private object WeatherForecastViewModelFixture {
     object Day1 {
         const val DATE = "2026-06-12"
         const val MAX_TEMPERATURE_CELSIUS = 24.0
+        const val REFRESHED_MAX_TEMPERATURE_CELSIUS = 27.0
         const val MIN_TEMPERATURE_CELSIUS = 14.0
         const val PRECIPITATION_SUM_MM = 0.0
         const val PRECIPITATION_PROBABILITY_PERCENT = 10
@@ -164,6 +165,68 @@ class WeatherForecastViewModelTest {
             }
         }
 
+    @Test
+    fun `given successful forecast, when onRefresh is called, then state emits refreshing then success without loading`() =
+        runTest(testDispatcher) {
+            val firstForecast = buildForecast()
+            val refreshedForecast = buildForecast(
+                day1MaxTemperatureCelsius = WeatherForecastViewModelFixture.Day1.REFRESHED_MAX_TEMPERATURE_CELSIUS,
+            )
+            val viewModel = buildViewModel(
+                forecastResults = listOf(
+                    Result.success(firstForecast),
+                    Result.success(refreshedForecast),
+                ),
+            )
+
+            viewModel.forecastState.test {
+                awaitItem() // initial state
+                awaitItem() // loading
+                awaitItem() // first success
+
+                viewModel.onRefresh()
+
+                val refreshing = awaitItem() // refreshing
+                assertTrue(refreshing.isRefreshing)
+                assertFalse(refreshing.isLoading)
+
+                val refreshed = awaitItem() // success after refresh
+                assertFalse(refreshed.isRefreshing)
+                assertFalse(refreshed.isLoading)
+                assertEquals(refreshedForecast.daily.map { it.toUiModel() }, refreshed.dailyForecast)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given forecast failed, when onRefresh is called, then state emits refreshing then error`() =
+        runTest(testDispatcher) {
+            val viewModel = buildViewModel(
+                forecastResults = listOf(
+                    Result.success(buildForecast()),
+                    Result.failure(DomainError.NetworkUnavailable()),
+                ),
+            )
+
+            viewModel.forecastState.test {
+                awaitItem() // initial state
+                awaitItem() // loading
+                awaitItem() // first success
+
+                viewModel.onRefresh()
+
+                val refreshing = awaitItem() // refreshing
+                assertTrue(refreshing.isRefreshing)
+
+                val error = awaitItem() // error after refresh
+                assertFalse(error.isRefreshing)
+                assertEquals(UiError.NetworkUnavailable, error.error)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
     private fun buildInitialState() = WeatherForecastUiState(
         locationName = WeatherForecastViewModelFixture.Paris.NAME,
         locationCountry = WeatherForecastViewModelFixture.Paris.COUNTRY,
@@ -186,7 +249,9 @@ class WeatherForecastViewModelTest {
         ),
     )
 
-    private fun buildForecast() = Forecast(
+    private fun buildForecast(
+        day1MaxTemperatureCelsius: Double = WeatherForecastViewModelFixture.Day1.MAX_TEMPERATURE_CELSIUS,
+    ) = Forecast(
         latitude = WeatherForecastViewModelFixture.Paris.LATITUDE,
         longitude = WeatherForecastViewModelFixture.Paris.LONGITUDE,
         timezone = WeatherForecastViewModelFixture.Paris.TIMEZONE,
@@ -202,7 +267,7 @@ class WeatherForecastViewModelTest {
         daily = listOf(
             DailyForecast(
                 date = WeatherForecastViewModelFixture.Day1.DATE,
-                maxTemperatureCelsius = WeatherForecastViewModelFixture.Day1.MAX_TEMPERATURE_CELSIUS,
+                maxTemperatureCelsius = day1MaxTemperatureCelsius,
                 minTemperatureCelsius = WeatherForecastViewModelFixture.Day1.MIN_TEMPERATURE_CELSIUS,
                 precipitationSumMm = WeatherForecastViewModelFixture.Day1.PRECIPITATION_SUM_MM,
                 precipitationProbabilityMaxPercent = WeatherForecastViewModelFixture.Day1.PRECIPITATION_PROBABILITY_PERCENT,

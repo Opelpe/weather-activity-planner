@@ -60,21 +60,39 @@ class WeatherForecastViewModel @Inject constructor(
         args?.let(::loadForecast)
     }
 
+    fun onRefresh() {
+        args?.let(::refreshForecast)
+    }
+
     private fun loadForecast(args: ForecastArgs) {
         viewModelScope.launch {
             _forecastState.update { it.copy(isLoading = true, error = null) }
-            getForecastUseCase(latitude = args.latitude, longitude = args.longitude)
-                .onSuccess { forecast ->
-                    _forecastState.update {
-                        it.copy(
-                            isLoading = false,
-                            dailyForecast = forecast.daily.map { daily -> daily.toUiModel() },
-                        )
-                    }
-                }
-                .onFailure { throwable ->
-                    _forecastState.update { it.copy(isLoading = false, error = throwable.toUiError()) }
-                }
+            fetchForecast(args)
         }
+    }
+
+    private fun refreshForecast(args: ForecastArgs) {
+        viewModelScope.launch {
+            _forecastState.update { it.copy(isRefreshing = true, error = null) }
+            fetchForecast(args)
+        }
+    }
+
+    private suspend fun fetchForecast(args: ForecastArgs) {
+        getForecastUseCase(latitude = args.latitude, longitude = args.longitude)
+            .onSuccess { forecast ->
+                _forecastState.update {
+                    it.copy(
+                        isLoading = false,
+                        isRefreshing = false,
+                        dailyForecast = forecast.daily.map { daily -> daily.toUiModel() },
+                    )
+                }
+            }
+            .onFailure { throwable ->
+                _forecastState.update {
+                    it.copy(isLoading = false, isRefreshing = false, error = throwable.toUiError())
+                }
+            }
     }
 }

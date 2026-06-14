@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -65,6 +66,7 @@ fun WeatherForecastScreen(
             modifier = Modifier.padding(innerPadding),
             state = state,
             onRetry = viewModel::onRetry,
+            onRefresh = viewModel::onRefresh,
         )
     }
 }
@@ -123,6 +125,7 @@ private fun WeatherForecastContent(
     modifier: Modifier = Modifier,
     state: WeatherForecastUiState,
     onRetry: () -> Unit,
+    onRefresh: () -> Unit,
 ) {
     when {
         state.isLoading -> FullScreenLoading(modifier = modifier)
@@ -134,8 +137,27 @@ private fun WeatherForecastContent(
                 onRetry = onRetry,
             )
 
-        else -> LazyColumn(
-            modifier = modifier
+        else -> WeatherForecastResultsContent(
+            modifier = modifier,
+            state = state,
+            onRefresh = onRefresh,
+        )
+    }
+}
+
+@Composable
+private fun WeatherForecastResultsContent(
+    modifier: Modifier = Modifier,
+    state: WeatherForecastUiState,
+    onRefresh: () -> Unit,
+) {
+    PullToRefreshBox(
+        modifier = modifier.fillMaxSize(),
+        isRefreshing = state.isRefreshing,
+        onRefresh = onRefresh,
+    ) {
+        LazyColumn(
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(Dimens.Spacing16),
             verticalArrangement = Arrangement.spacedBy(Dimens.Spacing8),
@@ -252,6 +274,21 @@ private fun WeatherForecastContentSuccessPreview() {
             WeatherForecastContent(
                 state = WeatherForecastPreviewData.SuccessState,
                 onRetry = {},
+                onRefresh = {},
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun WeatherForecastContentRefreshingPreview() {
+    WeatherActivityPlannerTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            WeatherForecastContent(
+                state = WeatherForecastPreviewData.SuccessState.copy(isRefreshing = true),
+                onRetry = {},
+                onRefresh = {},
             )
         }
     }
@@ -269,6 +306,7 @@ private fun WeatherForecastContentErrorPreview() {
                     error = UiError.NetworkUnavailable,
                 ),
                 onRetry = {},
+                onRefresh = {},
             )
         }
     }
@@ -283,6 +321,7 @@ private fun WeatherForecastContentLoadingPreview() {
             WeatherForecastContent(
                 state = WeatherForecastUiState(isLoading = true),
                 onRetry = {},
+                onRefresh = {},
             )
         }
     }
