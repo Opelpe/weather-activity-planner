@@ -117,13 +117,13 @@ private fun LocationSearchResultsContent(
             state.searchQuery.isBlank() ->
                 DefaultSearchContentLabel(
                     modifier = Modifier.align(Alignment.Center),
-                    text = stringResource(R.string.weather_activity_search_prompt),
+                    label = stringResource(R.string.weather_activity_search_prompt),
                 )
 
             else ->
                 DefaultSearchContentLabel(
                     modifier = Modifier.align(Alignment.Center),
-                    text = stringResource(R.string.weather_activity_no_cities_found),
+                    label = stringResource(R.string.weather_activity_no_cities_found),
                 )
         }
     }
@@ -182,13 +182,13 @@ private fun LocationResultItem(
 @Composable
 private fun DefaultSearchContentLabel(
     modifier: Modifier,
-    text: String,
+    label: String,
 ) {
     Text(
         modifier = modifier
             .fillMaxWidth()
             .padding(Dimens.Spacing16),
-        text = text,
+        text = label,
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         textAlign = TextAlign.Center,
