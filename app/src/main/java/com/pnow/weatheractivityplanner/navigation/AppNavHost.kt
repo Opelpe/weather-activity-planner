@@ -21,8 +21,7 @@ fun AppNavHost(
         modifier = modifier,
         navController = navController,
         startDestination = LocationSearchRoute,
-
-        ) {
+    ) {
 
         composable<LocationSearchRoute> {
             LocationSearchScreen(
