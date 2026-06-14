@@ -1,3 +1,78 @@
 <resources>
-    <string name="app_name">WeatherActivityPlanner</string>
+    <string name="app_name">Weather Activity Planner</string>
+
+    <string name="common_error_network_unavailable">No internet connection</string>
+    <string name="common_error_http_format">Server error (%1$d)</string>
+    <string name="common_error_deserialization">Unexpected response format</string>
+    <string name="common_error_unknown">Something went wrong</string>
+    <string name="common_error_invalid_navigation">This screen could not be opened</string>
+
+    <string name="weather_activity_search_label">Search for a location</string>
+    <string name="weather_activity_no_cities_found">No locations found</string>
+    <string name="weather_activity_search_prompt">Search for a location to see activity suggestions</string>
+    <string name="weather_activity_retry">Retry</string>
+    <string name="weather_activity_score_label">Score</string>
+    <string name="weather_activity_score_value_format">%1$d/100</string>
+    <string name="weather_activity_temperature_format">%.1f°C</string>
+    <string name="weather_activity_feels_like_format">Feels like %1$d°C</string>
+    <string name="weather_activity_humidity_format">Humidity %1$d%%</string>
+    <string name="weather_activity_wind_format">Wind %1$d km/h</string>
+    <string name="weather_activity_city_country_format">%1$s, %2$s</string>
+    <string name="weather_activity_view_forecast_hint">Tap to view 7-day forecast</string>
+    <string name="weather_activity_view_forecast_content_description">View 7-day forecast for %1$s</string>
+    <string name="weather_activity_ranking_title">Activity suggestions</string>
+    <string name="weather_activity_ranking_subtitle">Ranked using the 7-day weather forecast</string>
+    <string name="weather_activity_skiing">Skiing</string>
+    <string name="weather_activity_surfing">Surfing</string>
+    <string name="weather_activity_outdoor_sightseeing">Outdoor Sightseeing</string>
+    <string name="weather_activity_indoor_sightseeing">Indoor Sightseeing</string>
+
+    <string name="weather_activity_reason_skiing_snow_and_freezing">Snowfall and freezing temperatures make for great skiing conditions</string>
+    <string name="weather_activity_reason_skiing_freezing_only">Freezing temperatures, but no fresh snowfall is expected</string>
+    <string name="weather_activity_reason_skiing_snow_only">Snow is expected, but temperatures are too mild for it to settle</string>
+    <string name="weather_activity_reason_skiing_rain">Rain in the forecast makes for poor skiing conditions</string>
+    <string name="weather_activity_reason_skiing_none">No snowfall expected, conditions are unfavorable for skiing</string>
+    <string name="weather_activity_reason_surfing_thunderstorm">Thunderstorms in the forecast make surfing dangerous</string>
+    <string name="weather_activity_reason_surfing_rain">Rain in the forecast could make for a less pleasant surf session</string>
+    <string name="weather_activity_reason_surfing_warm_and_windy">Warm temperatures and strong winds are great for catching waves</string>
+    <string name="weather_activity_reason_surfing_windy_only">Strong winds but cool water, a wetsuit is recommended</string>
+    <string name="weather_activity_reason_surfing_warm_only">Warm conditions, though winds are too light for big waves</string>
+    <string name="weather_activity_reason_surfing_none">Cold and calm conditions are not ideal for surfing</string>
+    <string name="weather_activity_reason_outdoor_clear_and_comfortable">Clear skies and comfortable temperatures are perfect for exploring outdoors</string>
+    <string name="weather_activity_reason_outdoor_rain">Rain is expected, which could disrupt outdoor plans</string>
+    <string name="weather_activity_reason_outdoor_fog">Foggy conditions may limit visibility for sightseeing</string>
+    <string name="weather_activity_reason_outdoor_clear_only">Clear skies, but temperatures are outside the comfortable range</string>
+    <string name="weather_activity_reason_outdoor_none">Overcast conditions make outdoor sightseeing less appealing</string>
+    <string name="weather_activity_reason_indoor_poor_outdoor">Poor outdoor conditions in the forecast make indoor attractions a great choice</string>
+    <string name="weather_activity_reason_indoor_extreme_temp">Extreme temperatures make indoor sightseeing more comfortable</string>
+    <string name="weather_activity_reason_indoor_great_outdoor">Great weather outside, but indoor sightseeing is a solid backup plan</string>
+    <string name="weather_activity_reason_indoor_none">A reasonable backup option regardless of conditions</string>
+
+    <string name="weather_forecast_temperature_range_format">%1$d° / %2$d°</string>
+
+    <string name="weather_condition_clear">Clear sky</string>
+    <string name="weather_condition_mainly_clear">Mainly clear</string>
+    <string name="weather_condition_partly_cloudy">Partly cloudy</string>
+    <string name="weather_condition_overcast">Overcast</string>
+    <string name="weather_condition_fog">Fog</string>
+    <string name="weather_condition_depositing_rime_fog">Depositing rime fog</string>
+    <string name="weather_condition_light_drizzle">Light drizzle</string>
+    <string name="weather_condition_moderate_drizzle">Moderate drizzle</string>
+    <string name="weather_condition_dense_drizzle">Dense drizzle</string>
+    <string name="weather_condition_light_rain">Light rain</string>
+    <string name="weather_condition_moderate_rain">Moderate rain</string>
+    <string name="weather_condition_heavy_rain">Heavy rain</string>
+    <string name="weather_condition_light_snow">Light snow</string>
+    <string name="weather_condition_moderate_snow">Moderate snow</string>
+    <string name="weather_condition_heavy_snow">Heavy snow</string>
+    <string name="weather_condition_snow_grains">Snow grains</string>
+    <string name="weather_condition_slight_rain_showers">Slight rain showers</string>
+    <string name="weather_condition_moderate_rain_showers">Moderate rain showers</string>
+    <string name="weather_condition_violent_rain_showers">Violent rain showers</string>
+    <string name="weather_condition_slight_snow_showers">Slight snow showers</string>
+    <string name="weather_condition_heavy_snow_showers">Heavy snow showers</string>
+    <string name="weather_condition_thunderstorm">Thunderstorm</string>
+    <string name="weather_condition_thunderstorm_slight_hail">Thunderstorm with slight hail</string>
+    <string name="weather_condition_thunderstorm_heavy_hail">Thunderstorm with heavy hail</string>
+    <string name="weather_condition_unknown">Unknown weather</string>
 </resources>

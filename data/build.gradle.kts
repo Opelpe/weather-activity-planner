@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
 }
@@ -12,6 +11,10 @@ android {
     defaultConfig {
         minSdk = 29
         consumerProguardFiles("consumer-rules.pro")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     compileOptions {
@@ -33,18 +36,14 @@ dependencies {
     // Networking
     implementation(platform(libs.retrofit.bom))
     implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.moshi)
     implementation(platform(libs.okhttp.bom))
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
-    implementation(libs.retrofit.kotlinx.serialization)
 
     // Serialization
-    implementation(libs.kotlinx.serialization.json)
-
-    // Database
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
+    implementation(libs.moshi)
+    ksp(libs.moshi.kotlin.codegen)
 
     // Testing
     testImplementation(libs.junit)
