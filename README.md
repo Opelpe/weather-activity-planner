@@ -10,7 +10,7 @@ A native Android app that lets you search for a city and see a **ranked list of 
 
 DEMO:
 
-
+<img width="816" height="1760" alt="weather-activity-planner-demo" src="https://github.com/user-attachments/assets/62be89b2-708f-436e-a72c-3057cf261cd4" />
 
 ---
 
