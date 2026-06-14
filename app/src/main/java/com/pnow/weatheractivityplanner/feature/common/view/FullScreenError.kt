@@ -24,7 +24,7 @@ import com.pnow.weatheractivityplanner.util.Dimens
 @Composable
 fun FullScreenError(
     modifier: Modifier = Modifier,
-    message: String,
+    message: String = stringResource(R.string.common_error_unknown),
     onRetry: () -> Unit,
 ) {
     Column(
@@ -41,7 +41,6 @@ fun FullScreenError(
         ErrorRetryButton(
             onClick = onRetry,
         )
-
     }
 }
 
@@ -72,7 +71,6 @@ private fun ErrorRetryButton(
     }
 }
 
-
 @Preview(showBackground = true)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
@@ -80,14 +78,14 @@ private fun FullScreenErrorPreview() {
     WeatherActivityPlannerTheme {
         Surface {
             FullScreenError(
-                message = CommonContentPreviewData.ERROR_MESSAGE,
+                message = FullScreenErrorPreviewData.ERROR_MESSAGE,
                 onRetry = {},
             )
         }
     }
 }
 
-private object CommonContentPreviewData {
+private object FullScreenErrorPreviewData {
 
-    const val ERROR_MESSAGE = "No internet connection"
+    const val ERROR_MESSAGE = "Something went wrong"
 }
