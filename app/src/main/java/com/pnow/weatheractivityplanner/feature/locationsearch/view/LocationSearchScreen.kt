@@ -114,16 +114,16 @@ private fun LocationSearchResultsContent(
                     onLocationSelected = onLocationSelected,
                 )
 
-            state.searchQuery.isNotBlank() && !state.isLoading ->
+            state.searchQuery.isBlank() ->
                 DefaultSearchContentLabel(
                     modifier = Modifier.align(Alignment.Center),
-                    text = stringResource(R.string.weather_activity_no_cities_found),
+                    text = stringResource(R.string.weather_activity_search_prompt),
                 )
 
             else ->
                 DefaultSearchContentLabel(
                     modifier = Modifier.align(Alignment.Center),
-                    text = stringResource(R.string.weather_activity_search_prompt),
+                    text = stringResource(R.string.weather_activity_no_cities_found),
                 )
         }
     }
