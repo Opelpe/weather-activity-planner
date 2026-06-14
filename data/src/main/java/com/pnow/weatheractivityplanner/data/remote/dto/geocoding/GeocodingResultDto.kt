@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class GeocodingResultDto(
+internal data class GeocodingResultDto(
     @param:Json(name = "id") val id: Long,
     @param:Json(name = "name") val name: String,
     @param:Json(name = "latitude") val latitude: Double,

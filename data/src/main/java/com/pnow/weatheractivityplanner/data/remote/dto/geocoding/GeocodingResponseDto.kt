@@ -4,6 +4,6 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class GeocodingResponseDto(
+internal data class GeocodingResponseDto(
     @param:Json(name = "results") val results: List<GeocodingResultDto>? = null,
 )

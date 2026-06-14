@@ -4,7 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class ForecastResponseDto(
+internal data class ForecastResponseDto(
     @param:Json(name = "latitude") val latitude: Double,
     @param:Json(name = "longitude") val longitude: Double,
     @param:Json(name = "timezone") val timezone: String,
