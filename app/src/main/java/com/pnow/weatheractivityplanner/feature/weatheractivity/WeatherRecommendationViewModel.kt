@@ -67,23 +67,40 @@ class WeatherRecommendationViewModel @Inject constructor(
         args?.let(::loadRankings)
     }
 
+    fun onRefresh() {
+        args?.let(::refreshRankings)
+    }
+
     private fun loadRankings(args: ActivitiesRankingArgs) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
-            runCatching { getActivityRankingsUseCase(args.location).first() }
-                .onSuccess { result ->
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            currentWeather = result.currentWeather.toUiModel(),
-                            ranking = result.rankings.toUiModels(),
-                        )
-                    }
-                }
-
-                .onFailure { throwable ->
-                    _state.update { it.copy(isLoading = false, error = throwable.toUiError()) }
-                }
+            fetchRankings(args)
         }
+    }
+
+    private fun refreshRankings(args: ActivitiesRankingArgs) {
+        viewModelScope.launch {
+            _state.update { it.copy(isRefreshing = true, error = null) }
+            fetchRankings(args)
+        }
+    }
+
+    private suspend fun fetchRankings(args: ActivitiesRankingArgs) {
+        runCatching { getActivityRankingsUseCase(args.location).first() }
+            .onSuccess { result ->
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        isRefreshing = false,
+                        currentWeather = result.currentWeather.toUiModel(),
+                        ranking = result.rankings.toUiModels(),
+                    )
+                }
+            }
+            .onFailure { throwable ->
+                _state.update {
+                    it.copy(isLoading = false, isRefreshing = false, error = throwable.toUiError())
+                }
+            }
     }
 }

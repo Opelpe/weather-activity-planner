@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -35,6 +36,7 @@ fun WeatherRecommendationScreen(
         modifier = modifier,
         state = state,
         onRetry = viewModel::onRetry,
+        onRefresh = viewModel::onRefresh,
         onWeatherCardClick = onNavigateToForecast,
     )
 }
@@ -44,6 +46,7 @@ private fun WeatherRecommendationContent(
     modifier: Modifier = Modifier,
     state: WeatherRecommendationUiState,
     onRetry: () -> Unit,
+    onRefresh: () -> Unit,
     onWeatherCardClick: () -> Unit,
 ) {
     when {
@@ -61,6 +64,7 @@ private fun WeatherRecommendationContent(
             WeatherRecommendationResultsContent(
                 modifier = modifier,
                 state = state,
+                onRefresh = onRefresh,
                 onWeatherCardClick = onWeatherCardClick,
             )
 
@@ -71,32 +75,39 @@ private fun WeatherRecommendationContent(
 private fun WeatherRecommendationResultsContent(
     modifier: Modifier = Modifier,
     state: WeatherRecommendationUiState,
+    onRefresh: () -> Unit,
     onWeatherCardClick: () -> Unit,
 ) {
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(Dimens.Spacing12),
-        verticalArrangement = Arrangement.spacedBy(Dimens.Spacing16),
+    PullToRefreshBox(
+        modifier = modifier.fillMaxSize(),
+        isRefreshing = state.isRefreshing,
+        onRefresh = onRefresh,
     ) {
-        item {
-            state.currentWeather?.let { currentWeather ->
-                CurrentWeatherCard(
-                    locationName = state.locationName,
-                    locationCountry = state.locationCountry,
-                    currentWeather = currentWeather,
-                    onClick = onWeatherCardClick,
-                )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(Dimens.Spacing12),
+            verticalArrangement = Arrangement.spacedBy(Dimens.Spacing16),
+        ) {
+            item {
+                state.currentWeather?.let { currentWeather ->
+                    CurrentWeatherCard(
+                        locationName = state.locationName,
+                        locationCountry = state.locationCountry,
+                        currentWeather = currentWeather,
+                        onClick = onWeatherCardClick,
+                    )
+                }
             }
-        }
 
-        items(
-            items = state.ranking,
-            key = { ranking -> ranking.activities.name },
-        ) { ranking ->
-            ActivitiesRankingItem(ranking = ranking)
-        }
+            items(
+                items = state.ranking,
+                key = { ranking -> ranking.activities.name },
+            ) { ranking ->
+                ActivitiesRankingItem(ranking = ranking)
+            }
 
+        }
     }
 }
 
@@ -109,6 +120,22 @@ private fun WeatherRecommendationContentSuccessPreview() {
             WeatherRecommendationContent(
                 state = WeatherRecommendationPreviewData.SuccessState,
                 onRetry = {},
+                onRefresh = {},
+                onWeatherCardClick = {},
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun WeatherRecommendationContentRefreshingPreview() {
+    WeatherActivityPlannerTheme {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            WeatherRecommendationContent(
+                state = WeatherRecommendationPreviewData.SuccessState.copy(isRefreshing = true),
+                onRetry = {},
+                onRefresh = {},
                 onWeatherCardClick = {},
             )
         }
@@ -127,6 +154,7 @@ private fun WeatherRecommendationContentErrorPreview() {
                     error = UiError.NetworkUnavailable,
                 ),
                 onRetry = {},
+                onRefresh = {},
                 onWeatherCardClick = {},
             )
         }
@@ -143,6 +171,7 @@ private fun WeatherRecommendationContentLoadingPreview() {
                     isLoading = true,
                 ),
                 onRetry = {},
+                onRefresh = {},
                 onWeatherCardClick = {},
             )
         }

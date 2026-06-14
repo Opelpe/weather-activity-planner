@@ -8,6 +8,7 @@ data class WeatherRecommendationUiState(
     val locationName: String = "",
     val locationCountry: String = "",
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val currentWeather: CurrentWeatherUiModel? = null,
     val ranking: List<ActivitiesRankingUiModel> = emptyList(),
     val error: UiError? = null,

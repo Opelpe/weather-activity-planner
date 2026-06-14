@@ -44,6 +44,7 @@ private object WeatherActivityViewModelFixture {
         const val LONGITUDE = 2.35
         const val TIMEZONE = "Europe/Paris"
         const val TEMPERATURE_CELSIUS = 22.0
+        const val REFRESHED_TEMPERATURE_CELSIUS = 25.0
         const val APPARENT_TEMPERATURE_CELSIUS = 21.0
         const val HUMIDITY_PERCENT = 50
         const val PRECIPITATION_MM = 0.0
@@ -165,6 +166,68 @@ class WeatherRecommendationViewModelTest {
         }
 
     @Test
+    fun `given successful forecast, when onRefresh is called, then state emits refreshing then success without loading`() =
+        runTest(testDispatcher) {
+            val firstForecast = buildForecast()
+            val refreshedForecast = buildForecast(
+                temperatureCelsius = WeatherActivityViewModelFixture.Paris.REFRESHED_TEMPERATURE_CELSIUS,
+            )
+            val viewModel = buildViewModel(
+                forecastResults = listOf(
+                    Result.success(firstForecast),
+                    Result.success(refreshedForecast),
+                ),
+            )
+
+            viewModel.state.test {
+                awaitItem() // initial state
+                awaitItem() // loading
+                awaitItem() // first success
+
+                viewModel.onRefresh()
+
+                val refreshing = awaitItem()
+                assertTrue(refreshing.isRefreshing)
+                assertFalse(refreshing.isLoading)
+
+                val refreshed = awaitItem()
+                assertFalse(refreshed.isRefreshing)
+                assertFalse(refreshed.isLoading)
+                assertEquals(refreshedForecast.current.toUiModel(), refreshed.currentWeather)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given rankings failed, when onRefresh is called, then state emits refreshing then error`() =
+        runTest(testDispatcher) {
+            val viewModel = buildViewModel(
+                forecastResults = listOf(
+                    Result.success(buildForecast()),
+                    Result.failure(DomainError.NetworkUnavailable()),
+                ),
+            )
+
+            viewModel.state.test {
+                awaitItem() // initial state
+                awaitItem() // loading
+                awaitItem() // first success
+
+                viewModel.onRefresh()
+
+                val refreshing = awaitItem()
+                assertTrue(refreshing.isRefreshing)
+
+                val error = awaitItem()
+                assertFalse(error.isRefreshing)
+                assertEquals(UiError.NetworkUnavailable, error.error)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
     fun `given rankings with a unique top score, when toUiModels, then only the highest scoring activity is top ranked`() {
         val rankings = listOf(
             buildRanking(Activities.OUTDOOR_SIGHTSEEING, WeatherActivityViewModelFixture.UniqueTopScore.HIGHEST),
@@ -223,12 +286,14 @@ class WeatherRecommendationViewModelTest {
         ),
     )
 
-    private fun buildForecast() = Forecast(
+    private fun buildForecast(
+        temperatureCelsius: Double = WeatherActivityViewModelFixture.Paris.TEMPERATURE_CELSIUS,
+    ) = Forecast(
         latitude = WeatherActivityViewModelFixture.Paris.LATITUDE,
         longitude = WeatherActivityViewModelFixture.Paris.LONGITUDE,
         timezone = WeatherActivityViewModelFixture.Paris.TIMEZONE,
         current = CurrentWeather(
-            temperatureCelsius = WeatherActivityViewModelFixture.Paris.TEMPERATURE_CELSIUS,
+            temperatureCelsius = temperatureCelsius,
             apparentTemperatureCelsius = WeatherActivityViewModelFixture.Paris.APPARENT_TEMPERATURE_CELSIUS,
             relativeHumidityPercent = WeatherActivityViewModelFixture.Paris.HUMIDITY_PERCENT,
             precipitationMm = WeatherActivityViewModelFixture.Paris.PRECIPITATION_MM,
