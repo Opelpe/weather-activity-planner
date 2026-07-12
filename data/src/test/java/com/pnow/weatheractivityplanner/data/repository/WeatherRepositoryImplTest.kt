@@ -1,11 +1,13 @@
 package com.pnow.weatheractivityplanner.data.repository
 
+import com.pnow.weatheractivityplanner.data.di.TimeSource
 import com.pnow.weatheractivityplanner.data.remote.api.WeatherApi
 import com.pnow.weatheractivityplanner.data.remote.dto.forecast.CurrentWeatherDto
 import com.pnow.weatheractivityplanner.data.remote.dto.forecast.DailyDataDto
 import com.pnow.weatheractivityplanner.data.remote.dto.forecast.ForecastResponseDto
 import com.pnow.weatheractivityplanner.domain.error.DomainError
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import java.io.IOException
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -19,8 +21,11 @@ import retrofit2.Response
 
 private object WeatherRepositoryFixture {
 
+    const val LOCATION_ID = 1L
+    const val OTHER_LOCATION_ID = 2L
     const val LATITUDE = 51.5
     const val LONGITUDE = -0.1
+    const val OTHER_LATITUDE = 48.85
     const val TIMEZONE = "Europe/London"
     const val NETWORK_ERROR_MESSAGE = "No network"
     const val HTTP_ERROR_CODE = 429
@@ -62,6 +67,7 @@ class WeatherRepositoryImplTest {
     private val repository = WeatherRepositoryImpl(
         weatherApi = weatherApi,
         ioDispatcher = testDispatcher,
+        timeSource = TimeSource { System.currentTimeMillis() },
     )
 
     @Test
@@ -79,6 +85,7 @@ class WeatherRepositoryImplTest {
             } returns buildForecastDto()
 
             val result = repository.getForecast(
+                locationId = WeatherRepositoryFixture.LOCATION_ID,
                 latitude = WeatherRepositoryFixture.LATITUDE,
                 longitude = WeatherRepositoryFixture.LONGITUDE,
             )
@@ -102,6 +109,7 @@ class WeatherRepositoryImplTest {
             } throws IOException(WeatherRepositoryFixture.NETWORK_ERROR_MESSAGE)
 
             val result = repository.getForecast(
+                locationId = WeatherRepositoryFixture.LOCATION_ID,
                 latitude = WeatherRepositoryFixture.LATITUDE,
                 longitude = WeatherRepositoryFixture.LONGITUDE,
             )
@@ -131,6 +139,7 @@ class WeatherRepositoryImplTest {
             } throws httpException
 
             val result = repository.getForecast(
+                locationId = WeatherRepositoryFixture.LOCATION_ID,
                 latitude = WeatherRepositoryFixture.LATITUDE,
                 longitude = WeatherRepositoryFixture.LONGITUDE,
             )
@@ -155,12 +164,169 @@ class WeatherRepositoryImplTest {
             } throws RuntimeException(WeatherRepositoryFixture.UNEXPECTED_ERROR_MESSAGE)
 
             val result = repository.getForecast(
+                locationId = WeatherRepositoryFixture.LOCATION_ID,
                 latitude = WeatherRepositoryFixture.LATITUDE,
                 longitude = WeatherRepositoryFixture.LONGITUDE,
             )
 
             assertTrue(result.isFailure)
             assertTrue(result.exceptionOrNull() is DomainError.Unknown)
+        }
+
+    @Test
+    fun `given fresh cache, when getForecast called twice with same location, then api called only once`() =
+        runTest(testDispatcher) {
+            coEvery {
+                weatherApi.getForecast(
+                    latitude = any(),
+                    longitude = any(),
+                    current = any(),
+                    daily = any(),
+                    forecastDays = any(),
+                    timezone = any(),
+                )
+            } returns buildForecastDto()
+
+            repository.getForecast(
+                locationId = WeatherRepositoryFixture.LOCATION_ID,
+                latitude = WeatherRepositoryFixture.LATITUDE,
+                longitude = WeatherRepositoryFixture.LONGITUDE,
+            )
+            repository.getForecast(
+                locationId = WeatherRepositoryFixture.LOCATION_ID,
+                latitude = WeatherRepositoryFixture.LATITUDE,
+                longitude = WeatherRepositoryFixture.LONGITUDE,
+            )
+
+            coVerify(exactly = 1) {
+                weatherApi.getForecast(
+                    latitude = any(),
+                    longitude = any(),
+                    current = any(),
+                    daily = any(),
+                    forecastDays = any(),
+                    timezone = any(),
+                )
+            }
+        }
+
+    @Test
+    fun `given fresh cache, when getForecast called with forceRefresh true, then api called again`() =
+        runTest(testDispatcher) {
+            coEvery {
+                weatherApi.getForecast(
+                    latitude = any(),
+                    longitude = any(),
+                    current = any(),
+                    daily = any(),
+                    forecastDays = any(),
+                    timezone = any(),
+                )
+            } returns buildForecastDto()
+
+            repository.getForecast(
+                locationId = WeatherRepositoryFixture.LOCATION_ID,
+                latitude = WeatherRepositoryFixture.LATITUDE,
+                longitude = WeatherRepositoryFixture.LONGITUDE,
+            )
+            repository.getForecast(
+                locationId = WeatherRepositoryFixture.LOCATION_ID,
+                latitude = WeatherRepositoryFixture.LATITUDE,
+                longitude = WeatherRepositoryFixture.LONGITUDE,
+                forceRefresh = true,
+            )
+
+            coVerify(exactly = 2) {
+                weatherApi.getForecast(
+                    latitude = any(),
+                    longitude = any(),
+                    current = any(),
+                    daily = any(),
+                    forecastDays = any(),
+                    timezone = any(),
+                )
+            }
+        }
+
+    @Test
+    fun `given different location ids, when getForecast called, then api called for each`() =
+        runTest(testDispatcher) {
+            coEvery {
+                weatherApi.getForecast(
+                    latitude = any(),
+                    longitude = any(),
+                    current = any(),
+                    daily = any(),
+                    forecastDays = any(),
+                    timezone = any(),
+                )
+            } returns buildForecastDto()
+
+            repository.getForecast(
+                locationId = WeatherRepositoryFixture.LOCATION_ID,
+                latitude = WeatherRepositoryFixture.LATITUDE,
+                longitude = WeatherRepositoryFixture.LONGITUDE,
+            )
+            repository.getForecast(
+                locationId = WeatherRepositoryFixture.OTHER_LOCATION_ID,
+                latitude = WeatherRepositoryFixture.OTHER_LATITUDE,
+                longitude = WeatherRepositoryFixture.LONGITUDE,
+            )
+
+            coVerify(exactly = 2) {
+                weatherApi.getForecast(
+                    latitude = any(),
+                    longitude = any(),
+                    current = any(),
+                    daily = any(),
+                    forecastDays = any(),
+                    timezone = any(),
+                )
+            }
+        }
+
+    @Test
+    fun `given expired cache, when getForecast called, then api called again`() =
+        runTest(testDispatcher) {
+            var now = 0L
+            val repositoryWithTimeSource = WeatherRepositoryImpl(
+                weatherApi = weatherApi,
+                ioDispatcher = testDispatcher,
+                timeSource = TimeSource { now },
+            )
+            coEvery {
+                weatherApi.getForecast(
+                    latitude = any(),
+                    longitude = any(),
+                    current = any(),
+                    daily = any(),
+                    forecastDays = any(),
+                    timezone = any(),
+                )
+            } returns buildForecastDto()
+
+            repositoryWithTimeSource.getForecast(
+                locationId = WeatherRepositoryFixture.LOCATION_ID,
+                latitude = WeatherRepositoryFixture.LATITUDE,
+                longitude = WeatherRepositoryFixture.LONGITUDE,
+            )
+            now = WeatherRepositoryImpl.FORECAST_CACHE_TTL_MS + 1L
+            repositoryWithTimeSource.getForecast(
+                locationId = WeatherRepositoryFixture.LOCATION_ID,
+                latitude = WeatherRepositoryFixture.LATITUDE,
+                longitude = WeatherRepositoryFixture.LONGITUDE,
+            )
+
+            coVerify(exactly = 2) {
+                weatherApi.getForecast(
+                    latitude = any(),
+                    longitude = any(),
+                    current = any(),
+                    daily = any(),
+                    forecastDays = any(),
+                    timezone = any(),
+                )
+            }
         }
 
     private fun buildForecastDto() = ForecastResponseDto(
