@@ -44,7 +44,7 @@ internal class WeatherRepositoryImpl @Inject constructor(
 
     companion object {
 
-        internal const val FORECAST_CACHE_TTL_MS = 300_000L
+        internal const val FORECAST_CACHE_TTL_MS = 120_000L
     }
 }
 
