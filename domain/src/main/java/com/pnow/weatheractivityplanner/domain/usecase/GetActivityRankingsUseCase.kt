@@ -10,10 +10,13 @@ class GetActivityRankingsUseCase @Inject constructor(
     private val activitiesRankingCalculator: ActivitiesRankingCalculator,
 ) {
 
-    suspend operator fun invoke(location: Location): Result<ActivitiesRankingsResult> =
+    suspend operator fun invoke(
+        location: Location,
+        forceRefresh: Boolean = false,
+    ): Result<ActivitiesRankingsResult> =
         getForecastUseCase(
-            latitude = location.latitude,
-            longitude = location.longitude,
+            location = location,
+            forceRefresh = forceRefresh,
         ).map { forecast ->
             ActivitiesRankingsResult(
                 currentWeather = forecast.current,
