@@ -10,7 +10,6 @@ import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
 import com.pnow.weatheractivityplanner.domain.usecase.GetForecastUseCase
 import com.pnow.weatheractivityplanner.feature.common.UiError
-import com.pnow.weatheractivityplanner.navigation.RouteArgKeys
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -31,6 +30,8 @@ private object WeatherForecastViewModelFixture {
     const val LOADING_DELAY_MS = 1L
 
     object Paris {
+
+        const val ID = 3L
         const val NAME = "Paris"
         const val COUNTRY = "France"
         const val LATITUDE = 48.85
@@ -44,6 +45,7 @@ private object WeatherForecastViewModelFixture {
     }
 
     object Day1 {
+
         const val DATE = "2026-06-12"
         const val MAX_TEMPERATURE_CELSIUS = 24.0
         const val REFRESHED_MAX_TEMPERATURE_CELSIUS = 27.0
@@ -58,6 +60,7 @@ private object WeatherForecastViewModelFixture {
     }
 
     object Day2 {
+
         const val DATE = "2026-06-13"
         const val MAX_TEMPERATURE_CELSIUS = 21.0
         const val MIN_TEMPERATURE_CELSIUS = 12.0
@@ -152,7 +155,10 @@ class WeatherForecastViewModelTest {
             viewModel.forecastState.test {
                 awaitItem() // initial state
                 awaitItem() // loading
-                assertEquals(UiError.NetworkUnavailable, awaitItem().error) // error after first failed load
+                assertEquals(
+                    UiError.NetworkUnavailable,
+                    awaitItem().error,
+                ) // error after first failed load
 
                 viewModel.onRetry()
 
@@ -193,7 +199,10 @@ class WeatherForecastViewModelTest {
                 val refreshed = awaitItem() // success after refresh
                 assertFalse(refreshed.isRefreshing)
                 assertFalse(refreshed.isLoading)
-                assertEquals(refreshedForecast.daily.map { it.toUiModel() }, refreshed.dailyForecast)
+                assertEquals(
+                    refreshedForecast.daily.map { it.toUiModel() },
+                    refreshed.dailyForecast,
+                )
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -242,10 +251,11 @@ class WeatherForecastViewModelTest {
 
     private fun buildSavedStateHandle() = SavedStateHandle(
         mapOf(
-            RouteArgKeys.LOCATION_NAME to WeatherForecastViewModelFixture.Paris.NAME,
-            RouteArgKeys.LOCATION_COUNTRY to WeatherForecastViewModelFixture.Paris.COUNTRY,
-            RouteArgKeys.LATITUDE to WeatherForecastViewModelFixture.Paris.LATITUDE,
-            RouteArgKeys.LONGITUDE to WeatherForecastViewModelFixture.Paris.LONGITUDE,
+            "locationId" to WeatherForecastViewModelFixture.Paris.ID,
+            "locationName" to WeatherForecastViewModelFixture.Paris.NAME,
+            "locationCountry" to WeatherForecastViewModelFixture.Paris.COUNTRY,
+            "latitude" to WeatherForecastViewModelFixture.Paris.LATITUDE,
+            "longitude" to WeatherForecastViewModelFixture.Paris.LONGITUDE,
         ),
     )
 
@@ -297,9 +307,15 @@ class WeatherForecastViewModelTest {
     private class FakeWeatherRepository(
         private val results: List<Result<Forecast>>,
     ) : WeatherRepository {
+
         private var callIndex = 0
 
-        override suspend fun getForecast(latitude: Double, longitude: Double): Result<Forecast> {
+        override suspend fun getForecast(
+            locationId: Long,
+            latitude: Double,
+            longitude: Double,
+            forceRefresh: Boolean,
+        ): Result<Forecast> {
             delay(WeatherForecastViewModelFixture.LOADING_DELAY_MS.milliseconds)
             val result = results[callIndex]
             callIndex = minOf(callIndex + 1, results.size - 1)

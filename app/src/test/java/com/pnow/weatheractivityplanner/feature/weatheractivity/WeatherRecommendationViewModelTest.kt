@@ -21,7 +21,6 @@ import com.pnow.weatheractivityplanner.domain.usecase.GetForecastUseCase
 import com.pnow.weatheractivityplanner.feature.common.UiError
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModel
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModels
-import com.pnow.weatheractivityplanner.navigation.RouteArgKeys
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -317,11 +316,11 @@ class WeatherRecommendationViewModelTest {
 
     private fun buildSavedStateHandle() = SavedStateHandle(
         mapOf(
-            RouteArgKeys.LOCATION_ID to WeatherActivityViewModelFixture.Paris.ID,
-            RouteArgKeys.LOCATION_NAME to WeatherActivityViewModelFixture.Paris.NAME,
-            RouteArgKeys.LOCATION_COUNTRY to WeatherActivityViewModelFixture.Paris.COUNTRY,
-            RouteArgKeys.LATITUDE to WeatherActivityViewModelFixture.Paris.LATITUDE,
-            RouteArgKeys.LONGITUDE to WeatherActivityViewModelFixture.Paris.LONGITUDE,
+            "locationId" to WeatherActivityViewModelFixture.Paris.ID,
+            "locationName" to WeatherActivityViewModelFixture.Paris.NAME,
+            "locationCountry" to WeatherActivityViewModelFixture.Paris.COUNTRY,
+            "latitude" to WeatherActivityViewModelFixture.Paris.LATITUDE,
+            "longitude" to WeatherActivityViewModelFixture.Paris.LONGITUDE,
         ),
     )
 
@@ -364,8 +363,10 @@ class WeatherRecommendationViewModelTest {
         private var callIndex = 0
 
         override suspend fun getForecast(
+            locationId: Long,
             latitude: Double,
             longitude: Double,
+            forceRefresh: Boolean,
         ): Result<Forecast> {
             delay(WeatherActivityViewModelFixture.LOADING_DELAY_MS.milliseconds)
             val result = results[callIndex]
