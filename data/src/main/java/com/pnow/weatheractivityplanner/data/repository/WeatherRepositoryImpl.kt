@@ -34,17 +34,25 @@ internal class WeatherRepositoryImpl @Inject constructor(
         }
         runCatching {
             weatherApi.getForecast(latitude = latitude, longitude = longitude).toDomain()
-        }.toDomainResult().also { result ->
-            result.onSuccess { forecast ->
+        }.toDomainResult().fold(
+            onSuccess = { forecast ->
                 cache[locationId] =
                     CachedForecast(forecast = forecast, fetchedAtMs = timeSource.nowMs())
-            }
-        }
+                Result.success(forecast)
+            },
+            onFailure = { error ->
+                cache[locationId]
+                    ?.takeIf { timeSource.nowMs() - it.fetchedAtMs < FORECAST_CACHE_MAX_STALE_MS }
+                    ?.let { Result.success(it.forecast.copy(isCached = true)) }
+                    ?: Result.failure(error)
+            },
+        )
     }
 
     companion object {
 
         internal const val FORECAST_CACHE_TTL_MS = 120_000L
+        internal const val FORECAST_CACHE_MAX_STALE_MS = 8 * 60 * 60_000L
     }
 }
 
