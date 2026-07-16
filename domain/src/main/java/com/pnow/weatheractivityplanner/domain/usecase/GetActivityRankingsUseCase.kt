@@ -21,6 +21,7 @@ class GetActivityRankingsUseCase @Inject constructor(
             ActivitiesRankingsResult(
                 currentWeather = forecast.current,
                 rankings = activitiesRankingCalculator.calculate(forecast.daily),
+                isCached = forecast.isCached,
             )
         }
 }

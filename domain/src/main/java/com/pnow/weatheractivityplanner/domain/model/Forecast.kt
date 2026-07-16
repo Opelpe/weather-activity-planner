@@ -6,4 +6,5 @@ data class Forecast(
     val timezone: String,
     val current: CurrentWeather,
     val daily: List<DailyForecast>,
+    val isCached: Boolean = false,
 )
