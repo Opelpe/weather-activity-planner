@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pnow.weatheractivityplanner.domain.model.Location
+import com.pnow.weatheractivityplanner.domain.repository.ConnectivityRepository
 import com.pnow.weatheractivityplanner.domain.usecase.GetActivityRankingsUseCase
 import com.pnow.weatheractivityplanner.feature.common.UiError
 import com.pnow.weatheractivityplanner.feature.common.toUiError
@@ -12,9 +13,12 @@ import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModels
 import com.pnow.weatheractivityplanner.navigation.toLocationOrNull
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -22,6 +26,7 @@ import kotlinx.coroutines.launch
 class WeatherRecommendationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getActivityRankingsUseCase: GetActivityRankingsUseCase,
+    private val connectivityRepository: ConnectivityRepository,
 ) : ViewModel() {
 
     private val location: Location? = savedStateHandle.toLocationOrNull()
@@ -35,8 +40,12 @@ class WeatherRecommendationViewModel @Inject constructor(
     )
     val state: StateFlow<WeatherRecommendationUiState> = _state.asStateFlow()
 
+    private val _cachedDataNotices = Channel<Unit>(Channel.BUFFERED)
+    val cachedDataNotices: Flow<Unit> = _cachedDataNotices.receiveAsFlow()
+
     init {
         location?.let(::loadRankings)
+        observeConnectivity()
     }
 
     fun onRetry() {
@@ -51,6 +60,16 @@ class WeatherRecommendationViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             fetchRankings(location)
+        }
+    }
+
+    private fun observeConnectivity() {
+        viewModelScope.launch {
+            connectivityRepository.isConnected().collect { isConnected ->
+                if (!isConnected && _state.value.currentWeather != null) {
+                    _cachedDataNotices.trySend(Unit)
+                }
+            }
         }
     }
 
@@ -77,6 +96,9 @@ class WeatherRecommendationViewModel @Inject constructor(
                         currentWeather = result.currentWeather.toUiModel(),
                         ranking = result.rankings.toUiModels(),
                     )
+                }
+                if (result.isCached) {
+                    _cachedDataNotices.trySend(Unit)
                 }
             }
             .onFailure { throwable ->

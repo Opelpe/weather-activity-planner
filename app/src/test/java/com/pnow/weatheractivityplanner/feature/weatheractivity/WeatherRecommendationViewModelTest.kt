@@ -15,6 +15,7 @@ import com.pnow.weatheractivityplanner.domain.ranking.IndoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.OutdoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SkiingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SurfingDayScorer
+import com.pnow.weatheractivityplanner.domain.repository.ConnectivityRepository
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
 import com.pnow.weatheractivityplanner.domain.usecase.GetActivityRankingsUseCase
 import com.pnow.weatheractivityplanner.domain.usecase.GetForecastUseCase
@@ -25,6 +26,8 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -125,6 +128,31 @@ class WeatherRecommendationViewModelTest {
                     calculator.calculate(forecast.daily).toUiModels(),
                     success.ranking,
                 )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given cached forecast returned, when initialized, then state shows content and emits cached data notice`() =
+        runTest(testDispatcher) {
+            val cachedForecast = buildForecast().copy(isCached = true)
+            val viewModel = buildViewModel(forecastResults = listOf(Result.success(cachedForecast)))
+
+            viewModel.cachedDataNotices.test {
+                viewModel.state.test {
+                    assertEquals(buildInitialState(), awaitItem())
+                    assertTrue(awaitItem().isLoading)
+
+                    val success = awaitItem()
+                    assertFalse(success.isLoading)
+                    assertEquals(cachedForecast.current.toUiModel(), success.currentWeather)
+                    assertEquals(null, success.error)
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+
+                assertEquals(Unit, awaitItem())
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -254,6 +282,132 @@ class WeatherRecommendationViewModelTest {
         }
 
     @Test
+    fun `given cached forecast returned, when onRefresh is called, then state keeps content and emits cached data notice`() =
+        runTest(testDispatcher) {
+            val firstForecast = buildForecast()
+            val cachedForecast = firstForecast.copy(isCached = true)
+            val viewModel = buildViewModel(
+                forecastResults = listOf(
+                    Result.success(firstForecast),
+                    Result.success(cachedForecast),
+                ),
+            )
+
+            viewModel.cachedDataNotices.test {
+                viewModel.state.test {
+                    awaitItem() // initial state
+                    awaitItem() // loading
+                    awaitItem() // first success
+
+                    viewModel.onRefresh()
+
+                    val refreshing = awaitItem()
+                    assertTrue(refreshing.isRefreshing)
+
+                    val refreshed = awaitItem()
+                    assertFalse(refreshed.isRefreshing)
+                    assertEquals(cachedForecast.current.toUiModel(), refreshed.currentWeather)
+                    assertEquals(null, refreshed.error)
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+
+                assertEquals(Unit, awaitItem())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given cached forecast returned on consecutive refreshes, when onRefresh is called each time, then a new cached data notice is emitted every time`() =
+        runTest(testDispatcher) {
+            val firstForecast = buildForecast()
+            val cachedForecast = firstForecast.copy(isCached = true)
+            val viewModel = buildViewModel(
+                forecastResults = listOf(
+                    Result.success(firstForecast),
+                    Result.success(cachedForecast),
+                    Result.success(cachedForecast),
+                ),
+            )
+
+            viewModel.cachedDataNotices.test {
+                viewModel.state.test {
+                    awaitItem() // initial state
+                    awaitItem() // loading
+                    awaitItem() // first success
+
+                    viewModel.onRefresh()
+                    awaitItem() // refreshing
+                    awaitItem() // first cached success
+
+                    viewModel.onRefresh()
+                    awaitItem() // refreshing
+                    awaitItem() // second cached success
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+
+                assertEquals(Unit, awaitItem())
+                assertEquals(Unit, awaitItem())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given content already shown, when connectivity is lost, then a cached data notice is emitted`() =
+        runTest(testDispatcher) {
+            val connectivity = MutableStateFlow(true)
+            val viewModel = buildViewModel(
+                forecastResults = listOf(Result.success(buildForecast())),
+                connectivityRepository = FakeConnectivityRepository(connectivity),
+            )
+
+            viewModel.cachedDataNotices.test {
+                viewModel.state.test {
+                    awaitItem() // initial state
+                    awaitItem() // loading
+                    awaitItem() // success
+
+                    connectivity.value = false
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+
+                assertEquals(Unit, awaitItem())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given no content yet, when connectivity is lost, then no cached data notice is emitted`() =
+        runTest(testDispatcher) {
+            val connectivity = MutableStateFlow(true)
+            val viewModel = buildViewModel(
+                forecastResults = listOf(Result.failure(DomainError.NetworkUnavailable())),
+                connectivityRepository = FakeConnectivityRepository(connectivity),
+            )
+
+            viewModel.cachedDataNotices.test {
+                viewModel.state.test {
+                    awaitItem() // initial state
+                    awaitItem() // loading
+                    awaitItem() // error, no content
+
+                    connectivity.value = false
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+
+                expectNoEvents()
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
     fun `given rankings with a unique top score, when toUiModels, then only the highest scoring activity is top ranked`() {
         val rankings = listOf(
             buildRanking(
@@ -306,12 +460,14 @@ class WeatherRecommendationViewModelTest {
     private fun buildViewModel(
         forecastResults: List<Result<Forecast>> = listOf(Result.success(buildForecast())),
         savedStateHandle: SavedStateHandle = buildSavedStateHandle(),
+        connectivityRepository: ConnectivityRepository = FakeConnectivityRepository(),
     ) = WeatherRecommendationViewModel(
         savedStateHandle = savedStateHandle,
         getActivityRankingsUseCase = GetActivityRankingsUseCase(
             getForecastUseCase = GetForecastUseCase(FakeWeatherRepository(forecastResults)),
             activitiesRankingCalculator = calculator,
         ),
+        connectivityRepository = connectivityRepository,
     )
 
     private fun buildSavedStateHandle() = SavedStateHandle(
@@ -373,5 +529,12 @@ class WeatherRecommendationViewModelTest {
             callIndex = minOf(callIndex + 1, results.size - 1)
             return result
         }
+    }
+
+    private class FakeConnectivityRepository(
+        private val connectivityFlow: Flow<Boolean> = MutableStateFlow(true),
+    ) : ConnectivityRepository {
+
+        override fun isConnected(): Flow<Boolean> = connectivityFlow
     }
 }

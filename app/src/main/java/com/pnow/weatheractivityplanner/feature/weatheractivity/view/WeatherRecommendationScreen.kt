@@ -8,11 +8,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,6 +27,7 @@ import com.pnow.weatheractivityplanner.feature.common.UiError
 import com.pnow.weatheractivityplanner.feature.common.toMessage
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenError
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenLoading
+import com.pnow.weatheractivityplanner.feature.common.view.ObserveCachedDataNotice
 import com.pnow.weatheractivityplanner.feature.weatheractivity.WeatherRecommendationPreviewData
 import com.pnow.weatheractivityplanner.feature.weatheractivity.WeatherRecommendationUiState
 import com.pnow.weatheractivityplanner.feature.weatheractivity.WeatherRecommendationViewModel
@@ -36,14 +41,26 @@ fun WeatherRecommendationScreen(
     viewModel: WeatherRecommendationViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    WeatherRecommendationContent(
-        modifier = modifier,
-        state = state,
-        onRetry = viewModel::onRetry,
-        onRefresh = viewModel::onRefresh,
-        onWeatherCardClick = onNavigateToForecast,
+    ObserveCachedDataNotice(
+        notices = viewModel.cachedDataNotices,
+        snackbarHostState = snackbarHostState,
+        onRetry = viewModel::onRefresh,
     )
+
+    Scaffold(
+        modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+    ) { innerPadding ->
+        WeatherRecommendationContent(
+            modifier = Modifier.padding(innerPadding),
+            state = state,
+            onRetry = viewModel::onRetry,
+            onRefresh = viewModel::onRefresh,
+            onWeatherCardClick = onNavigateToForecast,
+        )
+    }
 }
 
 @Composable
