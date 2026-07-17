@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 fun ObserveCachedDataNotice(
     notices: Flow<Unit>,
     snackbarHostState: SnackbarHostState,
-    onRetry: () -> Unit,
+    onRefresh: () -> Unit,
 ) {
     val message = stringResource(R.string.common_cached_data_notice_message)
     val actionLabel = stringResource(R.string.weather_activity_retry)
@@ -26,7 +26,7 @@ fun ObserveCachedDataNotice(
                 duration = SnackbarDuration.Long,
             )
             if (result == SnackbarResult.ActionPerformed) {
-                onRetry()
+                onRefresh()
             }
         }
     }

@@ -57,7 +57,7 @@ fun WeatherForecastScreen(
     ObserveCachedDataNotice(
         notices = viewModel.cachedDataNotices,
         snackbarHostState = snackbarHostState,
-        onRetry = viewModel::onRefresh,
+        onRefresh = viewModel::onRefresh,
     )
 
     Scaffold(
