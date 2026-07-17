@@ -7,7 +7,7 @@ import com.pnow.weatheractivityplanner.data.mapper.toDomainResult
 import com.pnow.weatheractivityplanner.data.remote.api.WeatherApi
 import com.pnow.weatheractivityplanner.domain.model.Forecast
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
-import java.util.concurrent.ConcurrentHashMap
+import java.util.Collections
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -18,7 +18,12 @@ internal class WeatherRepositoryImpl @Inject constructor(
     private val timeSource: TimeSource,
 ) : WeatherRepository {
 
-    private val cache = ConcurrentHashMap<Long, CachedForecast>()
+    private val cache: MutableMap<Long, CachedForecast> = Collections.synchronizedMap(
+        object : LinkedHashMap<Long, CachedForecast>(FORECAST_CACHE_MAX_SIZE, 0.75f, true) {
+            override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Long, CachedForecast>) =
+                size > FORECAST_CACHE_MAX_SIZE
+        },
+    )
 
     override suspend fun getForecast(
         locationId: Long,
@@ -53,6 +58,7 @@ internal class WeatherRepositoryImpl @Inject constructor(
 
         internal const val FORECAST_CACHE_TTL_MS = 120_000L
         internal const val FORECAST_CACHE_MAX_STALE_MS = 8 * 60 * 60_000L
+        internal const val FORECAST_CACHE_MAX_SIZE = 40
     }
 }
 
