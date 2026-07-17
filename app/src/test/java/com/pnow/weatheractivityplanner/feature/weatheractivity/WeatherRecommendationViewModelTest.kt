@@ -23,6 +23,7 @@ import com.pnow.weatheractivityplanner.domain.usecase.ObserveConnectivityLossUse
 import com.pnow.weatheractivityplanner.feature.common.UiError
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModel
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModels
+import com.pnow.weatheractivityplanner.navigation.LocationArgs
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -473,11 +474,11 @@ class WeatherRecommendationViewModelTest {
 
     private fun buildSavedStateHandle() = SavedStateHandle(
         mapOf(
-            "locationId" to WeatherActivityViewModelFixture.Paris.ID,
-            "locationName" to WeatherActivityViewModelFixture.Paris.NAME,
-            "locationCountry" to WeatherActivityViewModelFixture.Paris.COUNTRY,
-            "latitude" to WeatherActivityViewModelFixture.Paris.LATITUDE,
-            "longitude" to WeatherActivityViewModelFixture.Paris.LONGITUDE,
+            LocationArgs::locationId.name to WeatherActivityViewModelFixture.Paris.ID,
+            LocationArgs::locationName.name to WeatherActivityViewModelFixture.Paris.NAME,
+            LocationArgs::locationCountry.name to WeatherActivityViewModelFixture.Paris.COUNTRY,
+            LocationArgs::latitude.name to WeatherActivityViewModelFixture.Paris.LATITUDE,
+            LocationArgs::longitude.name to WeatherActivityViewModelFixture.Paris.LONGITUDE,
         ),
     )
 

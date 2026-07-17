@@ -12,6 +12,7 @@ import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
 import com.pnow.weatheractivityplanner.domain.usecase.GetForecastUseCase
 import com.pnow.weatheractivityplanner.domain.usecase.ObserveConnectivityLossUseCase
 import com.pnow.weatheractivityplanner.feature.common.UiError
+import com.pnow.weatheractivityplanner.navigation.LocationArgs
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -411,11 +412,11 @@ class WeatherForecastViewModelTest {
 
     private fun buildSavedStateHandle() = SavedStateHandle(
         mapOf(
-            "locationId" to WeatherForecastViewModelFixture.Paris.ID,
-            "locationName" to WeatherForecastViewModelFixture.Paris.NAME,
-            "locationCountry" to WeatherForecastViewModelFixture.Paris.COUNTRY,
-            "latitude" to WeatherForecastViewModelFixture.Paris.LATITUDE,
-            "longitude" to WeatherForecastViewModelFixture.Paris.LONGITUDE,
+            LocationArgs::locationId.name to WeatherForecastViewModelFixture.Paris.ID,
+            LocationArgs::locationName.name to WeatherForecastViewModelFixture.Paris.NAME,
+            LocationArgs::locationCountry.name to WeatherForecastViewModelFixture.Paris.COUNTRY,
+            LocationArgs::latitude.name to WeatherForecastViewModelFixture.Paris.LATITUDE,
+            LocationArgs::longitude.name to WeatherForecastViewModelFixture.Paris.LONGITUDE,
         ),
     )
 
