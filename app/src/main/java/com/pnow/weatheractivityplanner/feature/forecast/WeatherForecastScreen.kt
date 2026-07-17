@@ -19,11 +19,14 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -37,6 +40,7 @@ import com.pnow.weatheractivityplanner.feature.common.UiError
 import com.pnow.weatheractivityplanner.feature.common.toMessage
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenError
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenLoading
+import com.pnow.weatheractivityplanner.feature.common.view.ObserveCachedDataNotice
 import com.pnow.weatheractivityplanner.ui.theme.WeatherActivityPlannerTheme
 import com.pnow.weatheractivityplanner.util.Dimens
 import kotlin.math.roundToInt
@@ -48,6 +52,13 @@ fun WeatherForecastScreen(
     viewModel: WeatherForecastViewModel = hiltViewModel(),
 ) {
     val state by viewModel.forecastState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    ObserveCachedDataNotice(
+        notices = viewModel.cachedDataNotices,
+        snackbarHostState = snackbarHostState,
+        onRefresh = viewModel::onRefresh,
+    )
 
     Scaffold(
         modifier = modifier,
@@ -61,6 +72,7 @@ fun WeatherForecastScreen(
                 onNavigateBack = onNavigateBack,
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         WeatherForecastContent(
             modifier = Modifier.padding(innerPadding),

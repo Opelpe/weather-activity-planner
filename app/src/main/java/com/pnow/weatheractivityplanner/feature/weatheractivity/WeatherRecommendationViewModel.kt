@@ -5,87 +5,89 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pnow.weatheractivityplanner.domain.model.Location
 import com.pnow.weatheractivityplanner.domain.usecase.GetActivityRankingsUseCase
+import com.pnow.weatheractivityplanner.domain.usecase.ObserveConnectivityLossUseCase
 import com.pnow.weatheractivityplanner.feature.common.UiError
 import com.pnow.weatheractivityplanner.feature.common.toUiError
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModel
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModels
-import com.pnow.weatheractivityplanner.navigation.RouteArgKeys
+import com.pnow.weatheractivityplanner.navigation.toLocationOrNull
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-private data class ActivitiesRankingArgs(
-    val location: Location,
-)
-
-private fun SavedStateHandle.toActivityRankingsArgsOrNull(): ActivitiesRankingArgs? {
-    val locationId: Long = get(RouteArgKeys.LOCATION_ID) ?: return null
-    val locationName: String = get(RouteArgKeys.LOCATION_NAME) ?: return null
-    val locationCountry: String = get(RouteArgKeys.LOCATION_COUNTRY) ?: return null
-    val latitude: Double = get(RouteArgKeys.LATITUDE) ?: return null
-    val longitude: Double = get(RouteArgKeys.LONGITUDE) ?: return null
-    return ActivitiesRankingArgs(
-        location = Location(
-            id = locationId,
-            name = locationName,
-            latitude = latitude,
-            longitude = longitude,
-            country = locationCountry,
-            countryCode = null,
-            region = null,
-        ),
-    )
-}
 
 @HiltViewModel
 class WeatherRecommendationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getActivityRankingsUseCase: GetActivityRankingsUseCase,
+    private val observeConnectivityLossUseCase: ObserveConnectivityLossUseCase,
 ) : ViewModel() {
 
-    private val args = savedStateHandle.toActivityRankingsArgsOrNull()
+    private val location: Location? = savedStateHandle.toLocationOrNull()
 
     private val _state = MutableStateFlow(
         WeatherRecommendationUiState(
-            locationName = args?.location?.name.orEmpty(),
-            locationCountry = args?.location?.country.orEmpty(),
-            error = if (args == null) UiError.InvalidNavigationArguments else null,
+            locationName = location?.name.orEmpty(),
+            locationCountry = location?.country.orEmpty(),
+            error = if (location == null) UiError.InvalidNavigationArguments else null,
         ),
     )
     val state: StateFlow<WeatherRecommendationUiState> = _state.asStateFlow()
 
+    private val _cachedDataNotices = Channel<Unit>(Channel.BUFFERED)
+    val cachedDataNotices: Flow<Unit> = _cachedDataNotices.receiveAsFlow()
+
     init {
-        args?.let(::loadRankings)
+        location?.let(::loadRankings)
+        observeConnectivity()
     }
 
     fun onRetry() {
-        args?.let(::loadRankings)
+        location?.let(::loadRankings)
     }
 
     fun onRefresh() {
-        args?.let(::refreshRankings)
+        location?.let(::refreshRankings)
     }
 
-    private fun loadRankings(args: ActivitiesRankingArgs) {
+    private fun loadRankings(location: Location) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
-            fetchRankings(args)
+            fetchRankings(location)
         }
     }
 
-    private fun refreshRankings(args: ActivitiesRankingArgs) {
+    private fun observeConnectivity() {
+        viewModelScope.launch {
+            observeConnectivityLossUseCase().collect {
+                if (_state.value.currentWeather != null) {
+                    _cachedDataNotices.trySend(Unit)
+                }
+            }
+        }
+    }
+
+    private fun refreshRankings(location: Location) {
         viewModelScope.launch {
             _state.update { it.copy(isRefreshing = true, error = null) }
-            fetchRankings(args)
+            fetchRankings(location, forceRefresh = true)
         }
     }
 
-    private suspend fun fetchRankings(args: ActivitiesRankingArgs) {
-        getActivityRankingsUseCase(args.location)
+    private suspend fun fetchRankings(
+        location: Location,
+        forceRefresh: Boolean = false,
+    ) {
+        getActivityRankingsUseCase(
+            location = location,
+            forceRefresh = forceRefresh,
+        )
             .onSuccess { result ->
                 _state.update {
                     it.copy(
@@ -94,6 +96,9 @@ class WeatherRecommendationViewModel @Inject constructor(
                         currentWeather = result.currentWeather.toUiModel(),
                         ranking = result.rankings.toUiModels(),
                     )
+                }
+                if (result.isCached) {
+                    _cachedDataNotices.trySend(Unit)
                 }
             }
             .onFailure { throwable ->

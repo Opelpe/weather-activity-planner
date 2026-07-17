@@ -63,7 +63,7 @@ class GetActivitiesRankingsUseCaseTest {
     fun `given successful forecast, when invoked, then returns calculated rankings`() = runTest {
         val forecast = buildForecast()
         val useCase = GetActivityRankingsUseCase(
-            getForecastUseCase = fakeGetForecastUseCase(Result.success(forecast)),
+            getForecastUseCase = GetForecastUseCase(FakeWeatherRepository(Result.success(forecast))),
             activitiesRankingCalculator = calculator,
         )
 
@@ -79,8 +79,8 @@ class GetActivitiesRankingsUseCaseTest {
     @Test
     fun `given network error, when invoked, then returns failure`() = runTest {
         val useCase = GetActivityRankingsUseCase(
-            getForecastUseCase = fakeGetForecastUseCase(
-                Result.failure(DomainError.NetworkUnavailable()),
+            getForecastUseCase = GetForecastUseCase(
+                FakeWeatherRepository(Result.failure(DomainError.NetworkUnavailable())),
             ),
             activitiesRankingCalculator = calculator,
         )
@@ -90,8 +90,19 @@ class GetActivitiesRankingsUseCaseTest {
         assertTrue(result.exceptionOrNull() is DomainError.NetworkUnavailable)
     }
 
-    private fun fakeGetForecastUseCase(result: Result<Forecast>) =
-        GetForecastUseCase(FakeWeatherRepository(result))
+    @Test
+    fun `given forceRefresh true, when invoked, then passes forceRefresh to forecast use case`() =
+        runTest {
+            val repository = FakeWeatherRepository(Result.success(buildForecast()))
+            val useCase = GetActivityRankingsUseCase(
+                getForecastUseCase = GetForecastUseCase(repository),
+                activitiesRankingCalculator = calculator,
+            )
+
+            useCase(location = buildLocation(), forceRefresh = true)
+
+            assertTrue(repository.capturedForceRefresh)
+        }
 
     private fun buildLocation() = Location(
         id = GetActivitiesRankingFixture.Paris.ID,
@@ -137,9 +148,16 @@ class GetActivitiesRankingsUseCaseTest {
         private val result: Result<Forecast>,
     ) : WeatherRepository {
 
+        var capturedForceRefresh = false
+
         override suspend fun getForecast(
+            locationId: Long,
             latitude: Double,
             longitude: Double,
-        ): Result<Forecast> = result
+            forceRefresh: Boolean,
+        ): Result<Forecast> {
+            capturedForceRefresh = forceRefresh
+            return result
+        }
     }
 }

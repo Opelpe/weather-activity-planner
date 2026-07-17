@@ -3,83 +3,86 @@ package com.pnow.weatheractivityplanner.feature.forecast
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pnow.weatheractivityplanner.domain.model.Location
 import com.pnow.weatheractivityplanner.domain.usecase.GetForecastUseCase
+import com.pnow.weatheractivityplanner.domain.usecase.ObserveConnectivityLossUseCase
 import com.pnow.weatheractivityplanner.feature.common.UiError
 import com.pnow.weatheractivityplanner.feature.common.toUiError
-import com.pnow.weatheractivityplanner.navigation.RouteArgKeys
+import com.pnow.weatheractivityplanner.navigation.toLocationOrNull
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-private data class ForecastArgs(
-    val locationName: String,
-    val locationCountry: String,
-    val latitude: Double,
-    val longitude: Double,
-)
-
-private fun SavedStateHandle.toForecastArgsOrNull(): ForecastArgs? {
-    val locationName: String = get(RouteArgKeys.LOCATION_NAME) ?: return null
-    val locationCountry: String = get(RouteArgKeys.LOCATION_COUNTRY) ?: return null
-    val latitude: Double = get(RouteArgKeys.LATITUDE) ?: return null
-    val longitude: Double = get(RouteArgKeys.LONGITUDE) ?: return null
-    return ForecastArgs(
-        locationName = locationName,
-        locationCountry = locationCountry,
-        latitude = latitude,
-        longitude = longitude,
-    )
-}
 
 @HiltViewModel
 class WeatherForecastViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getForecastUseCase: GetForecastUseCase,
+    private val observeConnectivityLossUseCase: ObserveConnectivityLossUseCase,
 ) : ViewModel() {
 
-    private val args = savedStateHandle.toForecastArgsOrNull()
+    private val location: Location? = savedStateHandle.toLocationOrNull()
 
     private val _forecastState = MutableStateFlow(
         WeatherForecastUiState(
-            locationName = args?.locationName.orEmpty(),
-            locationCountry = args?.locationCountry.orEmpty(),
-            error = if (args == null) UiError.InvalidNavigationArguments else null,
+            locationName = location?.name.orEmpty(),
+            locationCountry = location?.country.orEmpty(),
+            error = if (location == null) UiError.InvalidNavigationArguments else null,
         ),
     )
     val forecastState: StateFlow<WeatherForecastUiState> = _forecastState.asStateFlow()
 
+    private val _cachedDataNotices = Channel<Unit>(Channel.BUFFERED)
+    val cachedDataNotices: Flow<Unit> = _cachedDataNotices.receiveAsFlow()
+
     init {
-        args?.let(::loadForecast)
+        location?.let(::loadForecast)
+        observeConnectivity()
     }
 
     fun onRetry() {
-        args?.let(::loadForecast)
+        location?.let(::loadForecast)
     }
 
     fun onRefresh() {
-        args?.let(::refreshForecast)
+        location?.let(::refreshForecast)
     }
 
-    private fun loadForecast(args: ForecastArgs) {
+    private fun loadForecast(location: Location) {
         viewModelScope.launch {
             _forecastState.update { it.copy(isLoading = true, error = null) }
-            fetchForecast(args)
+            fetchForecast(location)
         }
     }
 
-    private fun refreshForecast(args: ForecastArgs) {
+    private fun observeConnectivity() {
+        viewModelScope.launch {
+            observeConnectivityLossUseCase().collect {
+                if (_forecastState.value.dailyForecast.isNotEmpty()) {
+                    _cachedDataNotices.trySend(Unit)
+                }
+            }
+        }
+    }
+
+    private fun refreshForecast(location: Location) {
         viewModelScope.launch {
             _forecastState.update { it.copy(isRefreshing = true, error = null) }
-            fetchForecast(args)
+            fetchForecast(location, forceRefresh = true)
         }
     }
 
-    private suspend fun fetchForecast(args: ForecastArgs) {
-        getForecastUseCase(latitude = args.latitude, longitude = args.longitude)
+    private suspend fun fetchForecast(
+        location: Location,
+        forceRefresh: Boolean = false,
+    ) {
+        getForecastUseCase(location = location, forceRefresh = forceRefresh)
             .onSuccess { forecast ->
                 _forecastState.update {
                     it.copy(
@@ -87,6 +90,9 @@ class WeatherForecastViewModel @Inject constructor(
                         isRefreshing = false,
                         dailyForecast = forecast.daily.map { daily -> daily.toUiModel() },
                     )
+                }
+                if (forecast.isCached) {
+                    _cachedDataNotices.trySend(Unit)
                 }
             }
             .onFailure { throwable ->
