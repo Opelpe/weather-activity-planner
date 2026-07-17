@@ -19,6 +19,7 @@ import com.pnow.weatheractivityplanner.domain.repository.ConnectivityRepository
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
 import com.pnow.weatheractivityplanner.domain.usecase.GetActivityRankingsUseCase
 import com.pnow.weatheractivityplanner.domain.usecase.GetForecastUseCase
+import com.pnow.weatheractivityplanner.domain.usecase.ObserveConnectivityLossUseCase
 import com.pnow.weatheractivityplanner.feature.common.UiError
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModel
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModels
@@ -467,7 +468,7 @@ class WeatherRecommendationViewModelTest {
             getForecastUseCase = GetForecastUseCase(FakeWeatherRepository(forecastResults)),
             activitiesRankingCalculator = calculator,
         ),
-        connectivityRepository = connectivityRepository,
+        observeConnectivityLossUseCase = ObserveConnectivityLossUseCase(connectivityRepository),
     )
 
     private fun buildSavedStateHandle() = SavedStateHandle(

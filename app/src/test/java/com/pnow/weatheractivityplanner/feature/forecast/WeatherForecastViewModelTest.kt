@@ -10,6 +10,7 @@ import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
 import com.pnow.weatheractivityplanner.domain.repository.ConnectivityRepository
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
 import com.pnow.weatheractivityplanner.domain.usecase.GetForecastUseCase
+import com.pnow.weatheractivityplanner.domain.usecase.ObserveConnectivityLossUseCase
 import com.pnow.weatheractivityplanner.feature.common.UiError
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
@@ -405,7 +406,7 @@ class WeatherForecastViewModelTest {
     ) = WeatherForecastViewModel(
         savedStateHandle = savedStateHandle,
         getForecastUseCase = GetForecastUseCase(FakeWeatherRepository(forecastResults)),
-        connectivityRepository = connectivityRepository,
+        observeConnectivityLossUseCase = ObserveConnectivityLossUseCase(connectivityRepository),
     )
 
     private fun buildSavedStateHandle() = SavedStateHandle(

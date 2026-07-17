@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pnow.weatheractivityplanner.domain.model.Location
-import com.pnow.weatheractivityplanner.domain.repository.ConnectivityRepository
 import com.pnow.weatheractivityplanner.domain.usecase.GetActivityRankingsUseCase
+import com.pnow.weatheractivityplanner.domain.usecase.ObserveConnectivityLossUseCase
 import com.pnow.weatheractivityplanner.feature.common.UiError
 import com.pnow.weatheractivityplanner.feature.common.toUiError
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModel
@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 class WeatherRecommendationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getActivityRankingsUseCase: GetActivityRankingsUseCase,
-    private val connectivityRepository: ConnectivityRepository,
+    private val observeConnectivityLossUseCase: ObserveConnectivityLossUseCase,
 ) : ViewModel() {
 
     private val location: Location? = savedStateHandle.toLocationOrNull()
@@ -65,8 +65,8 @@ class WeatherRecommendationViewModel @Inject constructor(
 
     private fun observeConnectivity() {
         viewModelScope.launch {
-            connectivityRepository.isConnected().collect { isConnected ->
-                if (!isConnected && _state.value.currentWeather != null) {
+            observeConnectivityLossUseCase().collect {
+                if (_state.value.currentWeather != null) {
                     _cachedDataNotices.trySend(Unit)
                 }
             }
