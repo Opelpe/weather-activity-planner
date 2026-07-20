@@ -25,7 +25,7 @@ private object StargazingDayScorerFixture {
         val CONDITION = WeatherCondition.Clear
         const val DAYLIGHT_DURATION_HOURS = LONG_NIGHT_DAYLIGHT_DURATION_HOURS
         const val EXPECTED_SCORE = 90f
-        val EXPECTED_REASON = ActivitiesRankingReason.STARGAZING_CLEAR_AND_LONG_NIGHT
+        val EXPECTED_REASON = ActivitiesRankingReason.Stargazing.ClearAndLongNight
     }
 
     object Rain {
@@ -34,7 +34,7 @@ private object StargazingDayScorerFixture {
         const val DAYLIGHT_DURATION_HOURS = SHORT_DAYLIGHT_DURATION_HOURS
         const val PRECIPITATION_MM = 5.0
         const val EXPECTED_SCORE = 0f
-        val EXPECTED_REASON = ActivitiesRankingReason.STARGAZING_RAIN
+        val EXPECTED_REASON = ActivitiesRankingReason.Stargazing.Rain
     }
 
     object Fog {
@@ -42,7 +42,7 @@ private object StargazingDayScorerFixture {
         val CONDITION = WeatherCondition.Fog
         const val DAYLIGHT_DURATION_HOURS = SHORT_DAYLIGHT_DURATION_HOURS
         const val EXPECTED_SCORE = 0f
-        val EXPECTED_REASON = ActivitiesRankingReason.STARGAZING_FOG
+        val EXPECTED_REASON = ActivitiesRankingReason.Stargazing.Fog
     }
 
     object ClearOnly {
@@ -50,7 +50,7 @@ private object StargazingDayScorerFixture {
         val CONDITION = WeatherCondition.Clear
         const val DAYLIGHT_DURATION_HOURS = SHORT_DAYLIGHT_DURATION_HOURS
         const val EXPECTED_SCORE = 65f
-        val EXPECTED_REASON = ActivitiesRankingReason.STARGAZING_CLEAR_ONLY
+        val EXPECTED_REASON = ActivitiesRankingReason.Stargazing.ClearOnly
     }
 
     object LongNightOnly {
@@ -58,7 +58,7 @@ private object StargazingDayScorerFixture {
         val CONDITION = WeatherCondition.Overcast
         const val DAYLIGHT_DURATION_HOURS = LONG_NIGHT_DAYLIGHT_DURATION_HOURS
         const val EXPECTED_SCORE = 45f
-        val EXPECTED_REASON = ActivitiesRankingReason.STARGAZING_LONG_NIGHT_ONLY
+        val EXPECTED_REASON = ActivitiesRankingReason.Stargazing.LongNightOnly
     }
 
     object None {
@@ -66,7 +66,7 @@ private object StargazingDayScorerFixture {
         val CONDITION = WeatherCondition.Overcast
         const val DAYLIGHT_DURATION_HOURS = SHORT_DAYLIGHT_DURATION_HOURS
         const val EXPECTED_SCORE = 20f
-        val EXPECTED_REASON = ActivitiesRankingReason.STARGAZING_NONE
+        val EXPECTED_REASON = ActivitiesRankingReason.Stargazing.None
     }
 }
 

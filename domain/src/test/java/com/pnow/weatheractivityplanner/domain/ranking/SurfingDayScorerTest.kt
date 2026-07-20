@@ -24,7 +24,7 @@ private object SurfingDayScorerFixture {
         const val WIND_SPEED_KPH = 25.0
         val CONDITION = WeatherCondition.Overcast
         const val EXPECTED_SCORE = 80f
-        val EXPECTED_REASON = ActivitiesRankingReason.SURFING_WARM_AND_WINDY
+        val EXPECTED_REASON = ActivitiesRankingReason.Surfing.WarmAndWindy
     }
 
     object Thunderstorm {
@@ -32,7 +32,7 @@ private object SurfingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 18.0
         val CONDITION = WeatherCondition.Thunderstorm
         const val EXPECTED_SCORE = 0f
-        val EXPECTED_REASON = ActivitiesRankingReason.SURFING_THUNDERSTORM
+        val EXPECTED_REASON = ActivitiesRankingReason.Surfing.Thunderstorm
     }
 
     object WarmAndRainy {
@@ -41,7 +41,7 @@ private object SurfingDayScorerFixture {
         const val PRECIPITATION_MM = 5.0
         val CONDITION = WeatherCondition.HeavyRain
         const val EXPECTED_SCORE = 20f
-        val EXPECTED_REASON = ActivitiesRankingReason.SURFING_RAIN
+        val EXPECTED_REASON = ActivitiesRankingReason.Surfing.Rain
     }
 
     object WindyOnly {
@@ -50,7 +50,7 @@ private object SurfingDayScorerFixture {
         const val WIND_SPEED_KPH = 20.0
         val CONDITION = WeatherCondition.Overcast
         const val EXPECTED_SCORE = 45f
-        val EXPECTED_REASON = ActivitiesRankingReason.SURFING_WINDY_ONLY
+        val EXPECTED_REASON = ActivitiesRankingReason.Surfing.WindyOnly
     }
 
     object WarmOnly {
@@ -58,7 +58,7 @@ private object SurfingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 20.0
         val CONDITION = WeatherCondition.Clear
         const val EXPECTED_SCORE = 45f
-        val EXPECTED_REASON = ActivitiesRankingReason.SURFING_WARM_ONLY
+        val EXPECTED_REASON = ActivitiesRankingReason.Surfing.WarmOnly
     }
 
     object ColdAndCalm {
@@ -66,7 +66,7 @@ private object SurfingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 0.0
         val CONDITION = WeatherCondition.Clear
         const val EXPECTED_SCORE = 0f
-        val EXPECTED_REASON = ActivitiesRankingReason.SURFING_NONE
+        val EXPECTED_REASON = ActivitiesRankingReason.Surfing.None
     }
 }
 

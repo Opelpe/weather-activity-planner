@@ -24,7 +24,7 @@ private object IndoorSightseeingDayScorerFixture {
         const val PRECIPITATION_MM = 5.0
         val CONDITION = WeatherCondition.HeavyRain
         const val EXPECTED_SCORE = 80f
-        val EXPECTED_REASON = ActivitiesRankingReason.INDOOR_POOR_OUTDOOR
+        val EXPECTED_REASON = ActivitiesRankingReason.IndoorSightseeing.PoorOutdoor
     }
 
     object ExtremeTemp {
@@ -32,7 +32,7 @@ private object IndoorSightseeingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 35.0
         val CONDITION = WeatherCondition.Clear
         const val EXPECTED_SCORE = 55f
-        val EXPECTED_REASON = ActivitiesRankingReason.INDOOR_EXTREME_TEMP
+        val EXPECTED_REASON = ActivitiesRankingReason.IndoorSightseeing.ExtremeTemp
     }
 
     object GreatOutdoor {
@@ -40,7 +40,7 @@ private object IndoorSightseeingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 22.0
         val CONDITION = WeatherCondition.Clear
         const val EXPECTED_SCORE = 15f
-        val EXPECTED_REASON = ActivitiesRankingReason.INDOOR_GREAT_OUTDOOR
+        val EXPECTED_REASON = ActivitiesRankingReason.IndoorSightseeing.GreatOutdoor
     }
 
     object None {
@@ -48,7 +48,7 @@ private object IndoorSightseeingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 22.0
         val CONDITION = WeatherCondition.Overcast
         const val EXPECTED_SCORE = 40f
-        val EXPECTED_REASON = ActivitiesRankingReason.INDOOR_NONE
+        val EXPECTED_REASON = ActivitiesRankingReason.IndoorSightseeing.None
     }
 }
 

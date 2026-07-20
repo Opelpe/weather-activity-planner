@@ -22,12 +22,12 @@ class SurfingDayScorer @Inject constructor() : ActivityDayScorer {
             .activityPenalty(hasSignificantPrecipitation, RAIN_PENALTY)
 
         val reason = when {
-            isThunderstorm -> ActivitiesRankingReason.SURFING_THUNDERSTORM
-            hasSignificantPrecipitation -> ActivitiesRankingReason.SURFING_RAIN
-            isWarm && isWindy -> ActivitiesRankingReason.SURFING_WARM_AND_WINDY
-            isWindy -> ActivitiesRankingReason.SURFING_WINDY_ONLY
-            isWarm -> ActivitiesRankingReason.SURFING_WARM_ONLY
-            else -> ActivitiesRankingReason.SURFING_NONE
+            isThunderstorm -> ActivitiesRankingReason.Surfing.Thunderstorm
+            hasSignificantPrecipitation -> ActivitiesRankingReason.Surfing.Rain
+            isWarm && isWindy -> ActivitiesRankingReason.Surfing.WarmAndWindy
+            isWindy -> ActivitiesRankingReason.Surfing.WindyOnly
+            isWarm -> ActivitiesRankingReason.Surfing.WarmOnly
+            else -> ActivitiesRankingReason.Surfing.None
         }
 
         return DayScore(score = coerceActivityScore(score), reason = reason)

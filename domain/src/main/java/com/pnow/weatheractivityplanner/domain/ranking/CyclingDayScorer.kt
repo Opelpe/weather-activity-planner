@@ -20,11 +20,11 @@ class CyclingDayScorer @Inject constructor() : ActivityDayScorer {
             .activityPenalty(isCold, COLD_PENALTY)
 
         val reason = when {
-            hasSignificantPrecipitation -> ActivitiesRankingReason.CYCLING_RAIN
-            isGusty -> ActivitiesRankingReason.CYCLING_GUSTY
-            isComfortable -> ActivitiesRankingReason.CYCLING_COMFORTABLE
-            isCold -> ActivitiesRankingReason.CYCLING_COLD
-            else -> ActivitiesRankingReason.CYCLING_NONE
+            hasSignificantPrecipitation -> ActivitiesRankingReason.Cycling.Rain
+            isGusty -> ActivitiesRankingReason.Cycling.Gusty
+            isComfortable -> ActivitiesRankingReason.Cycling.Comfortable
+            isCold -> ActivitiesRankingReason.Cycling.Cold
+            else -> ActivitiesRankingReason.Cycling.None
         }
 
         return DayScore(score = coerceActivityScore(score), reason = reason)

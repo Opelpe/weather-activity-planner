@@ -23,7 +23,7 @@ private object CyclingDayScorerFixture {
 
         const val TEMPERATURE_CELSIUS = 20.0
         const val EXPECTED_SCORE = 70f
-        val EXPECTED_REASON = ActivitiesRankingReason.CYCLING_COMFORTABLE
+        val EXPECTED_REASON = ActivitiesRankingReason.Cycling.Comfortable
     }
 
     object Gusty {
@@ -31,7 +31,7 @@ private object CyclingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 20.0
         const val WIND_GUSTS_KPH = 45.0
         const val EXPECTED_SCORE = 30f
-        val EXPECTED_REASON = ActivitiesRankingReason.CYCLING_GUSTY
+        val EXPECTED_REASON = ActivitiesRankingReason.Cycling.Gusty
     }
 
     object Rainy {
@@ -39,21 +39,21 @@ private object CyclingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 20.0
         const val PRECIPITATION_MM = 5.0
         const val EXPECTED_SCORE = 35f
-        val EXPECTED_REASON = ActivitiesRankingReason.CYCLING_RAIN
+        val EXPECTED_REASON = ActivitiesRankingReason.Cycling.Rain
     }
 
     object Cold {
 
         const val TEMPERATURE_CELSIUS = 0.0
         const val EXPECTED_SCORE = 5f
-        val EXPECTED_REASON = ActivitiesRankingReason.CYCLING_COLD
+        val EXPECTED_REASON = ActivitiesRankingReason.Cycling.Cold
     }
 
     object MildNeither {
 
         const val TEMPERATURE_CELSIUS = 8.0
         const val EXPECTED_SCORE = 25f
-        val EXPECTED_REASON = ActivitiesRankingReason.CYCLING_NONE
+        val EXPECTED_REASON = ActivitiesRankingReason.Cycling.None
     }
 
     object ColdGustyAndRainy {
@@ -62,7 +62,7 @@ private object CyclingDayScorerFixture {
         const val WIND_GUSTS_KPH = 45.0
         const val PRECIPITATION_MM = 5.0
         const val EXPECTED_SCORE = 0f
-        val EXPECTED_REASON = ActivitiesRankingReason.CYCLING_RAIN
+        val EXPECTED_REASON = ActivitiesRankingReason.Cycling.Rain
     }
 }
 

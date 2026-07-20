@@ -79,7 +79,7 @@ private object WeatherActivityViewModelFixture {
         const val DAYLIGHT_DURATION_HOURS = 15.5
     }
 
-    val RANKING_REASON = ActivitiesRankingReason.OUTDOOR_NONE
+    val RANKING_REASON = ActivitiesRankingReason.OutdoorSightseeing.None
 
     object UniqueTopScore {
 

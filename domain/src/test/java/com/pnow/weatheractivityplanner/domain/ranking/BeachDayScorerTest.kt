@@ -23,7 +23,7 @@ private object BeachDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 26.0
         const val UV_INDEX_MAX = 8.0
         const val EXPECTED_SCORE = 80f
-        val EXPECTED_REASON = ActivitiesRankingReason.BEACH_DAY_WARM_AND_SUNNY
+        val EXPECTED_REASON = ActivitiesRankingReason.BeachDay.WarmAndSunny
     }
 
     object Windy {
@@ -32,7 +32,7 @@ private object BeachDayScorerFixture {
         const val UV_INDEX_MAX = 8.0
         const val WIND_SPEED_KPH = 30.0
         const val EXPECTED_SCORE = 50f
-        val EXPECTED_REASON = ActivitiesRankingReason.BEACH_DAY_WINDY
+        val EXPECTED_REASON = ActivitiesRankingReason.BeachDay.Windy
     }
 
     object RainyWindyAndCold {
@@ -42,7 +42,7 @@ private object BeachDayScorerFixture {
         const val WIND_SPEED_KPH = 30.0
         const val PRECIPITATION_MM = 5.0
         const val EXPECTED_SCORE = 0f
-        val EXPECTED_REASON = ActivitiesRankingReason.BEACH_DAY_RAIN
+        val EXPECTED_REASON = ActivitiesRankingReason.BeachDay.Rain
     }
 
     object SunnyOnly {
@@ -50,7 +50,7 @@ private object BeachDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 18.0
         const val UV_INDEX_MAX = 8.0
         const val EXPECTED_SCORE = 45f
-        val EXPECTED_REASON = ActivitiesRankingReason.BEACH_DAY_SUNNY_ONLY
+        val EXPECTED_REASON = ActivitiesRankingReason.BeachDay.SunnyOnly
     }
 
     object WarmOnly {
@@ -58,7 +58,7 @@ private object BeachDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 26.0
         const val UV_INDEX_MAX = 3.0
         const val EXPECTED_SCORE = 45f
-        val EXPECTED_REASON = ActivitiesRankingReason.BEACH_DAY_WARM_ONLY
+        val EXPECTED_REASON = ActivitiesRankingReason.BeachDay.WarmOnly
     }
 
     object None {
@@ -66,7 +66,7 @@ private object BeachDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 15.0
         const val UV_INDEX_MAX = 3.0
         const val EXPECTED_SCORE = 10f
-        val EXPECTED_REASON = ActivitiesRankingReason.BEACH_DAY_NONE
+        val EXPECTED_REASON = ActivitiesRankingReason.BeachDay.None
     }
 }
 

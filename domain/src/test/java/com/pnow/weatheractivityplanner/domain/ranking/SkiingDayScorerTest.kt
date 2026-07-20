@@ -23,7 +23,7 @@ private object SkiingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = -5.0
         val CONDITION = WeatherCondition.HeavySnow
         const val EXPECTED_SCORE = 100f
-        val EXPECTED_REASON = ActivitiesRankingReason.SKIING_SNOW_AND_FREEZING
+        val EXPECTED_REASON = ActivitiesRankingReason.Skiing.SnowAndFreezing
     }
 
     object FreezingOnly {
@@ -31,7 +31,7 @@ private object SkiingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = -10.0
         val CONDITION = WeatherCondition.Clear
         const val EXPECTED_SCORE = 45f
-        val EXPECTED_REASON = ActivitiesRankingReason.SKIING_FREEZING_ONLY
+        val EXPECTED_REASON = ActivitiesRankingReason.Skiing.FreezingOnly
     }
 
     object SnowOnly {
@@ -39,7 +39,7 @@ private object SkiingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 0.0
         val CONDITION = WeatherCondition.LightSnow
         const val EXPECTED_SCORE = 80f
-        val EXPECTED_REASON = ActivitiesRankingReason.SKIING_SNOW_ONLY
+        val EXPECTED_REASON = ActivitiesRankingReason.Skiing.SnowOnly
     }
 
     object Rain {
@@ -47,7 +47,7 @@ private object SkiingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 5.0
         val CONDITION = WeatherCondition.HeavyRain
         const val EXPECTED_SCORE = 0f
-        val EXPECTED_REASON = ActivitiesRankingReason.SKIING_RAIN
+        val EXPECTED_REASON = ActivitiesRankingReason.Skiing.Rain
     }
 
     object MildAndDry {
@@ -55,7 +55,7 @@ private object SkiingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 20.0
         val CONDITION = WeatherCondition.PartlyCloudy
         const val EXPECTED_SCORE = 0f
-        val EXPECTED_REASON = ActivitiesRankingReason.SKIING_NONE
+        val EXPECTED_REASON = ActivitiesRankingReason.Skiing.None
     }
 }
 

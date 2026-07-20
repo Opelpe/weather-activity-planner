@@ -20,12 +20,12 @@ class BeachDayScorer @Inject constructor() : ActivityDayScorer {
             .activityPenalty(hasSignificantPrecipitation, RAIN_PENALTY)
 
         val reason = when {
-            hasSignificantPrecipitation -> ActivitiesRankingReason.BEACH_DAY_RAIN
-            isWindy -> ActivitiesRankingReason.BEACH_DAY_WINDY
-            isWarm && isSunny -> ActivitiesRankingReason.BEACH_DAY_WARM_AND_SUNNY
-            isSunny -> ActivitiesRankingReason.BEACH_DAY_SUNNY_ONLY
-            isWarm -> ActivitiesRankingReason.BEACH_DAY_WARM_ONLY
-            else -> ActivitiesRankingReason.BEACH_DAY_NONE
+            hasSignificantPrecipitation -> ActivitiesRankingReason.BeachDay.Rain
+            isWindy -> ActivitiesRankingReason.BeachDay.Windy
+            isWarm && isSunny -> ActivitiesRankingReason.BeachDay.WarmAndSunny
+            isSunny -> ActivitiesRankingReason.BeachDay.SunnyOnly
+            isWarm -> ActivitiesRankingReason.BeachDay.WarmOnly
+            else -> ActivitiesRankingReason.BeachDay.None
         }
 
         return DayScore(score = coerceActivityScore(score), reason = reason)

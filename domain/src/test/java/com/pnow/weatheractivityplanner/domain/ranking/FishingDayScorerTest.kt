@@ -23,7 +23,7 @@ private object FishingDayScorerFixture {
         const val WIND_SPEED_KPH = 5.0
         const val PRECIPITATION_PROBABILITY_PERCENT = 10
         const val EXPECTED_SCORE = 80f
-        val EXPECTED_REASON = ActivitiesRankingReason.FISHING_CALM_AND_DRY
+        val EXPECTED_REASON = ActivitiesRankingReason.Fishing.CalmAndDry
     }
 
     object Thunderstorm {
@@ -32,7 +32,7 @@ private object FishingDayScorerFixture {
         const val PRECIPITATION_PROBABILITY_PERCENT = 10
         val CONDITION = WeatherCondition.Thunderstorm
         const val EXPECTED_SCORE = 20f
-        val EXPECTED_REASON = ActivitiesRankingReason.FISHING_THUNDERSTORM
+        val EXPECTED_REASON = ActivitiesRankingReason.Fishing.Thunderstorm
     }
 
     object Windy {
@@ -40,7 +40,7 @@ private object FishingDayScorerFixture {
         const val WIND_SPEED_KPH = 35.0
         const val PRECIPITATION_PROBABILITY_PERCENT = 10
         const val EXPECTED_SCORE = 15f
-        val EXPECTED_REASON = ActivitiesRankingReason.FISHING_WINDY
+        val EXPECTED_REASON = ActivitiesRankingReason.Fishing.Windy
     }
 
     object CalmOnly {
@@ -48,7 +48,7 @@ private object FishingDayScorerFixture {
         const val WIND_SPEED_KPH = 5.0
         const val PRECIPITATION_PROBABILITY_PERCENT = 80
         const val EXPECTED_SCORE = 50f
-        val EXPECTED_REASON = ActivitiesRankingReason.FISHING_CALM_ONLY
+        val EXPECTED_REASON = ActivitiesRankingReason.Fishing.CalmOnly
     }
 
     object DryOnly {
@@ -56,7 +56,7 @@ private object FishingDayScorerFixture {
         const val WIND_SPEED_KPH = 20.0
         const val PRECIPITATION_PROBABILITY_PERCENT = 10
         const val EXPECTED_SCORE = 50f
-        val EXPECTED_REASON = ActivitiesRankingReason.FISHING_DRY_ONLY
+        val EXPECTED_REASON = ActivitiesRankingReason.Fishing.DryOnly
     }
 
     object None {
@@ -64,7 +64,7 @@ private object FishingDayScorerFixture {
         const val WIND_SPEED_KPH = 20.0
         const val PRECIPITATION_PROBABILITY_PERCENT = 80
         const val EXPECTED_SCORE = 20f
-        val EXPECTED_REASON = ActivitiesRankingReason.FISHING_NONE
+        val EXPECTED_REASON = ActivitiesRankingReason.Fishing.None
     }
 }
 

@@ -20,12 +20,12 @@ class StargazingDayScorer @Inject constructor() : ActivityDayScorer {
             .activityPenalty(isFoggy, FOG_PENALTY)
 
         val reason = when {
-            hasSignificantPrecipitation -> ActivitiesRankingReason.STARGAZING_RAIN
-            isFoggy -> ActivitiesRankingReason.STARGAZING_FOG
-            isClear && isLongNight -> ActivitiesRankingReason.STARGAZING_CLEAR_AND_LONG_NIGHT
-            isClear -> ActivitiesRankingReason.STARGAZING_CLEAR_ONLY
-            isLongNight -> ActivitiesRankingReason.STARGAZING_LONG_NIGHT_ONLY
-            else -> ActivitiesRankingReason.STARGAZING_NONE
+            hasSignificantPrecipitation -> ActivitiesRankingReason.Stargazing.Rain
+            isFoggy -> ActivitiesRankingReason.Stargazing.Fog
+            isClear && isLongNight -> ActivitiesRankingReason.Stargazing.ClearAndLongNight
+            isClear -> ActivitiesRankingReason.Stargazing.ClearOnly
+            isLongNight -> ActivitiesRankingReason.Stargazing.LongNightOnly
+            else -> ActivitiesRankingReason.Stargazing.None
         }
 
         return DayScore(score = coerceActivityScore(score), reason = reason)

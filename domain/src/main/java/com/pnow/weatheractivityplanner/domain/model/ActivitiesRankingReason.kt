@@ -1,54 +1,71 @@
 package com.pnow.weatheractivityplanner.domain.model
 
-enum class ActivitiesRankingReason {
-    SKIING_SNOW_AND_FREEZING,
-    SKIING_FREEZING_ONLY,
-    SKIING_SNOW_ONLY,
-    SKIING_RAIN,
-    SKIING_NONE,
+sealed interface ActivitiesRankingReason {
 
-    SURFING_THUNDERSTORM,
-    SURFING_RAIN,
-    SURFING_WARM_AND_WINDY,
-    SURFING_WINDY_ONLY,
-    SURFING_WARM_ONLY,
-    SURFING_NONE,
+    sealed interface Skiing : ActivitiesRankingReason {
+        data object SnowAndFreezing : Skiing
+        data object FreezingOnly : Skiing
+        data object SnowOnly : Skiing
+        data object Rain : Skiing
+        data object None : Skiing
+    }
 
-    OUTDOOR_CLEAR_AND_COMFORTABLE,
-    OUTDOOR_RAIN,
-    OUTDOOR_FOG,
-    OUTDOOR_CLEAR_ONLY,
-    OUTDOOR_NONE,
+    sealed interface Surfing : ActivitiesRankingReason {
+        data object Thunderstorm : Surfing
+        data object Rain : Surfing
+        data object WarmAndWindy : Surfing
+        data object WindyOnly : Surfing
+        data object WarmOnly : Surfing
+        data object None : Surfing
+    }
 
-    INDOOR_POOR_OUTDOOR,
-    INDOOR_EXTREME_TEMP,
-    INDOOR_GREAT_OUTDOOR,
-    INDOOR_NONE,
+    sealed interface OutdoorSightseeing : ActivitiesRankingReason {
+        data object ClearAndComfortable : OutdoorSightseeing
+        data object Rain : OutdoorSightseeing
+        data object Fog : OutdoorSightseeing
+        data object ClearOnly : OutdoorSightseeing
+        data object None : OutdoorSightseeing
+    }
 
-    CYCLING_RAIN,
-    CYCLING_GUSTY,
-    CYCLING_COMFORTABLE,
-    CYCLING_COLD,
-    CYCLING_NONE,
+    sealed interface IndoorSightseeing : ActivitiesRankingReason {
+        data object PoorOutdoor : IndoorSightseeing
+        data object ExtremeTemp : IndoorSightseeing
+        data object GreatOutdoor : IndoorSightseeing
+        data object None : IndoorSightseeing
+    }
 
-    BEACH_DAY_RAIN,
-    BEACH_DAY_WINDY,
-    BEACH_DAY_WARM_AND_SUNNY,
-    BEACH_DAY_SUNNY_ONLY,
-    BEACH_DAY_WARM_ONLY,
-    BEACH_DAY_NONE,
+    sealed interface Cycling : ActivitiesRankingReason {
+        data object Rain : Cycling
+        data object Gusty : Cycling
+        data object Comfortable : Cycling
+        data object Cold : Cycling
+        data object None : Cycling
+    }
 
-    STARGAZING_RAIN,
-    STARGAZING_FOG,
-    STARGAZING_CLEAR_AND_LONG_NIGHT,
-    STARGAZING_CLEAR_ONLY,
-    STARGAZING_LONG_NIGHT_ONLY,
-    STARGAZING_NONE,
+    sealed interface BeachDay : ActivitiesRankingReason {
+        data object Rain : BeachDay
+        data object Windy : BeachDay
+        data object WarmAndSunny : BeachDay
+        data object SunnyOnly : BeachDay
+        data object WarmOnly : BeachDay
+        data object None : BeachDay
+    }
 
-    FISHING_THUNDERSTORM,
-    FISHING_WINDY,
-    FISHING_CALM_AND_DRY,
-    FISHING_CALM_ONLY,
-    FISHING_DRY_ONLY,
-    FISHING_NONE,
+    sealed interface Stargazing : ActivitiesRankingReason {
+        data object Rain : Stargazing
+        data object Fog : Stargazing
+        data object ClearAndLongNight : Stargazing
+        data object ClearOnly : Stargazing
+        data object LongNightOnly : Stargazing
+        data object None : Stargazing
+    }
+
+    sealed interface Fishing : ActivitiesRankingReason {
+        data object Thunderstorm : Fishing
+        data object Windy : Fishing
+        data object CalmAndDry : Fishing
+        data object CalmOnly : Fishing
+        data object DryOnly : Fishing
+        data object None : Fishing
+    }
 }

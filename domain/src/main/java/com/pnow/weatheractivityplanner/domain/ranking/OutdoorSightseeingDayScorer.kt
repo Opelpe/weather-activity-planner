@@ -20,11 +20,11 @@ class OutdoorSightseeingDayScorer @Inject constructor() : ActivityDayScorer {
             .activityPenalty(isFoggy, FOG_PENALTY)
 
         val reason = when {
-            isClear && isComfortable -> ActivitiesRankingReason.OUTDOOR_CLEAR_AND_COMFORTABLE
-            hasSignificantPrecipitation -> ActivitiesRankingReason.OUTDOOR_RAIN
-            isFoggy -> ActivitiesRankingReason.OUTDOOR_FOG
-            isClear -> ActivitiesRankingReason.OUTDOOR_CLEAR_ONLY
-            else -> ActivitiesRankingReason.OUTDOOR_NONE
+            isClear && isComfortable -> ActivitiesRankingReason.OutdoorSightseeing.ClearAndComfortable
+            hasSignificantPrecipitation -> ActivitiesRankingReason.OutdoorSightseeing.Rain
+            isFoggy -> ActivitiesRankingReason.OutdoorSightseeing.Fog
+            isClear -> ActivitiesRankingReason.OutdoorSightseeing.ClearOnly
+            else -> ActivitiesRankingReason.OutdoorSightseeing.None
         }
 
         return DayScore(score = coerceActivityScore(score), reason = reason)

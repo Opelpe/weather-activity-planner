@@ -20,12 +20,12 @@ class FishingDayScorer @Inject constructor() : ActivityDayScorer {
             .activityPenalty(isWindy, WINDY_PENALTY)
 
         val reason = when {
-            isThunderstorm -> ActivitiesRankingReason.FISHING_THUNDERSTORM
-            isWindy -> ActivitiesRankingReason.FISHING_WINDY
-            isCalm && isLikelyDry -> ActivitiesRankingReason.FISHING_CALM_AND_DRY
-            isCalm -> ActivitiesRankingReason.FISHING_CALM_ONLY
-            isLikelyDry -> ActivitiesRankingReason.FISHING_DRY_ONLY
-            else -> ActivitiesRankingReason.FISHING_NONE
+            isThunderstorm -> ActivitiesRankingReason.Fishing.Thunderstorm
+            isWindy -> ActivitiesRankingReason.Fishing.Windy
+            isCalm && isLikelyDry -> ActivitiesRankingReason.Fishing.CalmAndDry
+            isCalm -> ActivitiesRankingReason.Fishing.CalmOnly
+            isLikelyDry -> ActivitiesRankingReason.Fishing.DryOnly
+            else -> ActivitiesRankingReason.Fishing.None
         }
 
         return DayScore(score = coerceActivityScore(score), reason = reason)

@@ -31,7 +31,7 @@ private object ActivityRankingCalculatorFixture {
 
         const val TEMPERATURE_CELSIUS = 0.0
         val CONDITION = WeatherCondition.LightSnow
-        val EXPECTED_REASON = ActivitiesRankingReason.SKIING_SNOW_ONLY
+        val EXPECTED_REASON = ActivitiesRankingReason.Skiing.SnowOnly
         const val EXPECTED_SKIING_SCORE = 80f
     }
 

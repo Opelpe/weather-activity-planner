@@ -25,10 +25,10 @@ class IndoorSightseeingDayScorer @Inject constructor() : ActivityDayScorer {
             .activityPenalty(isGreatOutdoor, GREAT_OUTDOOR_PENALTY)
 
         val reason = when {
-            isPoorOutdoor -> ActivitiesRankingReason.INDOOR_POOR_OUTDOOR
-            isExtremeTemp -> ActivitiesRankingReason.INDOOR_EXTREME_TEMP
-            isGreatOutdoor -> ActivitiesRankingReason.INDOOR_GREAT_OUTDOOR
-            else -> ActivitiesRankingReason.INDOOR_NONE
+            isPoorOutdoor -> ActivitiesRankingReason.IndoorSightseeing.PoorOutdoor
+            isExtremeTemp -> ActivitiesRankingReason.IndoorSightseeing.ExtremeTemp
+            isGreatOutdoor -> ActivitiesRankingReason.IndoorSightseeing.GreatOutdoor
+            else -> ActivitiesRankingReason.IndoorSightseeing.None
         }
 
         return DayScore(score = coerceActivityScore(score), reason = reason)
