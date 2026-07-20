@@ -26,10 +26,13 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import com.pnow.weatheractivityplanner.R
 import com.pnow.weatheractivityplanner.feature.locationsearch.LocationSearchPreviewData
-import com.pnow.weatheractivityplanner.ui.theme.PreviewLight
 import com.pnow.weatheractivityplanner.ui.theme.PreviewLightDark
 import com.pnow.weatheractivityplanner.ui.theme.WeatherActivityPlannerTheme
 import com.pnow.weatheractivityplanner.util.Dimens
+import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.delay
+
+private const val LOADING_INDICATOR_DELAY_MS = 500L
 
 @Composable
 fun LocationSearchBar(
@@ -41,6 +44,7 @@ fun LocationSearchBar(
     var textFieldValue by remember {
         mutableStateOf(TextFieldValue(text = query, selection = TextRange(query.length)))
     }
+    val showLoadingIndicator = rememberDelayedLoadingIndicator(isLoading)
 
     LaunchedEffect(query) {
         if (query != textFieldValue.text) {
@@ -59,7 +63,7 @@ fun LocationSearchBar(
         singleLine = true,
         trailingIcon = {
             SearchTrailingIcon(
-                isLoading = isLoading,
+                isLoading = showLoadingIndicator,
                 showClear = textFieldValue.text.isNotEmpty(),
                 onClear = {
                     textFieldValue = TextFieldValue()
@@ -68,6 +72,22 @@ fun LocationSearchBar(
             )
         },
     )
+}
+
+@Composable
+private fun rememberDelayedLoadingIndicator(isLoading: Boolean): Boolean {
+    var showLoadingIndicator by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isLoading) {
+        if (isLoading) {
+            delay(LOADING_INDICATOR_DELAY_MS.milliseconds)
+            showLoadingIndicator = true
+        } else {
+            showLoadingIndicator = false
+        }
+    }
+
+    return showLoadingIndicator
 }
 
 @Composable
@@ -109,7 +129,7 @@ private fun ClearSearchIcon(
     )
 }
 
-@PreviewLight
+@PreviewLightDark
 @Composable
 private fun LocationSearchBarDefaultPreview() {
     WeatherActivityPlannerTheme {
@@ -123,19 +143,7 @@ private fun LocationSearchBarDefaultPreview() {
 
 @PreviewLightDark
 @Composable
-private fun LocationSearchBarLoadingPreview() {
-    WeatherActivityPlannerTheme {
-        LocationSearchBar(
-            query = LocationSearchPreviewData.SEARCH_QUERY,
-            isLoading = true,
-            onQueryChange = {},
-        )
-    }
-}
-
-@PreviewLight
-@Composable
-private fun LocationSearchBarClearablePreview() {
+private fun LocationSearchBarWithQueryPreview() {
     WeatherActivityPlannerTheme {
         LocationSearchBar(
             query = LocationSearchPreviewData.SEARCH_QUERY,
