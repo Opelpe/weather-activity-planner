@@ -1,6 +1,5 @@
 package com.pnow.weatheractivityplanner.feature.locationsearch.view
 
-import android.content.res.Configuration
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +23,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pnow.weatheractivityplanner.R
@@ -35,6 +33,8 @@ import com.pnow.weatheractivityplanner.feature.locationsearch.LocationSearchPrev
 import com.pnow.weatheractivityplanner.feature.locationsearch.LocationSearchUiState
 import com.pnow.weatheractivityplanner.feature.locationsearch.LocationSearchViewModel
 import com.pnow.weatheractivityplanner.feature.locationsearch.LocationUiModel
+import com.pnow.weatheractivityplanner.ui.theme.PreviewLight
+import com.pnow.weatheractivityplanner.ui.theme.PreviewLightDark
 import com.pnow.weatheractivityplanner.ui.theme.WeatherActivityPlannerTheme
 import com.pnow.weatheractivityplanner.util.Dimens
 
@@ -195,7 +195,7 @@ private fun DefaultSearchContentLabel(
     )
 }
 
-@Preview(showBackground = true)
+@PreviewLight
 @Composable
 private fun LocationSearchScreenPromptPreview() {
     WeatherActivityPlannerTheme {
@@ -208,7 +208,7 @@ private fun LocationSearchScreenPromptPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLight
 @Composable
 private fun LocationSearchScreenSuccessPreview() {
     WeatherActivityPlannerTheme {
@@ -224,7 +224,7 @@ private fun LocationSearchScreenSuccessPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLight
 @Composable
 private fun LocationSearchScreenNoResultsPreview() {
     WeatherActivityPlannerTheme {
@@ -240,8 +240,7 @@ private fun LocationSearchScreenNoResultsPreview() {
     }
 }
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun LocationSearchScreenErrorPreview() {
     WeatherActivityPlannerTheme {
