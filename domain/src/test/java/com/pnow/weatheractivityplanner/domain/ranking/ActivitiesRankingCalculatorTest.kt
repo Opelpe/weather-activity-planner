@@ -64,6 +64,7 @@ class ActivitiesRankingCalculatorTest {
         surfingDayScorer = SurfingDayScorer(),
         outdoorSightseeingDayScorer = OutdoorSightseeingDayScorer(),
         indoorSightseeingDayScorer = IndoorSightseeingDayScorer(),
+        cyclingDayScorer = CyclingDayScorer(),
     )
 
     @Test

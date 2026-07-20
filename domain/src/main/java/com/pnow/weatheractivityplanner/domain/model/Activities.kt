@@ -5,4 +5,5 @@ enum class Activities {
     SURFING,
     OUTDOOR_SIGHTSEEING,
     INDOOR_SIGHTSEEING,
+    CYCLING,
 }

@@ -35,6 +35,7 @@ internal fun Activities.toDisplayNameRes(): Int = when (this) {
     Activities.SURFING -> R.string.weather_activity_surfing
     Activities.OUTDOOR_SIGHTSEEING -> R.string.weather_activity_outdoor_sightseeing
     Activities.INDOOR_SIGHTSEEING -> R.string.weather_activity_indoor_sightseeing
+    Activities.CYCLING -> R.string.weather_activity_cycling
 }
 
 @DrawableRes
@@ -43,4 +44,5 @@ internal fun Activities.toIconRes(): Int = when (this) {
     Activities.SURFING -> R.drawable.ic_surfing
     Activities.OUTDOOR_SIGHTSEEING -> R.drawable.ic_outdoor_sightseeing
     Activities.INDOOR_SIGHTSEEING -> R.drawable.ic_indoor_sightseeing
+    Activities.CYCLING -> R.drawable.ic_cycling
 }

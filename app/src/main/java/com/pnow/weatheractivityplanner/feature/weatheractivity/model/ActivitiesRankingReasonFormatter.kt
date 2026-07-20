@@ -26,4 +26,9 @@ internal fun ActivitiesRankingReason.toStringRes(): Int = when (this) {
     ActivitiesRankingReason.INDOOR_EXTREME_TEMP -> R.string.weather_activity_reason_indoor_extreme_temp
     ActivitiesRankingReason.INDOOR_GREAT_OUTDOOR -> R.string.weather_activity_reason_indoor_great_outdoor
     ActivitiesRankingReason.INDOOR_NONE -> R.string.weather_activity_reason_indoor_none
+    ActivitiesRankingReason.CYCLING_RAIN -> R.string.weather_activity_reason_cycling_rain
+    ActivitiesRankingReason.CYCLING_GUSTY -> R.string.weather_activity_reason_cycling_gusty
+    ActivitiesRankingReason.CYCLING_COMFORTABLE -> R.string.weather_activity_reason_cycling_comfortable
+    ActivitiesRankingReason.CYCLING_COLD -> R.string.weather_activity_reason_cycling_cold
+    ActivitiesRankingReason.CYCLING_NONE -> R.string.weather_activity_reason_cycling_none
 }
