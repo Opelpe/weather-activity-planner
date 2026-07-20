@@ -31,4 +31,10 @@ internal fun ActivitiesRankingReason.toStringRes(): Int = when (this) {
     ActivitiesRankingReason.CYCLING_COMFORTABLE -> R.string.weather_activity_reason_cycling_comfortable
     ActivitiesRankingReason.CYCLING_COLD -> R.string.weather_activity_reason_cycling_cold
     ActivitiesRankingReason.CYCLING_NONE -> R.string.weather_activity_reason_cycling_none
+    ActivitiesRankingReason.BEACH_DAY_RAIN -> R.string.weather_activity_reason_beach_day_rain
+    ActivitiesRankingReason.BEACH_DAY_WINDY -> R.string.weather_activity_reason_beach_day_windy
+    ActivitiesRankingReason.BEACH_DAY_WARM_AND_SUNNY -> R.string.weather_activity_reason_beach_day_warm_and_sunny
+    ActivitiesRankingReason.BEACH_DAY_SUNNY_ONLY -> R.string.weather_activity_reason_beach_day_sunny_only
+    ActivitiesRankingReason.BEACH_DAY_WARM_ONLY -> R.string.weather_activity_reason_beach_day_warm_only
+    ActivitiesRankingReason.BEACH_DAY_NONE -> R.string.weather_activity_reason_beach_day_none
 }

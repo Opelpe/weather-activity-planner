@@ -29,6 +29,7 @@
     <string name="weather_activity_outdoor_sightseeing">Outdoor Sightseeing</string>
     <string name="weather_activity_indoor_sightseeing">Indoor Sightseeing</string>
     <string name="weather_activity_cycling">Cycling</string>
+    <string name="weather_activity_beach_day">Beach Day</string>
 
     <string name="weather_activity_reason_skiing_snow_and_freezing">Snowfall and freezing temperatures make for great skiing conditions</string>
     <string name="weather_activity_reason_skiing_freezing_only">Freezing temperatures, but no fresh snowfall is expected</string>
@@ -55,6 +56,12 @@
     <string name="weather_activity_reason_cycling_comfortable">Comfortable temperatures and calm winds are great for a ride</string>
     <string name="weather_activity_reason_cycling_cold">Cold temperatures make for an uncomfortable ride</string>
     <string name="weather_activity_reason_cycling_none">Mild conditions, neither ideal nor bad for cycling</string>
+    <string name="weather_activity_reason_beach_day_rain">Rain in the forecast rules out a beach day</string>
+    <string name="weather_activity_reason_beach_day_windy">Strong winds make for an uncomfortable beach day</string>
+    <string name="weather_activity_reason_beach_day_warm_and_sunny">Warm temperatures and strong sun are perfect for the beach</string>
+    <string name="weather_activity_reason_beach_day_sunny_only">Strong sun, though temperatures are on the cooler side</string>
+    <string name="weather_activity_reason_beach_day_warm_only">Warm, but the sun isn\'t especially strong today</string>
+    <string name="weather_activity_reason_beach_day_none">Mild conditions, neither ideal nor bad for a beach day</string>
 
     <string name="weather_forecast_temperature_range_format">%1$d° / %2$d°</string>
 

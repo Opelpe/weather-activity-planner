@@ -8,6 +8,7 @@ import com.pnow.weatheractivityplanner.domain.model.Forecast
 import com.pnow.weatheractivityplanner.domain.model.Location
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
 import com.pnow.weatheractivityplanner.domain.ranking.ActivitiesRankingCalculator
+import com.pnow.weatheractivityplanner.domain.ranking.BeachDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.CyclingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.IndoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.OutdoorSightseeingDayScorer
@@ -59,6 +60,7 @@ class GetActivitiesRankingsUseCaseTest {
         outdoorSightseeingDayScorer = OutdoorSightseeingDayScorer(),
         indoorSightseeingDayScorer = IndoorSightseeingDayScorer(),
         cyclingDayScorer = CyclingDayScorer(),
+        beachDayScorer = BeachDayScorer(),
     )
 
     @Test
