@@ -7,16 +7,16 @@ import com.pnow.weatheractivityplanner.domain.usecase.SearchLocationsUseCase
 import com.pnow.weatheractivityplanner.feature.common.toUiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -33,18 +33,35 @@ class LocationSearchViewModel @Inject constructor(
     private val queryFlow = MutableStateFlow("")
 
     @Volatile
-    private var lastSuccessfulQuery: String? = null
+    private var lastSuccessfulSearch: SearchCache? = null
 
     init {
-        queryFlow
-            .debounce(SEARCH_DEBOUNCE_MS.milliseconds)
-            .onEach { query ->
-                if (query.isNotBlank() && query != lastSuccessfulQuery) {
-                    searchLocations(query)
+        viewModelScope.launch {
+            queryFlow
+                .debounce { query ->
+                    if (query.isBlank()) {
+                        Duration.ZERO
+                    } else {
+                        SEARCH_DEBOUNCE_MS.milliseconds
+                    }
                 }
-            }
-            .flowOn(defaultDispatcher)
-            .launchIn(viewModelScope)
+                .flowOn(defaultDispatcher)
+                .collectLatest { query ->
+                    if (query.isBlank()) return@collectLatest
+                    val cached = lastSuccessfulSearch
+                    if (cached != null && cached.query == query) {
+                        _searchState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = null,
+                                locations = cached.locations,
+                            )
+                        }
+                    } else {
+                        searchLocations(query)
+                    }
+                }
+        }
     }
 
     fun onQueryChanged(query: String) {
@@ -56,33 +73,47 @@ class LocationSearchViewModel @Inject constructor(
     }
 
     fun onRetry() {
-        if (_searchState.value.error != null) {
-            searchLocations(_searchState.value.searchQuery)
+        val state = _searchState.value
+        if (state.error != null && !state.isLoading) {
+            viewModelScope.launch {
+                searchLocations(
+                    query = state.searchQuery,
+                    clearStaleResults = true,
+                )
+            }
         }
     }
 
-    private fun searchLocations(query: String) {
-        viewModelScope.launch {
-            _searchState.update { it.copy(isLoading = true, error = null) }
-            searchLocationsUseCase(query = query)
-                .onSuccess { locations ->
-                    lastSuccessfulQuery = query
-                    _searchState.update {
-                        it.copy(
-                            isLoading = false,
-                            locations = locations.map { location -> location.toUiModel() },
-                        )
-                    }
-                }
-                .onFailure { throwable ->
-                    _searchState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = throwable.toUiError(),
-                        )
-                    }
-                }
+    private suspend fun searchLocations(
+        query: String,
+        clearStaleResults: Boolean = false,
+    ) {
+        _searchState.update {
+            it.copy(
+                isLoading = true,
+                error = null,
+                locations = if (clearStaleResults) emptyList() else it.locations,
+            )
         }
+        searchLocationsUseCase(query = query)
+            .onSuccess { locations ->
+                val uiLocations = locations.map { location -> location.toUiModel() }
+                lastSuccessfulSearch = SearchCache(query = query, locations = uiLocations)
+                _searchState.update {
+                    it.copy(
+                        isLoading = false,
+                        locations = uiLocations,
+                    )
+                }
+            }
+            .onFailure { throwable ->
+                _searchState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = throwable.toUiError(),
+                    )
+                }
+            }
     }
 
     private companion object {
@@ -90,3 +121,8 @@ class LocationSearchViewModel @Inject constructor(
         const val SEARCH_DEBOUNCE_MS = 500L
     }
 }
+
+private data class SearchCache(
+    val query: String,
+    val locations: List<LocationUiModel>,
+)
