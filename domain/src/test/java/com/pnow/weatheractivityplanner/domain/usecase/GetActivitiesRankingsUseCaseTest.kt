@@ -13,6 +13,7 @@ import com.pnow.weatheractivityplanner.domain.ranking.CyclingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.IndoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.OutdoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SkiingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.StargazingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SurfingDayScorer
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
 import kotlinx.coroutines.test.runTest
@@ -61,6 +62,7 @@ class GetActivitiesRankingsUseCaseTest {
         indoorSightseeingDayScorer = IndoorSightseeingDayScorer(),
         cyclingDayScorer = CyclingDayScorer(),
         beachDayScorer = BeachDayScorer(),
+        stargazingDayScorer = StargazingDayScorer(),
     )
 
     @Test

@@ -7,4 +7,5 @@ enum class Activities {
     INDOOR_SIGHTSEEING,
     CYCLING,
     BEACH_DAY,
+    STARGAZING,
 }

@@ -13,6 +13,7 @@ class ActivitiesRankingCalculator @Inject constructor(
     private val indoorSightseeingDayScorer: IndoorSightseeingDayScorer,
     private val cyclingDayScorer: CyclingDayScorer,
     private val beachDayScorer: BeachDayScorer,
+    private val stargazingDayScorer: StargazingDayScorer,
 ) {
 
     fun calculate(daily: List<DailyForecast>): List<ActivitiesRanking> =
@@ -42,5 +43,6 @@ class ActivitiesRankingCalculator @Inject constructor(
         Activities.INDOOR_SIGHTSEEING -> indoorSightseeingDayScorer
         Activities.CYCLING -> cyclingDayScorer
         Activities.BEACH_DAY -> beachDayScorer
+        Activities.STARGAZING -> stargazingDayScorer
     }
 }

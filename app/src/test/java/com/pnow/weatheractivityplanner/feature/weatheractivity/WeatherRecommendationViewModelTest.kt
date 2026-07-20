@@ -16,6 +16,7 @@ import com.pnow.weatheractivityplanner.domain.ranking.CyclingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.IndoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.OutdoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SkiingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.StargazingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SurfingDayScorer
 import com.pnow.weatheractivityplanner.domain.repository.ConnectivityRepository
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
@@ -105,6 +106,7 @@ class WeatherRecommendationViewModelTest {
         indoorSightseeingDayScorer = IndoorSightseeingDayScorer(),
         cyclingDayScorer = CyclingDayScorer(),
         beachDayScorer = BeachDayScorer(),
+        stargazingDayScorer = StargazingDayScorer(),
     )
 
     @Before
