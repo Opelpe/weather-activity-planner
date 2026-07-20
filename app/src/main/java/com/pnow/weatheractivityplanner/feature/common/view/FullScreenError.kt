@@ -1,6 +1,5 @@
 package com.pnow.weatheractivityplanner.feature.common.view
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,8 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import com.pnow.weatheractivityplanner.R
+import com.pnow.weatheractivityplanner.ui.theme.PreviewLightDark
 import com.pnow.weatheractivityplanner.ui.theme.WeatherActivityPlannerTheme
 import com.pnow.weatheractivityplanner.util.Dimens
 
@@ -71,8 +70,7 @@ private fun ErrorRetryButton(
     }
 }
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun FullScreenErrorPreview() {
     WeatherActivityPlannerTheme {

@@ -1,6 +1,5 @@
 package com.pnow.weatheractivityplanner.feature.forecast
 
-import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pnow.weatheractivityplanner.R
@@ -41,6 +39,8 @@ import com.pnow.weatheractivityplanner.feature.common.toMessage
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenError
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenLoading
 import com.pnow.weatheractivityplanner.feature.common.view.ObserveCachedDataNotice
+import com.pnow.weatheractivityplanner.ui.theme.PreviewLight
+import com.pnow.weatheractivityplanner.ui.theme.PreviewLightDark
 import com.pnow.weatheractivityplanner.ui.theme.WeatherActivityPlannerTheme
 import com.pnow.weatheractivityplanner.util.Dimens
 import kotlin.math.roundToInt
@@ -243,8 +243,7 @@ private fun ForecastItemTemperature(
     )
 }
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun WeatherForecastTopBarPreview() {
     WeatherActivityPlannerTheme {
@@ -259,8 +258,7 @@ private fun WeatherForecastTopBarPreview() {
     }
 }
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun DailyForecastItemPreview() {
     WeatherActivityPlannerTheme {
@@ -277,8 +275,7 @@ private fun DailyForecastItemPreview() {
     }
 }
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun WeatherForecastContentSuccessPreview() {
     WeatherActivityPlannerTheme {
@@ -292,7 +289,7 @@ private fun WeatherForecastContentSuccessPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLight
 @Composable
 private fun WeatherForecastContentErrorPreview() {
     WeatherActivityPlannerTheme {
@@ -309,7 +306,7 @@ private fun WeatherForecastContentErrorPreview() {
 }
 
 
-@Preview(showBackground = true)
+@PreviewLight
 @Composable
 private fun WeatherForecastContentLoadingPreview() {
     WeatherActivityPlannerTheme {
