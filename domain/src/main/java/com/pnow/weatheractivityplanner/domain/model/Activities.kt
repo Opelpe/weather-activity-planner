@@ -8,4 +8,5 @@ enum class Activities {
     CYCLING,
     BEACH_DAY,
     STARGAZING,
+    FISHING,
 }

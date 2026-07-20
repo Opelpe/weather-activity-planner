@@ -31,6 +31,7 @@
     <string name="weather_activity_cycling">Cycling</string>
     <string name="weather_activity_beach_day">Beach Day</string>
     <string name="weather_activity_stargazing">Stargazing</string>
+    <string name="weather_activity_fishing">Fishing</string>
 
     <string name="weather_activity_reason_skiing_snow_and_freezing">Snowfall and freezing temperatures make for great skiing conditions</string>
     <string name="weather_activity_reason_skiing_freezing_only">Freezing temperatures, but no fresh snowfall is expected</string>
@@ -69,6 +70,12 @@
     <string name="weather_activity_reason_stargazing_clear_only">Clear skies, though the night is on the shorter side</string>
     <string name="weather_activity_reason_stargazing_long_night_only">A long night, but cloud cover may obscure the stars</string>
     <string name="weather_activity_reason_stargazing_none">Cloudy skies and an average night length make for so-so stargazing</string>
+    <string name="weather_activity_reason_fishing_thunderstorm">Thunderstorms in the forecast make fishing unsafe</string>
+    <string name="weather_activity_reason_fishing_windy">Strong winds make for choppy, difficult fishing conditions</string>
+    <string name="weather_activity_reason_fishing_calm_and_dry">Calm water and a low chance of rain are ideal for fishing</string>
+    <string name="weather_activity_reason_fishing_calm_only">Calm conditions, though rain is possible later</string>
+    <string name="weather_activity_reason_fishing_dry_only">Low chance of rain, but expect some wind on the water</string>
+    <string name="weather_activity_reason_fishing_none">Average conditions, neither ideal nor bad for fishing</string>
 
     <string name="weather_forecast_temperature_range_format">%1$d° / %2$d°</string>
 
