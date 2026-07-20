@@ -9,6 +9,7 @@
     <string name="common_cached_data_notice_message">Displaying cached data - couldn\'t refresh</string>
 
     <string name="weather_activity_search_label">Search for a location</string>
+    <string name="weather_activity_search_clear_content_description">Clear search</string>
     <string name="weather_activity_no_cities_found">No locations found</string>
     <string name="weather_activity_search_prompt">Search for a location to see activity suggestions</string>
     <string name="weather_activity_retry">Retry</string>
