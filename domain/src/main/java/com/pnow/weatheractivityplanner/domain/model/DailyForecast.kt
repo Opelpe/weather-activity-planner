@@ -11,5 +11,10 @@ data class DailyForecast(
     val windGustsMaxKph: Double,
     val uvIndexMax: Double,
     val daylightDurationHours: Double,
+    val nightCloudCoverPercent: Double,
+    val dawnDuskWindSpeedKph: Double,
+    val dawnDuskPrecipitationProbabilityPercent: Double,
+    val daytimeWindSpeedMaxKph: Double,
+    val daytimeWindGustsMaxKph: Double,
     val condition: WeatherCondition,
 )

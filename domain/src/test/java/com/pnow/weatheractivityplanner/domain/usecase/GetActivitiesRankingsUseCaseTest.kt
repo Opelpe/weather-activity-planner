@@ -8,9 +8,13 @@ import com.pnow.weatheractivityplanner.domain.model.Forecast
 import com.pnow.weatheractivityplanner.domain.model.Location
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
 import com.pnow.weatheractivityplanner.domain.ranking.ActivitiesRankingCalculator
+import com.pnow.weatheractivityplanner.domain.ranking.CyclingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.FishingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.IndoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.OutdoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SkiingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.StargazingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.SunbathingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SurfingDayScorer
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
 import kotlinx.coroutines.test.runTest
@@ -47,6 +51,11 @@ private object GetActivitiesRankingFixture {
         const val WIND_GUSTS_MAX_KPH = 20.0
         const val UV_INDEX_MAX = 5.0
         const val DAYLIGHT_DURATION_HOURS = 15.5
+        const val NIGHT_CLOUD_COVER_PERCENT = 50.0
+        const val DAWN_DUSK_WIND_SPEED_KPH = 15.0
+        const val DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT = 30.0
+        const val DAYTIME_WIND_SPEED_MAX_KPH = 15.0
+        const val DAYTIME_WIND_GUSTS_MAX_KPH = 25.0
     }
 }
 
@@ -57,6 +66,10 @@ class GetActivitiesRankingsUseCaseTest {
         surfingDayScorer = SurfingDayScorer(),
         outdoorSightseeingDayScorer = OutdoorSightseeingDayScorer(),
         indoorSightseeingDayScorer = IndoorSightseeingDayScorer(),
+        cyclingDayScorer = CyclingDayScorer(),
+        sunbathingDayScorer = SunbathingDayScorer(),
+        stargazingDayScorer = StargazingDayScorer(),
+        fishingDayScorer = FishingDayScorer(),
     )
 
     @Test
@@ -139,6 +152,11 @@ class GetActivitiesRankingsUseCaseTest {
                 windGustsMaxKph = GetActivitiesRankingFixture.Day1.WIND_GUSTS_MAX_KPH,
                 uvIndexMax = GetActivitiesRankingFixture.Day1.UV_INDEX_MAX,
                 daylightDurationHours = GetActivitiesRankingFixture.Day1.DAYLIGHT_DURATION_HOURS,
+                nightCloudCoverPercent = GetActivitiesRankingFixture.Day1.NIGHT_CLOUD_COVER_PERCENT,
+                dawnDuskWindSpeedKph = GetActivitiesRankingFixture.Day1.DAWN_DUSK_WIND_SPEED_KPH,
+                dawnDuskPrecipitationProbabilityPercent = GetActivitiesRankingFixture.Day1.DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT,
+                daytimeWindSpeedMaxKph = GetActivitiesRankingFixture.Day1.DAYTIME_WIND_SPEED_MAX_KPH,
+                daytimeWindGustsMaxKph = GetActivitiesRankingFixture.Day1.DAYTIME_WIND_GUSTS_MAX_KPH,
                 condition = WeatherCondition.Clear,
             ),
         ),

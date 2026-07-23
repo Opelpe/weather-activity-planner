@@ -1,6 +1,6 @@
 package com.pnow.weatheractivityplanner.domain.ranking
 
-import com.pnow.weatheractivityplanner.domain.model.ActivitiesRankingReason
+import com.pnow.weatheractivityplanner.domain.model.ActivityDailyReason
 import com.pnow.weatheractivityplanner.domain.model.DailyForecast
 import com.pnow.weatheractivityplanner.domain.model.DayScore
 import javax.inject.Inject
@@ -19,16 +19,36 @@ class IndoorSightseeingDayScorer @Inject constructor() : ActivityDayScorer {
         val isExtremeTemp = day.maxTemperatureCelsius > EXTREME_HOT_CELSIUS ||
             day.minTemperatureCelsius < EXTREME_COLD_CELSIUS
 
+        val poorOutdoorFraction = listOf(
+            day.precipitationFraction,
+            if (day.condition.isRainy()) 1f else 0f,
+            if (day.condition.isThunderstorm()) 1f else 0f,
+            if (day.condition.isFoggy()) 1f else 0f,
+            if (day.condition.isSnowy()) 1f else 0f,
+        ).max()
+        val extremeTempFraction = maxOf(
+            fractionBetween(
+                day.maxTemperatureCelsius,
+                from = EXTREME_HOT_CELSIUS,
+                to = EXTREME_HOT_FULL_CELSIUS,
+            ),
+            fractionBetween(
+                day.minTemperatureCelsius,
+                from = EXTREME_COLD_CELSIUS,
+                to = EXTREME_COLD_FULL_CELSIUS,
+            ),
+        )
+
         val score = BASE_SCORE
-            .activityBonus(isPoorOutdoor, POOR_OUTDOOR_BONUS)
-            .activityBonus(isExtremeTemp, EXTREME_TEMP_BONUS)
+            .activityBonus(poorOutdoorFraction, POOR_OUTDOOR_BONUS)
+            .activityBonus(extremeTempFraction, EXTREME_TEMP_BONUS)
             .activityPenalty(isGreatOutdoor, GREAT_OUTDOOR_PENALTY)
 
         val reason = when {
-            isPoorOutdoor -> ActivitiesRankingReason.INDOOR_POOR_OUTDOOR
-            isExtremeTemp -> ActivitiesRankingReason.INDOOR_EXTREME_TEMP
-            isGreatOutdoor -> ActivitiesRankingReason.INDOOR_GREAT_OUTDOOR
-            else -> ActivitiesRankingReason.INDOOR_NONE
+            isPoorOutdoor -> ActivityDailyReason.IndoorSightseeing.PoorOutdoor
+            isExtremeTemp -> ActivityDailyReason.IndoorSightseeing.ExtremeTemp
+            isGreatOutdoor -> ActivityDailyReason.IndoorSightseeing.GreatOutdoor
+            else -> ActivityDailyReason.IndoorSightseeing.None
         }
 
         return DayScore(score = coerceActivityScore(score), reason = reason)
@@ -36,11 +56,13 @@ class IndoorSightseeingDayScorer @Inject constructor() : ActivityDayScorer {
 
     private companion object {
 
-        const val BASE_SCORE = 40f
+        const val BASE_SCORE = 35f
         const val POOR_OUTDOOR_BONUS = 40f
         const val EXTREME_TEMP_BONUS = 15f
         const val GREAT_OUTDOOR_PENALTY = 25f
         const val EXTREME_COLD_CELSIUS = 5.0
+        const val EXTREME_COLD_FULL_CELSIUS = -2.0
         const val EXTREME_HOT_CELSIUS = 28.0
+        const val EXTREME_HOT_FULL_CELSIUS = 35.0
     }
 }
