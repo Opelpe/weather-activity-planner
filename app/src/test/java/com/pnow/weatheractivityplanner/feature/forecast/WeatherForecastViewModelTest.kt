@@ -62,6 +62,11 @@ private object WeatherForecastViewModelFixture {
         const val WIND_GUSTS_MAX_KPH = 20.0
         const val UV_INDEX_MAX = 5.0
         const val DAYLIGHT_DURATION_HOURS = 15.5
+        const val NIGHT_CLOUD_COVER_PERCENT = 50.0
+        const val DAWN_DUSK_WIND_SPEED_KPH = 15.0
+        const val DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT = 30.0
+        const val DAYTIME_WIND_SPEED_MAX_KPH = 15.0
+        const val DAYTIME_WIND_GUSTS_MAX_KPH = 25.0
     }
 
     object Day2 {
@@ -76,6 +81,11 @@ private object WeatherForecastViewModelFixture {
         const val WIND_GUSTS_MAX_KPH = 30.0
         const val UV_INDEX_MAX = 3.0
         const val DAYLIGHT_DURATION_HOURS = 15.4
+        const val NIGHT_CLOUD_COVER_PERCENT = 55.0
+        const val DAWN_DUSK_WIND_SPEED_KPH = 18.0
+        const val DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT = 40.0
+        const val DAYTIME_WIND_SPEED_MAX_KPH = 18.0
+        const val DAYTIME_WIND_GUSTS_MAX_KPH = 28.0
     }
 }
 
@@ -447,6 +457,11 @@ class WeatherForecastViewModelTest {
                 windGustsMaxKph = WeatherForecastViewModelFixture.Day1.WIND_GUSTS_MAX_KPH,
                 uvIndexMax = WeatherForecastViewModelFixture.Day1.UV_INDEX_MAX,
                 daylightDurationHours = WeatherForecastViewModelFixture.Day1.DAYLIGHT_DURATION_HOURS,
+                nightCloudCoverPercent = WeatherForecastViewModelFixture.Day1.NIGHT_CLOUD_COVER_PERCENT,
+                dawnDuskWindSpeedKph = WeatherForecastViewModelFixture.Day1.DAWN_DUSK_WIND_SPEED_KPH,
+                dawnDuskPrecipitationProbabilityPercent = WeatherForecastViewModelFixture.Day1.DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT,
+                daytimeWindSpeedMaxKph = WeatherForecastViewModelFixture.Day1.DAYTIME_WIND_SPEED_MAX_KPH,
+                daytimeWindGustsMaxKph = WeatherForecastViewModelFixture.Day1.DAYTIME_WIND_GUSTS_MAX_KPH,
                 condition = WeatherCondition.Clear,
             ),
             DailyForecast(
@@ -460,6 +475,11 @@ class WeatherForecastViewModelTest {
                 windGustsMaxKph = WeatherForecastViewModelFixture.Day2.WIND_GUSTS_MAX_KPH,
                 uvIndexMax = WeatherForecastViewModelFixture.Day2.UV_INDEX_MAX,
                 daylightDurationHours = WeatherForecastViewModelFixture.Day2.DAYLIGHT_DURATION_HOURS,
+                nightCloudCoverPercent = WeatherForecastViewModelFixture.Day2.NIGHT_CLOUD_COVER_PERCENT,
+                dawnDuskWindSpeedKph = WeatherForecastViewModelFixture.Day2.DAWN_DUSK_WIND_SPEED_KPH,
+                dawnDuskPrecipitationProbabilityPercent = WeatherForecastViewModelFixture.Day2.DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT,
+                daytimeWindSpeedMaxKph = WeatherForecastViewModelFixture.Day2.DAYTIME_WIND_SPEED_MAX_KPH,
+                daytimeWindGustsMaxKph = WeatherForecastViewModelFixture.Day2.DAYTIME_WIND_GUSTS_MAX_KPH,
                 condition = WeatherCondition.LightRain,
             ),
         ),

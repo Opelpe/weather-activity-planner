@@ -5,6 +5,7 @@ import com.pnow.weatheractivityplanner.data.remote.api.WeatherApi
 import com.pnow.weatheractivityplanner.data.remote.dto.forecast.CurrentWeatherDto
 import com.pnow.weatheractivityplanner.data.remote.dto.forecast.DailyDataDto
 import com.pnow.weatheractivityplanner.data.remote.dto.forecast.ForecastResponseDto
+import com.pnow.weatheractivityplanner.data.remote.dto.forecast.HourlyDataDto
 import com.pnow.weatheractivityplanner.domain.error.DomainError
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -57,6 +58,16 @@ private object WeatherRepositoryFixture {
         const val WIND_GUSTS_MAX_KPH = 25.0
         const val UV_INDEX_MAX = 4.0
         const val DAYLIGHT_DURATION_SECONDS = 32_400.0
+    }
+
+    object Hourly {
+
+        val TIME = listOf("2024-01-01T00:00", "2024-01-01T12:00", "2024-01-01T22:00")
+        val CLOUD_COVER_PERCENT = listOf(20, 50, 30)
+        val IS_DAY = listOf(0, 1, 0)
+        val WIND_SPEED_KPH = listOf(10.0, 15.0, 12.0)
+        val PRECIPITATION_PROBABILITY_PERCENT = listOf(10, 20, 15)
+        val WIND_GUSTS_KPH = listOf(15.0, 20.0, 18.0)
     }
 }
 
@@ -384,6 +395,14 @@ class WeatherRepositoryImplTest {
             windGustsMaxKph = listOf(WeatherRepositoryFixture.Day.WIND_GUSTS_MAX_KPH),
             uvIndexMax = listOf(WeatherRepositoryFixture.Day.UV_INDEX_MAX),
             daylightDurationSeconds = listOf(WeatherRepositoryFixture.Day.DAYLIGHT_DURATION_SECONDS),
+        ),
+        hourly = HourlyDataDto(
+            time = WeatherRepositoryFixture.Hourly.TIME,
+            cloudCoverPercent = WeatherRepositoryFixture.Hourly.CLOUD_COVER_PERCENT,
+            isDay = WeatherRepositoryFixture.Hourly.IS_DAY,
+            windSpeedKph = WeatherRepositoryFixture.Hourly.WIND_SPEED_KPH,
+            precipitationProbabilityPercent = WeatherRepositoryFixture.Hourly.PRECIPITATION_PROBABILITY_PERCENT,
+            windGustsKph = WeatherRepositoryFixture.Hourly.WIND_GUSTS_KPH,
         ),
     )
 }

@@ -1,6 +1,6 @@
 package com.pnow.weatheractivityplanner.domain.ranking
 
-import com.pnow.weatheractivityplanner.domain.model.ActivitiesRankingReason
+import com.pnow.weatheractivityplanner.domain.model.ActivityDailyReason
 import com.pnow.weatheractivityplanner.domain.model.DailyForecast
 import com.pnow.weatheractivityplanner.domain.model.DayScore
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
@@ -12,26 +12,30 @@ private object CyclingDayScorerFixture {
     const val DATE = "2026-06-15"
     const val DEFAULT_PRECIPITATION_MM = 0.0
     const val DEFAULT_WIND_SPEED_KPH = 5.0
-    const val DEFAULT_WIND_GUSTS_KPH = 10.0
+    const val DEFAULT_DAYTIME_WIND_GUSTS_MAX_KPH = 10.0
+    const val WIND_GUSTS_MAX_KPH = 20.0
     const val PRECIPITATION_PROBABILITY_PERCENT = 0
     const val SNOWFALL_SUM_CM = 0.0
     const val UV_INDEX_MAX = 5.0
     const val DAYLIGHT_DURATION_HOURS = 12.0
+    const val NIGHT_CLOUD_COVER_PERCENT = 50.0
+    const val DAWN_DUSK_WIND_SPEED_KPH = 15.0
+    const val DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT = 30.0
     val CONDITION = WeatherCondition.PartlyCloudy
 
     object ComfortableAndCalm {
 
         const val TEMPERATURE_CELSIUS = 20.0
         const val EXPECTED_SCORE = 70f
-        val EXPECTED_REASON = ActivitiesRankingReason.Cycling.Comfortable
+        val EXPECTED_REASON = ActivityDailyReason.Cycling.Comfortable
     }
 
     object Gusty {
 
         const val TEMPERATURE_CELSIUS = 20.0
-        const val WIND_GUSTS_KPH = 45.0
+        const val DAYTIME_WIND_GUSTS_MAX_KPH = 45.0
         const val EXPECTED_SCORE = 30f
-        val EXPECTED_REASON = ActivitiesRankingReason.Cycling.Gusty
+        val EXPECTED_REASON = ActivityDailyReason.Cycling.Gusty
     }
 
     object Rainy {
@@ -39,30 +43,55 @@ private object CyclingDayScorerFixture {
         const val TEMPERATURE_CELSIUS = 20.0
         const val PRECIPITATION_MM = 5.0
         const val EXPECTED_SCORE = 35f
-        val EXPECTED_REASON = ActivitiesRankingReason.Cycling.Rain
+        val EXPECTED_REASON = ActivityDailyReason.Cycling.Rain
     }
 
     object Cold {
 
         const val TEMPERATURE_CELSIUS = 0.0
         const val EXPECTED_SCORE = 5f
-        val EXPECTED_REASON = ActivitiesRankingReason.Cycling.Cold
+        val EXPECTED_REASON = ActivityDailyReason.Cycling.Cold
     }
 
     object MildNeither {
 
         const val TEMPERATURE_CELSIUS = 8.0
         const val EXPECTED_SCORE = 25f
-        val EXPECTED_REASON = ActivitiesRankingReason.Cycling.None
+        val EXPECTED_REASON = ActivityDailyReason.Cycling.None
     }
 
     object ColdGustyAndRainy {
 
         const val TEMPERATURE_CELSIUS = 0.0
-        const val WIND_GUSTS_KPH = 45.0
+        const val DAYTIME_WIND_GUSTS_MAX_KPH = 45.0
         const val PRECIPITATION_MM = 5.0
         const val EXPECTED_SCORE = 0f
-        val EXPECTED_REASON = ActivitiesRankingReason.Cycling.Rain
+        val EXPECTED_REASON = ActivityDailyReason.Cycling.Rain
+    }
+
+    object PartiallyGusty {
+
+        // 50% of the way through the gusty ramp (20-40 kph), so only half the gusty penalty applies.
+        const val TEMPERATURE_CELSIUS = 20.0
+        const val DAYTIME_WIND_GUSTS_MAX_KPH = 30.0
+        const val EXPECTED_SCORE = 50f
+        val EXPECTED_REASON = ActivityDailyReason.Cycling.Comfortable
+    }
+
+    object PartiallyCold {
+
+        // 50% of the way through the cold ramp (5-0°C), so only half the cold penalty applies.
+        const val TEMPERATURE_CELSIUS = 2.5
+        const val EXPECTED_SCORE = 15f
+        val EXPECTED_REASON = ActivityDailyReason.Cycling.Cold
+    }
+
+    object WindPickingUp {
+
+        const val TEMPERATURE_CELSIUS = 8.0
+        const val DAYTIME_WIND_GUSTS_MAX_KPH = 30.0
+        const val EXPECTED_SCORE = 5f
+        val EXPECTED_REASON = ActivityDailyReason.Cycling.WindPickingUp
     }
 }
 
@@ -81,7 +110,7 @@ class CyclingDayScorerTest {
             ),
             buildDailyForecast(
                 temperatureCelsius = CyclingDayScorerFixture.Gusty.TEMPERATURE_CELSIUS,
-                windGustsKph = CyclingDayScorerFixture.Gusty.WIND_GUSTS_KPH,
+                daytimeWindGustsMaxKph = CyclingDayScorerFixture.Gusty.DAYTIME_WIND_GUSTS_MAX_KPH,
             ) to DayScore(
                 score = CyclingDayScorerFixture.Gusty.EXPECTED_SCORE,
                 reason = CyclingDayScorerFixture.Gusty.EXPECTED_REASON,
@@ -107,11 +136,31 @@ class CyclingDayScorerTest {
             ),
             buildDailyForecast(
                 temperatureCelsius = CyclingDayScorerFixture.ColdGustyAndRainy.TEMPERATURE_CELSIUS,
-                windGustsKph = CyclingDayScorerFixture.ColdGustyAndRainy.WIND_GUSTS_KPH,
+                daytimeWindGustsMaxKph = CyclingDayScorerFixture.ColdGustyAndRainy.DAYTIME_WIND_GUSTS_MAX_KPH,
                 precipitationMm = CyclingDayScorerFixture.ColdGustyAndRainy.PRECIPITATION_MM,
             ) to DayScore(
                 score = CyclingDayScorerFixture.ColdGustyAndRainy.EXPECTED_SCORE,
                 reason = CyclingDayScorerFixture.ColdGustyAndRainy.EXPECTED_REASON,
+            ),
+            buildDailyForecast(
+                temperatureCelsius = CyclingDayScorerFixture.PartiallyGusty.TEMPERATURE_CELSIUS,
+                daytimeWindGustsMaxKph = CyclingDayScorerFixture.PartiallyGusty.DAYTIME_WIND_GUSTS_MAX_KPH,
+            ) to DayScore(
+                score = CyclingDayScorerFixture.PartiallyGusty.EXPECTED_SCORE,
+                reason = CyclingDayScorerFixture.PartiallyGusty.EXPECTED_REASON,
+            ),
+            buildDailyForecast(
+                temperatureCelsius = CyclingDayScorerFixture.PartiallyCold.TEMPERATURE_CELSIUS,
+            ) to DayScore(
+                score = CyclingDayScorerFixture.PartiallyCold.EXPECTED_SCORE,
+                reason = CyclingDayScorerFixture.PartiallyCold.EXPECTED_REASON,
+            ),
+            buildDailyForecast(
+                temperatureCelsius = CyclingDayScorerFixture.WindPickingUp.TEMPERATURE_CELSIUS,
+                daytimeWindGustsMaxKph = CyclingDayScorerFixture.WindPickingUp.DAYTIME_WIND_GUSTS_MAX_KPH,
+            ) to DayScore(
+                score = CyclingDayScorerFixture.WindPickingUp.EXPECTED_SCORE,
+                reason = CyclingDayScorerFixture.WindPickingUp.EXPECTED_REASON,
             ),
         )
 
@@ -123,7 +172,7 @@ class CyclingDayScorerTest {
     private fun buildDailyForecast(
         temperatureCelsius: Double,
         precipitationMm: Double = CyclingDayScorerFixture.DEFAULT_PRECIPITATION_MM,
-        windGustsKph: Double = CyclingDayScorerFixture.DEFAULT_WIND_GUSTS_KPH,
+        daytimeWindGustsMaxKph: Double = CyclingDayScorerFixture.DEFAULT_DAYTIME_WIND_GUSTS_MAX_KPH,
     ) = DailyForecast(
         date = CyclingDayScorerFixture.DATE,
         maxTemperatureCelsius = temperatureCelsius,
@@ -132,9 +181,14 @@ class CyclingDayScorerTest {
         precipitationProbabilityMaxPercent = CyclingDayScorerFixture.PRECIPITATION_PROBABILITY_PERCENT,
         snowfallSumCm = CyclingDayScorerFixture.SNOWFALL_SUM_CM,
         windSpeedMaxKph = CyclingDayScorerFixture.DEFAULT_WIND_SPEED_KPH,
-        windGustsMaxKph = windGustsKph,
+        windGustsMaxKph = CyclingDayScorerFixture.WIND_GUSTS_MAX_KPH,
         uvIndexMax = CyclingDayScorerFixture.UV_INDEX_MAX,
         daylightDurationHours = CyclingDayScorerFixture.DAYLIGHT_DURATION_HOURS,
+        nightCloudCoverPercent = CyclingDayScorerFixture.NIGHT_CLOUD_COVER_PERCENT,
+        dawnDuskWindSpeedKph = CyclingDayScorerFixture.DAWN_DUSK_WIND_SPEED_KPH,
+        dawnDuskPrecipitationProbabilityPercent = CyclingDayScorerFixture.DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT,
+        daytimeWindSpeedMaxKph = CyclingDayScorerFixture.DEFAULT_WIND_SPEED_KPH,
+        daytimeWindGustsMaxKph = daytimeWindGustsMaxKph,
         condition = CyclingDayScorerFixture.CONDITION,
     )
 }
