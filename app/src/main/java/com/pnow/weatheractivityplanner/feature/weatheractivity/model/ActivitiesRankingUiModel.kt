@@ -10,7 +10,8 @@ data class ActivitiesRankingUiModel(
     val activities: Activities,
     val score: Float,
     val isTopRanked: Boolean,
-    @param:StringRes val reasonRes: Int,
+    @param:StringRes val weeklyReasonRes: Int,
+    @param:StringRes val dailyReasonRes: Int,
 )
 
 internal fun List<ActivitiesRanking>.toUiModels(): List<ActivitiesRankingUiModel> {
@@ -23,9 +24,10 @@ internal fun List<ActivitiesRanking>.toUiModels(): List<ActivitiesRankingUiModel
 
 internal fun ActivitiesRanking.toUiModel(isTopRanked: Boolean): ActivitiesRankingUiModel =
     ActivitiesRankingUiModel(
-        activities = activities,
+        activities = activity,
         score = score,
-        reasonRes = reason.toStringRes(),
+        weeklyReasonRes = weeklyReason.toStringRes(),
+        dailyReasonRes = dailyReason.toStringRes(),
         isTopRanked = isTopRanked,
     )
 
@@ -36,7 +38,7 @@ internal fun Activities.toDisplayNameRes(): Int = when (this) {
     Activities.OUTDOOR_SIGHTSEEING -> R.string.weather_activity_outdoor_sightseeing
     Activities.INDOOR_SIGHTSEEING -> R.string.weather_activity_indoor_sightseeing
     Activities.CYCLING -> R.string.weather_activity_cycling
-    Activities.BEACH_DAY -> R.string.weather_activity_beach_day
+    Activities.SUNBATHING -> R.string.weather_activity_sunbathing
     Activities.STARGAZING -> R.string.weather_activity_stargazing
     Activities.FISHING -> R.string.weather_activity_fishing
 }
@@ -48,7 +50,7 @@ internal fun Activities.toIconRes(): Int = when (this) {
     Activities.OUTDOOR_SIGHTSEEING -> R.drawable.ic_outdoor_sightseeing
     Activities.INDOOR_SIGHTSEEING -> R.drawable.ic_indoor_sightseeing
     Activities.CYCLING -> R.drawable.ic_cycling
-    Activities.BEACH_DAY -> R.drawable.ic_beach_day
+    Activities.SUNBATHING -> R.drawable.ic_sunbathing
     Activities.STARGAZING -> R.drawable.ic_stargazing
     Activities.FISHING -> R.drawable.ic_fishing
 }

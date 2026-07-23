@@ -2,93 +2,115 @@ package com.pnow.weatheractivityplanner.feature.weatheractivity.model
 
 import androidx.annotation.StringRes
 import com.pnow.weatheractivityplanner.R
-import com.pnow.weatheractivityplanner.domain.model.ActivitiesRankingReason
+import com.pnow.weatheractivityplanner.domain.model.ActivityDailyReason
+import com.pnow.weatheractivityplanner.domain.model.ActivityWeeklyReason
 
 @StringRes
-internal fun ActivitiesRankingReason.toStringRes(): Int = when (this) {
-    is ActivitiesRankingReason.Skiing -> toStringRes()
-    is ActivitiesRankingReason.Surfing -> toStringRes()
-    is ActivitiesRankingReason.OutdoorSightseeing -> toStringRes()
-    is ActivitiesRankingReason.IndoorSightseeing -> toStringRes()
-    is ActivitiesRankingReason.Cycling -> toStringRes()
-    is ActivitiesRankingReason.BeachDay -> toStringRes()
-    is ActivitiesRankingReason.Stargazing -> toStringRes()
-    is ActivitiesRankingReason.Fishing -> toStringRes()
+internal fun ActivityWeeklyReason.toStringRes(): Int = when (this) {
+    ActivityWeeklyReason.MIXED -> R.string.weather_activity_week_reason_mixed
+    ActivityWeeklyReason.IMPROVING -> R.string.weather_activity_week_reason_improving
+    ActivityWeeklyReason.DECLINING -> R.string.weather_activity_week_reason_declining
+    ActivityWeeklyReason.CONSISTENTLY_GREAT -> R.string.weather_activity_week_reason_consistently_great
+    ActivityWeeklyReason.CONSISTENTLY_GOOD -> R.string.weather_activity_week_reason_consistently_good
+    ActivityWeeklyReason.CONSISTENTLY_AVERAGE -> R.string.weather_activity_week_reason_consistently_average
+    ActivityWeeklyReason.CONSISTENTLY_POOR -> R.string.weather_activity_week_reason_consistently_poor
+    ActivityWeeklyReason.CONSISTENTLY_TERRIBLE -> R.string.weather_activity_week_reason_consistently_terrible
 }
 
 @StringRes
-private fun ActivitiesRankingReason.Skiing.toStringRes(): Int = when (this) {
-    ActivitiesRankingReason.Skiing.SnowAndFreezing -> R.string.weather_activity_reason_skiing_snow_and_freezing
-    ActivitiesRankingReason.Skiing.FreezingOnly -> R.string.weather_activity_reason_skiing_freezing_only
-    ActivitiesRankingReason.Skiing.SnowOnly -> R.string.weather_activity_reason_skiing_snow_only
-    ActivitiesRankingReason.Skiing.Rain -> R.string.weather_activity_reason_skiing_rain
-    ActivitiesRankingReason.Skiing.None -> R.string.weather_activity_reason_skiing_none
+internal fun ActivityDailyReason.toStringRes(): Int = when (this) {
+    is ActivityDailyReason.Skiing -> toStringRes()
+    is ActivityDailyReason.Surfing -> toStringRes()
+    is ActivityDailyReason.OutdoorSightseeing -> toStringRes()
+    is ActivityDailyReason.IndoorSightseeing -> toStringRes()
+    is ActivityDailyReason.Cycling -> toStringRes()
+    is ActivityDailyReason.Sunbathing -> toStringRes()
+    is ActivityDailyReason.Stargazing -> toStringRes()
+    is ActivityDailyReason.Fishing -> toStringRes()
 }
 
 @StringRes
-private fun ActivitiesRankingReason.Surfing.toStringRes(): Int = when (this) {
-    ActivitiesRankingReason.Surfing.Thunderstorm -> R.string.weather_activity_reason_surfing_thunderstorm
-    ActivitiesRankingReason.Surfing.Rain -> R.string.weather_activity_reason_surfing_rain
-    ActivitiesRankingReason.Surfing.WarmAndWindy -> R.string.weather_activity_reason_surfing_warm_and_windy
-    ActivitiesRankingReason.Surfing.WindyOnly -> R.string.weather_activity_reason_surfing_windy_only
-    ActivitiesRankingReason.Surfing.WarmOnly -> R.string.weather_activity_reason_surfing_warm_only
-    ActivitiesRankingReason.Surfing.None -> R.string.weather_activity_reason_surfing_none
+private fun ActivityDailyReason.Skiing.toStringRes(): Int = when (this) {
+    ActivityDailyReason.Skiing.SnowAndFreezing -> R.string.weather_activity_reason_skiing_snow_and_freezing
+    ActivityDailyReason.Skiing.FreezingOnly -> R.string.weather_activity_reason_skiing_freezing_only
+    ActivityDailyReason.Skiing.SnowOnly -> R.string.weather_activity_reason_skiing_snow_only
+    ActivityDailyReason.Skiing.Rain -> R.string.weather_activity_reason_skiing_rain
+    ActivityDailyReason.Skiing.TooWarm -> R.string.weather_activity_reason_skiing_too_warm
+    ActivityDailyReason.Skiing.GettingColder -> R.string.weather_activity_reason_skiing_getting_colder
+    ActivityDailyReason.Skiing.None -> R.string.weather_activity_reason_skiing_none
 }
 
 @StringRes
-private fun ActivitiesRankingReason.OutdoorSightseeing.toStringRes(): Int = when (this) {
-    ActivitiesRankingReason.OutdoorSightseeing.ClearAndComfortable ->
+private fun ActivityDailyReason.Surfing.toStringRes(): Int = when (this) {
+    ActivityDailyReason.Surfing.Thunderstorm -> R.string.weather_activity_reason_surfing_thunderstorm
+    ActivityDailyReason.Surfing.Rain -> R.string.weather_activity_reason_surfing_rain
+    ActivityDailyReason.Surfing.WarmAndWindy -> R.string.weather_activity_reason_surfing_warm_and_windy
+    ActivityDailyReason.Surfing.WindyOnly -> R.string.weather_activity_reason_surfing_windy_only
+    ActivityDailyReason.Surfing.WarmOnly -> R.string.weather_activity_reason_surfing_warm_only
+    ActivityDailyReason.Surfing.BuildingConditions -> R.string.weather_activity_reason_surfing_building_conditions
+    ActivityDailyReason.Surfing.None -> R.string.weather_activity_reason_surfing_none
+}
+
+@StringRes
+private fun ActivityDailyReason.OutdoorSightseeing.toStringRes(): Int = when (this) {
+    ActivityDailyReason.OutdoorSightseeing.ClearAndComfortable ->
         R.string.weather_activity_reason_outdoor_clear_and_comfortable
-    ActivitiesRankingReason.OutdoorSightseeing.Rain -> R.string.weather_activity_reason_outdoor_rain
-    ActivitiesRankingReason.OutdoorSightseeing.Fog -> R.string.weather_activity_reason_outdoor_fog
-    ActivitiesRankingReason.OutdoorSightseeing.ClearOnly -> R.string.weather_activity_reason_outdoor_clear_only
-    ActivitiesRankingReason.OutdoorSightseeing.None -> R.string.weather_activity_reason_outdoor_none
+
+    ActivityDailyReason.OutdoorSightseeing.Rain -> R.string.weather_activity_reason_outdoor_rain
+    ActivityDailyReason.OutdoorSightseeing.Fog -> R.string.weather_activity_reason_outdoor_fog
+    ActivityDailyReason.OutdoorSightseeing.ClearOnly -> R.string.weather_activity_reason_outdoor_clear_only
+    ActivityDailyReason.OutdoorSightseeing.WarmingUp -> R.string.weather_activity_reason_outdoor_warming_up
+    ActivityDailyReason.OutdoorSightseeing.None -> R.string.weather_activity_reason_outdoor_none
 }
 
 @StringRes
-private fun ActivitiesRankingReason.IndoorSightseeing.toStringRes(): Int = when (this) {
-    ActivitiesRankingReason.IndoorSightseeing.PoorOutdoor -> R.string.weather_activity_reason_indoor_poor_outdoor
-    ActivitiesRankingReason.IndoorSightseeing.ExtremeTemp -> R.string.weather_activity_reason_indoor_extreme_temp
-    ActivitiesRankingReason.IndoorSightseeing.GreatOutdoor -> R.string.weather_activity_reason_indoor_great_outdoor
-    ActivitiesRankingReason.IndoorSightseeing.None -> R.string.weather_activity_reason_indoor_none
+private fun ActivityDailyReason.IndoorSightseeing.toStringRes(): Int = when (this) {
+    ActivityDailyReason.IndoorSightseeing.PoorOutdoor -> R.string.weather_activity_reason_indoor_poor_outdoor
+    ActivityDailyReason.IndoorSightseeing.ExtremeTemp -> R.string.weather_activity_reason_indoor_extreme_temp
+    ActivityDailyReason.IndoorSightseeing.GreatOutdoor -> R.string.weather_activity_reason_indoor_great_outdoor
+    ActivityDailyReason.IndoorSightseeing.None -> R.string.weather_activity_reason_indoor_none
 }
 
 @StringRes
-private fun ActivitiesRankingReason.Cycling.toStringRes(): Int = when (this) {
-    ActivitiesRankingReason.Cycling.Rain -> R.string.weather_activity_reason_cycling_rain
-    ActivitiesRankingReason.Cycling.Gusty -> R.string.weather_activity_reason_cycling_gusty
-    ActivitiesRankingReason.Cycling.Comfortable -> R.string.weather_activity_reason_cycling_comfortable
-    ActivitiesRankingReason.Cycling.Cold -> R.string.weather_activity_reason_cycling_cold
-    ActivitiesRankingReason.Cycling.None -> R.string.weather_activity_reason_cycling_none
+private fun ActivityDailyReason.Cycling.toStringRes(): Int = when (this) {
+    ActivityDailyReason.Cycling.Rain -> R.string.weather_activity_reason_cycling_rain
+    ActivityDailyReason.Cycling.Gusty -> R.string.weather_activity_reason_cycling_gusty
+    ActivityDailyReason.Cycling.Comfortable -> R.string.weather_activity_reason_cycling_comfortable
+    ActivityDailyReason.Cycling.Cold -> R.string.weather_activity_reason_cycling_cold
+    ActivityDailyReason.Cycling.WindPickingUp -> R.string.weather_activity_reason_cycling_wind_picking_up
+    ActivityDailyReason.Cycling.None -> R.string.weather_activity_reason_cycling_none
 }
 
 @StringRes
-private fun ActivitiesRankingReason.BeachDay.toStringRes(): Int = when (this) {
-    ActivitiesRankingReason.BeachDay.Rain -> R.string.weather_activity_reason_beach_day_rain
-    ActivitiesRankingReason.BeachDay.Windy -> R.string.weather_activity_reason_beach_day_windy
-    ActivitiesRankingReason.BeachDay.WarmAndSunny -> R.string.weather_activity_reason_beach_day_warm_and_sunny
-    ActivitiesRankingReason.BeachDay.SunnyOnly -> R.string.weather_activity_reason_beach_day_sunny_only
-    ActivitiesRankingReason.BeachDay.WarmOnly -> R.string.weather_activity_reason_beach_day_warm_only
-    ActivitiesRankingReason.BeachDay.None -> R.string.weather_activity_reason_beach_day_none
+private fun ActivityDailyReason.Sunbathing.toStringRes(): Int = when (this) {
+    ActivityDailyReason.Sunbathing.Rain -> R.string.weather_activity_reason_sunbathing_rain
+    ActivityDailyReason.Sunbathing.Windy -> R.string.weather_activity_reason_sunbathing_windy
+    ActivityDailyReason.Sunbathing.WarmAndSunny -> R.string.weather_activity_reason_sunbathing_warm_and_sunny
+    ActivityDailyReason.Sunbathing.SunnyOnly -> R.string.weather_activity_reason_sunbathing_sunny_only
+    ActivityDailyReason.Sunbathing.WarmOnly -> R.string.weather_activity_reason_sunbathing_warm_only
+    ActivityDailyReason.Sunbathing.WarmingUp -> R.string.weather_activity_reason_sunbathing_warming_up
+    ActivityDailyReason.Sunbathing.None -> R.string.weather_activity_reason_sunbathing_none
 }
 
 @StringRes
-private fun ActivitiesRankingReason.Stargazing.toStringRes(): Int = when (this) {
-    ActivitiesRankingReason.Stargazing.Rain -> R.string.weather_activity_reason_stargazing_rain
-    ActivitiesRankingReason.Stargazing.Fog -> R.string.weather_activity_reason_stargazing_fog
-    ActivitiesRankingReason.Stargazing.ClearAndLongNight ->
+private fun ActivityDailyReason.Stargazing.toStringRes(): Int = when (this) {
+    ActivityDailyReason.Stargazing.Rain -> R.string.weather_activity_reason_stargazing_rain
+    ActivityDailyReason.Stargazing.Fog -> R.string.weather_activity_reason_stargazing_fog
+    ActivityDailyReason.Stargazing.ClearAndLongNight ->
         R.string.weather_activity_reason_stargazing_clear_and_long_night
-    ActivitiesRankingReason.Stargazing.ClearOnly -> R.string.weather_activity_reason_stargazing_clear_only
-    ActivitiesRankingReason.Stargazing.LongNightOnly -> R.string.weather_activity_reason_stargazing_long_night_only
-    ActivitiesRankingReason.Stargazing.None -> R.string.weather_activity_reason_stargazing_none
+
+    ActivityDailyReason.Stargazing.ClearOnly -> R.string.weather_activity_reason_stargazing_clear_only
+    ActivityDailyReason.Stargazing.LongNightOnly -> R.string.weather_activity_reason_stargazing_long_night_only
+    ActivityDailyReason.Stargazing.None -> R.string.weather_activity_reason_stargazing_none
 }
 
 @StringRes
-private fun ActivitiesRankingReason.Fishing.toStringRes(): Int = when (this) {
-    ActivitiesRankingReason.Fishing.Thunderstorm -> R.string.weather_activity_reason_fishing_thunderstorm
-    ActivitiesRankingReason.Fishing.Windy -> R.string.weather_activity_reason_fishing_windy
-    ActivitiesRankingReason.Fishing.CalmAndDry -> R.string.weather_activity_reason_fishing_calm_and_dry
-    ActivitiesRankingReason.Fishing.CalmOnly -> R.string.weather_activity_reason_fishing_calm_only
-    ActivitiesRankingReason.Fishing.DryOnly -> R.string.weather_activity_reason_fishing_dry_only
-    ActivitiesRankingReason.Fishing.None -> R.string.weather_activity_reason_fishing_none
+private fun ActivityDailyReason.Fishing.toStringRes(): Int = when (this) {
+    ActivityDailyReason.Fishing.Thunderstorm -> R.string.weather_activity_reason_fishing_thunderstorm
+    ActivityDailyReason.Fishing.Windy -> R.string.weather_activity_reason_fishing_windy
+    ActivityDailyReason.Fishing.CalmAndDry -> R.string.weather_activity_reason_fishing_calm_and_dry
+    ActivityDailyReason.Fishing.CalmOnly -> R.string.weather_activity_reason_fishing_calm_only
+    ActivityDailyReason.Fishing.DryOnly -> R.string.weather_activity_reason_fishing_dry_only
+    ActivityDailyReason.Fishing.WatersCalming -> R.string.weather_activity_reason_fishing_waters_calming
+    ActivityDailyReason.Fishing.None -> R.string.weather_activity_reason_fishing_none
 }

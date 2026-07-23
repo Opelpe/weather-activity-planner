@@ -28,7 +28,6 @@ import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toIconRes
 import com.pnow.weatheractivityplanner.ui.theme.PreviewLightDark
 import com.pnow.weatheractivityplanner.ui.theme.WeatherActivityPlannerTheme
 import com.pnow.weatheractivityplanner.util.Dimens
-import kotlin.math.roundToInt
 
 @Composable
 fun ActivitiesRankingItem(
@@ -88,26 +87,45 @@ private fun ActivitiesRankingDetails(
     ranking: ActivitiesRankingUiModel,
 ) {
     Column(modifier = modifier) {
+        if (ranking.isTopRanked) {
+            ActivitiesRankingBestPickTag()
+        }
+
         ActivitiesRankingTitle(
             activityTitleRes = ranking.activities.toDisplayNameRes(),
             isTopRanked = ranking.isTopRanked,
         )
 
         ActivitiesRankingReason(
-            reasonRes = ranking.reasonRes,
+            weeklyReasonRes = ranking.weeklyReasonRes,
+            dailyReasonRes = ranking.dailyReasonRes,
         )
-
     }
+}
+
+@Composable
+private fun ActivitiesRankingBestPickTag(modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = stringResource(R.string.weather_activity_best_pick),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.primary,
+    )
 }
 
 @Composable
 private fun ActivitiesRankingReason(
     modifier: Modifier = Modifier,
-    @StringRes reasonRes: Int,
+    @StringRes weeklyReasonRes: Int,
+    @StringRes dailyReasonRes: Int,
 ) {
     Text(
         modifier = modifier,
-        text = stringResource(reasonRes),
+        text = stringResource(
+            R.string.weather_activity_reason_summary_format,
+            stringResource(dailyReasonRes),
+            stringResource(weeklyReasonRes),
+        ),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -143,7 +161,7 @@ private fun ActivitiesRankingScore(
         Text(
             text = stringResource(
                 R.string.weather_activity_score_value_format,
-                score.roundToInt(),
+                score,
             ),
             style = MaterialTheme.typography.bodyLarge,
         )

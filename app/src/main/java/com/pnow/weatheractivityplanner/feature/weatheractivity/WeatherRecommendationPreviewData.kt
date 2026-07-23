@@ -22,25 +22,29 @@ internal object WeatherRecommendationPreviewData {
         ActivitiesRankingUiModel(
             activities = Activities.OUTDOOR_SIGHTSEEING,
             score = 92f,
-            reasonRes = R.string.weather_activity_reason_outdoor_clear_and_comfortable,
+            weeklyReasonRes = R.string.weather_activity_week_reason_consistently_great,
+            dailyReasonRes = R.string.weather_activity_reason_outdoor_clear_and_comfortable,
             isTopRanked = true,
         ),
         ActivitiesRankingUiModel(
             activities = Activities.INDOOR_SIGHTSEEING,
             score = 78f,
-            reasonRes = R.string.weather_activity_reason_indoor_great_outdoor,
+            weeklyReasonRes = R.string.weather_activity_week_reason_mixed,
+            dailyReasonRes = R.string.weather_activity_reason_indoor_none,
             isTopRanked = false,
         ),
         ActivitiesRankingUiModel(
             activities = Activities.SURFING,
             score = 41f,
-            reasonRes = R.string.weather_activity_reason_surfing_warm_only,
+            weeklyReasonRes = R.string.weather_activity_week_reason_consistently_average,
+            dailyReasonRes = R.string.weather_activity_reason_surfing_none,
             isTopRanked = false,
         ),
         ActivitiesRankingUiModel(
             activities = Activities.SKIING,
             score = 12f,
-            reasonRes = R.string.weather_activity_reason_skiing_none,
+            weeklyReasonRes = R.string.weather_activity_week_reason_consistently_terrible,
+            dailyReasonRes = R.string.weather_activity_reason_skiing_rain,
             isTopRanked = false,
         ),
     )

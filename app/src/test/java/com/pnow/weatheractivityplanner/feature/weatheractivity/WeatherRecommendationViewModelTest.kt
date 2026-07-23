@@ -5,19 +5,20 @@ import app.cash.turbine.test
 import com.pnow.weatheractivityplanner.domain.error.DomainError
 import com.pnow.weatheractivityplanner.domain.model.Activities
 import com.pnow.weatheractivityplanner.domain.model.ActivitiesRanking
-import com.pnow.weatheractivityplanner.domain.model.ActivitiesRankingReason
+import com.pnow.weatheractivityplanner.domain.model.ActivityDailyReason
+import com.pnow.weatheractivityplanner.domain.model.ActivityWeeklyReason
 import com.pnow.weatheractivityplanner.domain.model.CurrentWeather
 import com.pnow.weatheractivityplanner.domain.model.DailyForecast
 import com.pnow.weatheractivityplanner.domain.model.Forecast
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
 import com.pnow.weatheractivityplanner.domain.ranking.ActivitiesRankingCalculator
-import com.pnow.weatheractivityplanner.domain.ranking.BeachDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.CyclingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.FishingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.IndoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.OutdoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SkiingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.StargazingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.SunbathingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SurfingDayScorer
 import com.pnow.weatheractivityplanner.domain.repository.ConnectivityRepository
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
@@ -77,9 +78,15 @@ private object WeatherActivityViewModelFixture {
         const val WIND_GUSTS_MAX_KPH = 20.0
         const val UV_INDEX_MAX = 5.0
         const val DAYLIGHT_DURATION_HOURS = 15.5
+        const val NIGHT_CLOUD_COVER_PERCENT = 50.0
+        const val DAWN_DUSK_WIND_SPEED_KPH = 15.0
+        const val DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT = 30.0
+        const val DAYTIME_WIND_SPEED_MAX_KPH = 15.0
+        const val DAYTIME_WIND_GUSTS_MAX_KPH = 25.0
     }
 
-    val RANKING_REASON = ActivitiesRankingReason.OutdoorSightseeing.None
+    val RANKING_WEEK_REASON = ActivityWeeklyReason.CONSISTENTLY_AVERAGE
+    val RANKING_REASON = ActivityDailyReason.Skiing.None
 
     object UniqueTopScore {
 
@@ -106,7 +113,7 @@ class WeatherRecommendationViewModelTest {
         outdoorSightseeingDayScorer = OutdoorSightseeingDayScorer(),
         indoorSightseeingDayScorer = IndoorSightseeingDayScorer(),
         cyclingDayScorer = CyclingDayScorer(),
-        beachDayScorer = BeachDayScorer(),
+        sunbathingDayScorer = SunbathingDayScorer(),
         stargazingDayScorer = StargazingDayScorer(),
         fishingDayScorer = FishingDayScorer(),
     )
@@ -457,9 +464,10 @@ class WeatherRecommendationViewModelTest {
         activities: Activities,
         score: Float,
     ) = ActivitiesRanking(
-        activities = activities,
+        activity = activities,
         score = score,
-        reason = WeatherActivityViewModelFixture.RANKING_REASON,
+        weeklyReason = WeatherActivityViewModelFixture.RANKING_WEEK_REASON,
+        dailyReason = WeatherActivityViewModelFixture.RANKING_REASON,
     )
 
     private fun buildInitialState() = WeatherRecommendationUiState(
@@ -517,6 +525,11 @@ class WeatherRecommendationViewModelTest {
                 windGustsMaxKph = WeatherActivityViewModelFixture.Day1.WIND_GUSTS_MAX_KPH,
                 uvIndexMax = WeatherActivityViewModelFixture.Day1.UV_INDEX_MAX,
                 daylightDurationHours = WeatherActivityViewModelFixture.Day1.DAYLIGHT_DURATION_HOURS,
+                nightCloudCoverPercent = WeatherActivityViewModelFixture.Day1.NIGHT_CLOUD_COVER_PERCENT,
+                dawnDuskWindSpeedKph = WeatherActivityViewModelFixture.Day1.DAWN_DUSK_WIND_SPEED_KPH,
+                dawnDuskPrecipitationProbabilityPercent = WeatherActivityViewModelFixture.Day1.DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT,
+                daytimeWindSpeedMaxKph = WeatherActivityViewModelFixture.Day1.DAYTIME_WIND_SPEED_MAX_KPH,
+                daytimeWindGustsMaxKph = WeatherActivityViewModelFixture.Day1.DAYTIME_WIND_GUSTS_MAX_KPH,
                 condition = WeatherCondition.Clear,
             ),
         ),
