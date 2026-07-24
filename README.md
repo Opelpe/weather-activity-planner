@@ -16,28 +16,32 @@ from [Open-Meteo](https://open-meteo.com/).
 
 <table>
   <tr>
-    <td style="text-align: center">
-      <a href="docs/screenshots/1-location-search.png"><img src="docs/screenshots/1-location-search.png" width="200" alt="Location Search screen, empty" /></a><br/>
-      Location Search
+    <td align="center">
+      <a href="docs/screenshots/1-location-search.png"><img src="docs/screenshots/1-location-search.png" width="200" alt="Location Search screen, empty" /></a>
+      <br/><sub><b>Location Search</b></sub>
     </td>
-    <td style="text-align: center">
-      <a href="docs/screenshots/2-location-search-london.png"><img src="docs/screenshots/2-location-search-london.png" width="200" alt="Location Search screen with &quot;London&quot; typed in" /></a><br/>
-      Searching "London"
+    <td align="center">
+      <a href="docs/screenshots/2-location-search-london.png"><img src="docs/screenshots/2-location-search-london.png" width="200" alt="Location Search screen with &quot;London&quot; typed in" /></a>
+      <br/><sub><b>Searching "London"</b></sub>
     </td>
-    <td style="text-align: center">
-      <a href="docs/screenshots/3-activity-recommendations.png"><img src="docs/screenshots/3-activity-recommendations.png" width="200" alt="Activity Recommendations screen" /></a><br/>
-      Activity Recommendations
+    <td align="center">
+      <a href="docs/screenshots/3-activity-recommendations.png"><img src="docs/screenshots/3-activity-recommendations.png" width="200" alt="Activity Recommendations screen" /></a>
+      <br/><sub><b>Activity Recommendations</b></sub>
     </td>
-    <td style="text-align: center">
-      <a href="docs/screenshots/4-weekly-forecast.png"><img src="docs/screenshots/4-weekly-forecast.png" width="200" alt="7-Day Forecast screen" /></a><br/>
-      7-Day Forecast
+    <td align="center">
+      <a href="docs/screenshots/4-weekly-forecast.png"><img src="docs/screenshots/4-weekly-forecast.png" width="200" alt="7-Day Forecast screen" /></a>
+      <br/><sub><b>7-Day Forecast</b></sub>
     </td>
-    <td style="text-align: center">
-      <a href="docs/screenshots/5-activity-recommendations-dark.png"><img src="docs/screenshots/5-activity-recommendations-dark.png" width="200" alt="Activity Recommendations screen in dark mode" /></a><br/>
-      Recommendations (Dark)
+    <td align="center">
+      <a href="docs/screenshots/5-activity-recommendations-dark.png"><img src="docs/screenshots/5-activity-recommendations-dark.png" width="200" alt="Activity Recommendations screen in dark mode" /></a>
+      <br/><sub><b>Recommendations (Dark)</b></sub>
     </td>
   </tr>
 </table>
+
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/b4a500a5-7a16-4938-ba3b-cad5265f67b1" width="360" controls></video>
+</p>
 
 ---
 
