@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -6,12 +8,20 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val hasReleaseSigningConfig = keystorePropertiesFile.exists()
+val keystoreProperties = Properties().apply {
+    if (hasReleaseSigningConfig) {
+        keystorePropertiesFile.inputStream().use { load(it) }
+    }
+}
+
 android {
-    namespace = "com.pnow.weatheractivityplanner"
+    namespace = AppConfig.APPLICATION_ID
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.pnow.weatheractivityplanner"
+        applicationId = AppConfig.APPLICATION_ID
         minSdk = 29
         targetSdk = 37
         versionCode = 1
@@ -20,7 +30,22 @@ android {
         testInstrumentationRunner = "com.google.dagger.hilt.android.testing.HiltTestRunner"
     }
 
+    signingConfigs {
+        if (hasReleaseSigningConfig) {
+            create(AppConfig.RELEASE_SIGNING_CONFIG_NAME) {
+                storeFile = file(keystoreProperties.getProperty(KeystorePropertyKeys.STORE_FILE))
+                storePassword = keystoreProperties.getProperty(KeystorePropertyKeys.STORE_PASSWORD)
+                keyAlias = keystoreProperties.getProperty(KeystorePropertyKeys.KEY_ALIAS)
+                keyPassword = keystoreProperties.getProperty(KeystorePropertyKeys.KEY_PASSWORD)
+            }
+        }
+    }
+
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEBUG"
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -28,6 +53,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            if (hasReleaseSigningConfig) {
+                signingConfig = signingConfigs.getByName(AppConfig.RELEASE_SIGNING_CONFIG_NAME)
+            }
         }
     }
 
@@ -97,4 +125,18 @@ dependencies {
     // Debug
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+}
+
+private object AppConfig {
+
+    const val APPLICATION_ID = "com.pnow.weatheractivityplanner"
+    const val RELEASE_SIGNING_CONFIG_NAME = "release"
+}
+
+private object KeystorePropertyKeys {
+
+    const val STORE_FILE = "storeFile"
+    const val STORE_PASSWORD = "storePassword"
+    const val KEY_ALIAS = "keyAlias"
+    const val KEY_PASSWORD = "keyPassword"
 }

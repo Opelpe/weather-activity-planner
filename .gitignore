@@ -24,6 +24,7 @@ local.properties
 # Release signing keystore
 *.jks
 *.keystore
+keystore.properties
 
 # IntelliJ / Android Studio
 *.iml
