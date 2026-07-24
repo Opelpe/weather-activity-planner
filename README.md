@@ -1,5 +1,10 @@
 # Weather Activity Planner
 
+[![Tests](https://github.com/Opelpe/weather-activity-planner/actions/workflows/android-tests.yml/badge.svg)](https://github.com/Opelpe/weather-activity-planner/actions/workflows/android-tests.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Min SDK 29](https://img.shields.io/badge/minSdk-29-brightgreen.svg)](https://developer.android.com/about/versions/10)
+[![Kotlin](https://img.shields.io/badge/kotlin-2.3.21-blue.svg?logo=kotlin)](https://kotlinlang.org)
+
 A native Android app that lets you search for a city and see a **ranked list of activities**
 (Skiing, Surfing, Outdoor Sightseeing, Indoor Sightseeing, Cycling, Sunbathing, Stargazing,
 Fishing) suitable for that location over the **next 7 days**, based on live weather forecast data
@@ -191,6 +196,13 @@ script's argument construction. Invoke the wrapper jar directly instead:
 ```powershell
 java "-Xmx64m" "-Xms64m" "-Dorg.gradle.appname=gradlew" -jar "gradle\wrapper\gradle-wrapper.jar" assembleDebug --console=plain
 ```
+
+**Build variants:** debug builds use a distinct application ID (`.debug` suffix), app name
+(`(Debug)` suffix), and launcher icon, so a debug build can be installed side-by-side with a
+release build on the same device. Release builds are only signed if a `keystore.properties` file
+(gitignored, not included in this repo) exists at the project root with `storeFile`,
+`storePassword`, `keyAlias`, and `keyPassword` properties; without it, `assembleRelease` produces
+an unsigned APK.
 
 ---
 
