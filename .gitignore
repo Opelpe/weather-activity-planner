@@ -36,6 +36,7 @@ local.properties
 .idea/modules.xml
 .idea/deploymentTargetSelector.xml
 .idea/markdown.xml
+.idea/deviceManager.xml
 
 # macOS
 .DS_Store
