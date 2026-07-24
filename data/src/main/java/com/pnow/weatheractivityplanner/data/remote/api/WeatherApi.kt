@@ -12,6 +12,7 @@ internal interface WeatherApi {
         @Query("longitude") longitude: Double,
         @Query("current") current: String = CURRENT_FIELDS,
         @Query("daily") daily: String = DAILY_FIELDS,
+        @Query("hourly") hourly: String = HOURLY_FIELDS,
         @Query("forecast_days") forecastDays: Int = 7,
         @Query("timezone") timezone: String = TIMEZONE_AUTO,
         @Query("wind_speed_unit") windSpeedUnit: String = WIND_SPEED_UNIT_KMH,
@@ -39,6 +40,9 @@ internal interface WeatherApi {
         private const val FIELD_UV_INDEX_MAX = "uv_index_max"
         private const val FIELD_DAYLIGHT_DURATION = "daylight_duration"
         private const val FIELD_IS_DAY = "is_day"
+        private const val FIELD_CLOUD_COVER = "cloud_cover"
+        private const val FIELD_PRECIPITATION_PROBABILITY = "precipitation_probability"
+        private const val FIELD_WIND_GUSTS_10M = "wind_gusts_10m"
 
         private val CURRENT_FIELDS = listOf(
             FIELD_WEATHER_CODE,
@@ -61,6 +65,14 @@ internal interface WeatherApi {
             FIELD_WIND_GUSTS_10M_MAX,
             FIELD_UV_INDEX_MAX,
             FIELD_DAYLIGHT_DURATION,
+        ).joinToString(FIELD_SEPARATOR)
+
+        private val HOURLY_FIELDS = listOf(
+            FIELD_CLOUD_COVER,
+            FIELD_IS_DAY,
+            FIELD_WIND_SPEED_10M,
+            FIELD_PRECIPITATION_PROBABILITY,
+            FIELD_WIND_GUSTS_10M,
         ).joinToString(FIELD_SEPARATOR)
     }
 }

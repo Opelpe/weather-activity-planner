@@ -1,7 +1,8 @@
 package com.pnow.weatheractivityplanner.domain.model
 
 data class ActivitiesRanking(
-    val activities: Activities,
+    val activity: Activities,
     val score: Float,
-    val reason: ActivitiesRankingReason,
+    val weeklyReason: ActivityWeeklyReason,
+    val dailyReason: ActivityDailyReason,
 )

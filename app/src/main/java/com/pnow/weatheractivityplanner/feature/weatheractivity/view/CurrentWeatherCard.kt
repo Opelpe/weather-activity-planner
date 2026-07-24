@@ -1,6 +1,5 @@
 package com.pnow.weatheractivityplanner.feature.weatheractivity.view
 
-import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,11 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.pnow.weatheractivityplanner.R
 import com.pnow.weatheractivityplanner.feature.weatheractivity.WeatherRecommendationPreviewData
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.CurrentWeatherUiModel
+import com.pnow.weatheractivityplanner.ui.theme.PreviewLightDark
 import com.pnow.weatheractivityplanner.ui.theme.WeatherActivityPlannerTheme
 import com.pnow.weatheractivityplanner.util.Dimens
 import kotlin.math.roundToInt
@@ -174,8 +173,7 @@ private fun ViewForecastHint(modifier: Modifier = Modifier) {
 }
 
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun CurrentWeatherCardPreview() {
     WeatherActivityPlannerTheme {

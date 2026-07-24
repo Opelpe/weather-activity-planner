@@ -1,6 +1,5 @@
 package com.pnow.weatheractivityplanner.feature.forecast
 
-import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,17 +18,19 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pnow.weatheractivityplanner.R
@@ -37,6 +38,9 @@ import com.pnow.weatheractivityplanner.feature.common.UiError
 import com.pnow.weatheractivityplanner.feature.common.toMessage
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenError
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenLoading
+import com.pnow.weatheractivityplanner.feature.common.view.ObserveCachedDataNotice
+import com.pnow.weatheractivityplanner.ui.theme.PreviewLight
+import com.pnow.weatheractivityplanner.ui.theme.PreviewLightDark
 import com.pnow.weatheractivityplanner.ui.theme.WeatherActivityPlannerTheme
 import com.pnow.weatheractivityplanner.util.Dimens
 import kotlin.math.roundToInt
@@ -48,6 +52,13 @@ fun WeatherForecastScreen(
     viewModel: WeatherForecastViewModel = hiltViewModel(),
 ) {
     val state by viewModel.forecastState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    ObserveCachedDataNotice(
+        notices = viewModel.cachedDataNotices,
+        snackbarHostState = snackbarHostState,
+        onRefresh = viewModel::onRefresh,
+    )
 
     Scaffold(
         modifier = modifier,
@@ -61,6 +72,7 @@ fun WeatherForecastScreen(
                 onNavigateBack = onNavigateBack,
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         WeatherForecastContent(
             modifier = Modifier.padding(innerPadding),
@@ -231,8 +243,7 @@ private fun ForecastItemTemperature(
     )
 }
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun WeatherForecastTopBarPreview() {
     WeatherActivityPlannerTheme {
@@ -247,8 +258,7 @@ private fun WeatherForecastTopBarPreview() {
     }
 }
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun DailyForecastItemPreview() {
     WeatherActivityPlannerTheme {
@@ -265,8 +275,7 @@ private fun DailyForecastItemPreview() {
     }
 }
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun WeatherForecastContentSuccessPreview() {
     WeatherActivityPlannerTheme {
@@ -280,7 +289,7 @@ private fun WeatherForecastContentSuccessPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@PreviewLight
 @Composable
 private fun WeatherForecastContentErrorPreview() {
     WeatherActivityPlannerTheme {
@@ -297,7 +306,7 @@ private fun WeatherForecastContentErrorPreview() {
 }
 
 
-@Preview(showBackground = true)
+@PreviewLight
 @Composable
 private fun WeatherForecastContentLoadingPreview() {
     WeatherActivityPlannerTheme {

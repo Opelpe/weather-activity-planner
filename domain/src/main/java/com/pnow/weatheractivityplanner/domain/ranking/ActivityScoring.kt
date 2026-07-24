@@ -16,3 +16,21 @@ internal fun Float.activityPenalty(
     amount: Float,
 ): Float =
     if (condition) this - amount else this
+
+internal fun Float.activityBonus(
+    fraction: Float,
+    amount: Float,
+): Float = this + (amount * fraction.coerceIn(0f, 1f))
+
+internal fun Float.activityPenalty(
+    fraction: Float,
+    amount: Float,
+): Float = this - (amount * fraction.coerceIn(0f, 1f))
+
+
+internal fun fractionBetween(
+    value: Double,
+    from: Double,
+    to: Double,
+): Float =
+    ((value - from) / (to - from)).toFloat().coerceIn(0f, 1f)

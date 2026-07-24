@@ -6,6 +6,6 @@ interface GeocodingRepository {
 
     suspend fun searchLocations(
         query: String,
-        count: Int = 10,
+        count: Int = 20,
     ): Result<List<Location>>
 }

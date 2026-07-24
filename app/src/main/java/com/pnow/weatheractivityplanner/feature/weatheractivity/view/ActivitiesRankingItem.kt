@@ -1,6 +1,5 @@
 package com.pnow.weatheractivityplanner.feature.weatheractivity.view
 
-import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -20,16 +19,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.pnow.weatheractivityplanner.R
 import com.pnow.weatheractivityplanner.domain.model.Activities
 import com.pnow.weatheractivityplanner.feature.weatheractivity.WeatherRecommendationPreviewData
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.ActivitiesRankingUiModel
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toDisplayNameRes
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toIconRes
+import com.pnow.weatheractivityplanner.ui.theme.PreviewLightDark
 import com.pnow.weatheractivityplanner.ui.theme.WeatherActivityPlannerTheme
 import com.pnow.weatheractivityplanner.util.Dimens
-import kotlin.math.roundToInt
 
 @Composable
 fun ActivitiesRankingItem(
@@ -89,26 +87,45 @@ private fun ActivitiesRankingDetails(
     ranking: ActivitiesRankingUiModel,
 ) {
     Column(modifier = modifier) {
+        if (ranking.isTopRanked) {
+            ActivitiesRankingBestPickTag()
+        }
+
         ActivitiesRankingTitle(
             activityTitleRes = ranking.activities.toDisplayNameRes(),
             isTopRanked = ranking.isTopRanked,
         )
 
         ActivitiesRankingReason(
-            reasonRes = ranking.reasonRes,
+            weeklyReasonRes = ranking.weeklyReasonRes,
+            dailyReasonRes = ranking.dailyReasonRes,
         )
-
     }
+}
+
+@Composable
+private fun ActivitiesRankingBestPickTag(modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = stringResource(R.string.weather_activity_best_pick),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.primary,
+    )
 }
 
 @Composable
 private fun ActivitiesRankingReason(
     modifier: Modifier = Modifier,
-    @StringRes reasonRes: Int,
+    @StringRes weeklyReasonRes: Int,
+    @StringRes dailyReasonRes: Int,
 ) {
     Text(
         modifier = modifier,
-        text = stringResource(reasonRes),
+        text = stringResource(
+            R.string.weather_activity_reason_summary_format,
+            stringResource(dailyReasonRes),
+            stringResource(weeklyReasonRes),
+        ),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
@@ -144,15 +161,14 @@ private fun ActivitiesRankingScore(
         Text(
             text = stringResource(
                 R.string.weather_activity_score_value_format,
-                score.roundToInt(),
+                score,
             ),
             style = MaterialTheme.typography.bodyLarge,
         )
     }
 }
 
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@PreviewLightDark
 @Composable
 private fun ActivitiesRankingItemPreview() {
     WeatherActivityPlannerTheme {

@@ -1,6 +1,6 @@
 package com.pnow.weatheractivityplanner.domain.ranking
 
-import com.pnow.weatheractivityplanner.domain.model.ActivitiesRankingReason
+import com.pnow.weatheractivityplanner.domain.model.ActivityDailyReason
 import com.pnow.weatheractivityplanner.domain.model.DailyForecast
 import com.pnow.weatheractivityplanner.domain.model.DayScore
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
@@ -17,38 +17,62 @@ private object IndoorSightseeingDayScorerFixture {
     const val WIND_GUSTS_KPH = 10.0
     const val UV_INDEX_MAX = 5.0
     const val DAYLIGHT_DURATION_HOURS = 12.0
+    const val NIGHT_CLOUD_COVER_PERCENT = 50.0
+    const val DAWN_DUSK_WIND_SPEED_KPH = 15.0
+    const val DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT = 30.0
+    const val DAYTIME_WIND_SPEED_MAX_KPH = 15.0
+    const val DAYTIME_WIND_GUSTS_MAX_KPH = 25.0
 
     object PoorOutdoor {
 
         const val TEMPERATURE_CELSIUS = 15.0
         const val PRECIPITATION_MM = 5.0
         val CONDITION = WeatherCondition.HeavyRain
-        const val EXPECTED_SCORE = 80f
-        val EXPECTED_REASON = ActivitiesRankingReason.INDOOR_POOR_OUTDOOR
+        const val EXPECTED_SCORE = 75f
+        val EXPECTED_REASON = ActivityDailyReason.IndoorSightseeing.PoorOutdoor
     }
 
     object ExtremeTemp {
 
         const val TEMPERATURE_CELSIUS = 35.0
         val CONDITION = WeatherCondition.Clear
-        const val EXPECTED_SCORE = 55f
-        val EXPECTED_REASON = ActivitiesRankingReason.INDOOR_EXTREME_TEMP
+        const val EXPECTED_SCORE = 50f
+        val EXPECTED_REASON = ActivityDailyReason.IndoorSightseeing.ExtremeTemp
     }
 
     object GreatOutdoor {
 
         const val TEMPERATURE_CELSIUS = 22.0
         val CONDITION = WeatherCondition.Clear
-        const val EXPECTED_SCORE = 15f
-        val EXPECTED_REASON = ActivitiesRankingReason.INDOOR_GREAT_OUTDOOR
+        const val EXPECTED_SCORE = 10f
+        val EXPECTED_REASON = ActivityDailyReason.IndoorSightseeing.GreatOutdoor
     }
 
     object None {
 
         const val TEMPERATURE_CELSIUS = 22.0
         val CONDITION = WeatherCondition.Overcast
-        const val EXPECTED_SCORE = 40f
-        val EXPECTED_REASON = ActivitiesRankingReason.INDOOR_NONE
+        const val EXPECTED_SCORE = 35f
+        val EXPECTED_REASON = ActivityDailyReason.IndoorSightseeing.None
+    }
+
+    object PartiallyExtremeHot {
+
+        // 50% of the way through the extreme-heat ramp (28-35°C), so only half the extreme-temp bonus applies.
+        const val TEMPERATURE_CELSIUS = 31.5
+        val CONDITION = WeatherCondition.Clear
+        const val EXPECTED_SCORE = 42.5f
+        val EXPECTED_REASON = ActivityDailyReason.IndoorSightseeing.ExtremeTemp
+    }
+
+    object PartiallyPoorOutdoor {
+
+        // 50% of the way through the precipitation ramp (0.5-5.0mm), so only half the poor-outdoor bonus applies.
+        const val TEMPERATURE_CELSIUS = 22.0
+        const val PRECIPITATION_MM = 2.75
+        val CONDITION = WeatherCondition.Overcast
+        const val EXPECTED_SCORE = 55f
+        val EXPECTED_REASON = ActivityDailyReason.IndoorSightseeing.PoorOutdoor
     }
 }
 
@@ -88,6 +112,21 @@ class IndoorSightseeingDayScorerTest {
                 score = IndoorSightseeingDayScorerFixture.None.EXPECTED_SCORE,
                 reason = IndoorSightseeingDayScorerFixture.None.EXPECTED_REASON,
             ),
+            buildDailyForecast(
+                temperatureCelsius = IndoorSightseeingDayScorerFixture.PartiallyExtremeHot.TEMPERATURE_CELSIUS,
+                condition = IndoorSightseeingDayScorerFixture.PartiallyExtremeHot.CONDITION,
+            ) to DayScore(
+                score = IndoorSightseeingDayScorerFixture.PartiallyExtremeHot.EXPECTED_SCORE,
+                reason = IndoorSightseeingDayScorerFixture.PartiallyExtremeHot.EXPECTED_REASON,
+            ),
+            buildDailyForecast(
+                temperatureCelsius = IndoorSightseeingDayScorerFixture.PartiallyPoorOutdoor.TEMPERATURE_CELSIUS,
+                condition = IndoorSightseeingDayScorerFixture.PartiallyPoorOutdoor.CONDITION,
+                precipitationMm = IndoorSightseeingDayScorerFixture.PartiallyPoorOutdoor.PRECIPITATION_MM,
+            ) to DayScore(
+                score = IndoorSightseeingDayScorerFixture.PartiallyPoorOutdoor.EXPECTED_SCORE,
+                reason = IndoorSightseeingDayScorerFixture.PartiallyPoorOutdoor.EXPECTED_REASON,
+            ),
         )
 
         cases.forEach { (day, expected) ->
@@ -110,6 +149,11 @@ class IndoorSightseeingDayScorerTest {
         windGustsMaxKph = IndoorSightseeingDayScorerFixture.WIND_GUSTS_KPH,
         uvIndexMax = IndoorSightseeingDayScorerFixture.UV_INDEX_MAX,
         daylightDurationHours = IndoorSightseeingDayScorerFixture.DAYLIGHT_DURATION_HOURS,
+        nightCloudCoverPercent = IndoorSightseeingDayScorerFixture.NIGHT_CLOUD_COVER_PERCENT,
+        dawnDuskWindSpeedKph = IndoorSightseeingDayScorerFixture.DAWN_DUSK_WIND_SPEED_KPH,
+        dawnDuskPrecipitationProbabilityPercent = IndoorSightseeingDayScorerFixture.DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT,
+        daytimeWindSpeedMaxKph = IndoorSightseeingDayScorerFixture.DAYTIME_WIND_SPEED_MAX_KPH,
+        daytimeWindGustsMaxKph = IndoorSightseeingDayScorerFixture.DAYTIME_WIND_GUSTS_MAX_KPH,
         condition = condition,
     )
 }

@@ -44,6 +44,7 @@ fun AppNavHost(
                 onNavigateToForecast = {
                     navController.navigate(
                         WeatherForecastRoute(
+                            locationId = route.locationId,
                             locationName = route.locationName,
                             locationCountry = route.locationCountry,
                             latitude = route.latitude,

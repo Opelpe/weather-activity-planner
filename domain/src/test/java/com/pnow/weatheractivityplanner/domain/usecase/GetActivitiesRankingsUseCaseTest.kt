@@ -8,9 +8,13 @@ import com.pnow.weatheractivityplanner.domain.model.Forecast
 import com.pnow.weatheractivityplanner.domain.model.Location
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
 import com.pnow.weatheractivityplanner.domain.ranking.ActivitiesRankingCalculator
+import com.pnow.weatheractivityplanner.domain.ranking.CyclingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.FishingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.IndoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.OutdoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SkiingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.StargazingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.SunbathingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SurfingDayScorer
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
 import kotlinx.coroutines.test.runTest
@@ -47,6 +51,11 @@ private object GetActivitiesRankingFixture {
         const val WIND_GUSTS_MAX_KPH = 20.0
         const val UV_INDEX_MAX = 5.0
         const val DAYLIGHT_DURATION_HOURS = 15.5
+        const val NIGHT_CLOUD_COVER_PERCENT = 50.0
+        const val DAWN_DUSK_WIND_SPEED_KPH = 15.0
+        const val DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT = 30.0
+        const val DAYTIME_WIND_SPEED_MAX_KPH = 15.0
+        const val DAYTIME_WIND_GUSTS_MAX_KPH = 25.0
     }
 }
 
@@ -57,13 +66,17 @@ class GetActivitiesRankingsUseCaseTest {
         surfingDayScorer = SurfingDayScorer(),
         outdoorSightseeingDayScorer = OutdoorSightseeingDayScorer(),
         indoorSightseeingDayScorer = IndoorSightseeingDayScorer(),
+        cyclingDayScorer = CyclingDayScorer(),
+        sunbathingDayScorer = SunbathingDayScorer(),
+        stargazingDayScorer = StargazingDayScorer(),
+        fishingDayScorer = FishingDayScorer(),
     )
 
     @Test
     fun `given successful forecast, when invoked, then returns calculated rankings`() = runTest {
         val forecast = buildForecast()
         val useCase = GetActivityRankingsUseCase(
-            getForecastUseCase = fakeGetForecastUseCase(Result.success(forecast)),
+            getForecastUseCase = GetForecastUseCase(FakeWeatherRepository(Result.success(forecast))),
             activitiesRankingCalculator = calculator,
         )
 
@@ -79,8 +92,8 @@ class GetActivitiesRankingsUseCaseTest {
     @Test
     fun `given network error, when invoked, then returns failure`() = runTest {
         val useCase = GetActivityRankingsUseCase(
-            getForecastUseCase = fakeGetForecastUseCase(
-                Result.failure(DomainError.NetworkUnavailable()),
+            getForecastUseCase = GetForecastUseCase(
+                FakeWeatherRepository(Result.failure(DomainError.NetworkUnavailable())),
             ),
             activitiesRankingCalculator = calculator,
         )
@@ -90,8 +103,19 @@ class GetActivitiesRankingsUseCaseTest {
         assertTrue(result.exceptionOrNull() is DomainError.NetworkUnavailable)
     }
 
-    private fun fakeGetForecastUseCase(result: Result<Forecast>) =
-        GetForecastUseCase(FakeWeatherRepository(result))
+    @Test
+    fun `given forceRefresh true, when invoked, then passes forceRefresh to forecast use case`() =
+        runTest {
+            val repository = FakeWeatherRepository(Result.success(buildForecast()))
+            val useCase = GetActivityRankingsUseCase(
+                getForecastUseCase = GetForecastUseCase(repository),
+                activitiesRankingCalculator = calculator,
+            )
+
+            useCase(location = buildLocation(), forceRefresh = true)
+
+            assertTrue(repository.capturedForceRefresh)
+        }
 
     private fun buildLocation() = Location(
         id = GetActivitiesRankingFixture.Paris.ID,
@@ -128,6 +152,11 @@ class GetActivitiesRankingsUseCaseTest {
                 windGustsMaxKph = GetActivitiesRankingFixture.Day1.WIND_GUSTS_MAX_KPH,
                 uvIndexMax = GetActivitiesRankingFixture.Day1.UV_INDEX_MAX,
                 daylightDurationHours = GetActivitiesRankingFixture.Day1.DAYLIGHT_DURATION_HOURS,
+                nightCloudCoverPercent = GetActivitiesRankingFixture.Day1.NIGHT_CLOUD_COVER_PERCENT,
+                dawnDuskWindSpeedKph = GetActivitiesRankingFixture.Day1.DAWN_DUSK_WIND_SPEED_KPH,
+                dawnDuskPrecipitationProbabilityPercent = GetActivitiesRankingFixture.Day1.DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT,
+                daytimeWindSpeedMaxKph = GetActivitiesRankingFixture.Day1.DAYTIME_WIND_SPEED_MAX_KPH,
+                daytimeWindGustsMaxKph = GetActivitiesRankingFixture.Day1.DAYTIME_WIND_GUSTS_MAX_KPH,
                 condition = WeatherCondition.Clear,
             ),
         ),
@@ -137,9 +166,16 @@ class GetActivitiesRankingsUseCaseTest {
         private val result: Result<Forecast>,
     ) : WeatherRepository {
 
+        var capturedForceRefresh = false
+
         override suspend fun getForecast(
+            locationId: Long,
             latitude: Double,
             longitude: Double,
-        ): Result<Forecast> = result
+            forceRefresh: Boolean,
+        ): Result<Forecast> {
+            capturedForceRefresh = forceRefresh
+            return result
+        }
     }
 }

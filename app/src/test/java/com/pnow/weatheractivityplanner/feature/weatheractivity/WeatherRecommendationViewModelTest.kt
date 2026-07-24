@@ -5,27 +5,36 @@ import app.cash.turbine.test
 import com.pnow.weatheractivityplanner.domain.error.DomainError
 import com.pnow.weatheractivityplanner.domain.model.Activities
 import com.pnow.weatheractivityplanner.domain.model.ActivitiesRanking
-import com.pnow.weatheractivityplanner.domain.model.ActivitiesRankingReason
+import com.pnow.weatheractivityplanner.domain.model.ActivityDailyReason
+import com.pnow.weatheractivityplanner.domain.model.ActivityWeeklyReason
 import com.pnow.weatheractivityplanner.domain.model.CurrentWeather
 import com.pnow.weatheractivityplanner.domain.model.DailyForecast
 import com.pnow.weatheractivityplanner.domain.model.Forecast
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
 import com.pnow.weatheractivityplanner.domain.ranking.ActivitiesRankingCalculator
+import com.pnow.weatheractivityplanner.domain.ranking.CyclingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.FishingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.IndoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.OutdoorSightseeingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SkiingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.StargazingDayScorer
+import com.pnow.weatheractivityplanner.domain.ranking.SunbathingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SurfingDayScorer
+import com.pnow.weatheractivityplanner.domain.repository.ConnectivityRepository
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
 import com.pnow.weatheractivityplanner.domain.usecase.GetActivityRankingsUseCase
 import com.pnow.weatheractivityplanner.domain.usecase.GetForecastUseCase
+import com.pnow.weatheractivityplanner.domain.usecase.ObserveConnectivityLossUseCase
 import com.pnow.weatheractivityplanner.feature.common.UiError
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModel
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModels
-import com.pnow.weatheractivityplanner.navigation.RouteArgKeys
+import com.pnow.weatheractivityplanner.navigation.LocationArgs
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -69,9 +78,15 @@ private object WeatherActivityViewModelFixture {
         const val WIND_GUSTS_MAX_KPH = 20.0
         const val UV_INDEX_MAX = 5.0
         const val DAYLIGHT_DURATION_HOURS = 15.5
+        const val NIGHT_CLOUD_COVER_PERCENT = 50.0
+        const val DAWN_DUSK_WIND_SPEED_KPH = 15.0
+        const val DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT = 30.0
+        const val DAYTIME_WIND_SPEED_MAX_KPH = 15.0
+        const val DAYTIME_WIND_GUSTS_MAX_KPH = 25.0
     }
 
-    val RANKING_REASON = ActivitiesRankingReason.OUTDOOR_NONE
+    val RANKING_WEEK_REASON = ActivityWeeklyReason.CONSISTENTLY_AVERAGE
+    val RANKING_REASON = ActivityDailyReason.Skiing.None
 
     object UniqueTopScore {
 
@@ -97,6 +112,10 @@ class WeatherRecommendationViewModelTest {
         surfingDayScorer = SurfingDayScorer(),
         outdoorSightseeingDayScorer = OutdoorSightseeingDayScorer(),
         indoorSightseeingDayScorer = IndoorSightseeingDayScorer(),
+        cyclingDayScorer = CyclingDayScorer(),
+        sunbathingDayScorer = SunbathingDayScorer(),
+        stargazingDayScorer = StargazingDayScorer(),
+        fishingDayScorer = FishingDayScorer(),
     )
 
     @Before
@@ -126,6 +145,31 @@ class WeatherRecommendationViewModelTest {
                     calculator.calculate(forecast.daily).toUiModels(),
                     success.ranking,
                 )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given cached forecast returned, when initialized, then state shows content and emits cached data notice`() =
+        runTest(testDispatcher) {
+            val cachedForecast = buildForecast().copy(isCached = true)
+            val viewModel = buildViewModel(forecastResults = listOf(Result.success(cachedForecast)))
+
+            viewModel.cachedDataNotices.test {
+                viewModel.state.test {
+                    assertEquals(buildInitialState(), awaitItem())
+                    assertTrue(awaitItem().isLoading)
+
+                    val success = awaitItem()
+                    assertFalse(success.isLoading)
+                    assertEquals(cachedForecast.current.toUiModel(), success.currentWeather)
+                    assertEquals(null, success.error)
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+
+                assertEquals(Unit, awaitItem())
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -255,6 +299,132 @@ class WeatherRecommendationViewModelTest {
         }
 
     @Test
+    fun `given cached forecast returned, when onRefresh is called, then state keeps content and emits cached data notice`() =
+        runTest(testDispatcher) {
+            val firstForecast = buildForecast()
+            val cachedForecast = firstForecast.copy(isCached = true)
+            val viewModel = buildViewModel(
+                forecastResults = listOf(
+                    Result.success(firstForecast),
+                    Result.success(cachedForecast),
+                ),
+            )
+
+            viewModel.cachedDataNotices.test {
+                viewModel.state.test {
+                    awaitItem() // initial state
+                    awaitItem() // loading
+                    awaitItem() // first success
+
+                    viewModel.onRefresh()
+
+                    val refreshing = awaitItem()
+                    assertTrue(refreshing.isRefreshing)
+
+                    val refreshed = awaitItem()
+                    assertFalse(refreshed.isRefreshing)
+                    assertEquals(cachedForecast.current.toUiModel(), refreshed.currentWeather)
+                    assertEquals(null, refreshed.error)
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+
+                assertEquals(Unit, awaitItem())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given cached forecast returned on consecutive refreshes, when onRefresh is called each time, then a new cached data notice is emitted every time`() =
+        runTest(testDispatcher) {
+            val firstForecast = buildForecast()
+            val cachedForecast = firstForecast.copy(isCached = true)
+            val viewModel = buildViewModel(
+                forecastResults = listOf(
+                    Result.success(firstForecast),
+                    Result.success(cachedForecast),
+                    Result.success(cachedForecast),
+                ),
+            )
+
+            viewModel.cachedDataNotices.test {
+                viewModel.state.test {
+                    awaitItem() // initial state
+                    awaitItem() // loading
+                    awaitItem() // first success
+
+                    viewModel.onRefresh()
+                    awaitItem() // refreshing
+                    awaitItem() // first cached success
+
+                    viewModel.onRefresh()
+                    awaitItem() // refreshing
+                    awaitItem() // second cached success
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+
+                assertEquals(Unit, awaitItem())
+                assertEquals(Unit, awaitItem())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given content already shown, when connectivity is lost, then a cached data notice is emitted`() =
+        runTest(testDispatcher) {
+            val connectivity = MutableStateFlow(true)
+            val viewModel = buildViewModel(
+                forecastResults = listOf(Result.success(buildForecast())),
+                connectivityRepository = FakeConnectivityRepository(connectivity),
+            )
+
+            viewModel.cachedDataNotices.test {
+                viewModel.state.test {
+                    awaitItem() // initial state
+                    awaitItem() // loading
+                    awaitItem() // success
+
+                    connectivity.value = false
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+
+                assertEquals(Unit, awaitItem())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given no content yet, when connectivity is lost, then no cached data notice is emitted`() =
+        runTest(testDispatcher) {
+            val connectivity = MutableStateFlow(true)
+            val viewModel = buildViewModel(
+                forecastResults = listOf(Result.failure(DomainError.NetworkUnavailable())),
+                connectivityRepository = FakeConnectivityRepository(connectivity),
+            )
+
+            viewModel.cachedDataNotices.test {
+                viewModel.state.test {
+                    awaitItem() // initial state
+                    awaitItem() // loading
+                    awaitItem() // error, no content
+
+                    connectivity.value = false
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+
+                expectNoEvents()
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
     fun `given rankings with a unique top score, when toUiModels, then only the highest scoring activity is top ranked`() {
         val rankings = listOf(
             buildRanking(
@@ -294,9 +464,10 @@ class WeatherRecommendationViewModelTest {
         activities: Activities,
         score: Float,
     ) = ActivitiesRanking(
-        activities = activities,
+        activity = activities,
         score = score,
-        reason = WeatherActivityViewModelFixture.RANKING_REASON,
+        weeklyReason = WeatherActivityViewModelFixture.RANKING_WEEK_REASON,
+        dailyReason = WeatherActivityViewModelFixture.RANKING_REASON,
     )
 
     private fun buildInitialState() = WeatherRecommendationUiState(
@@ -307,21 +478,23 @@ class WeatherRecommendationViewModelTest {
     private fun buildViewModel(
         forecastResults: List<Result<Forecast>> = listOf(Result.success(buildForecast())),
         savedStateHandle: SavedStateHandle = buildSavedStateHandle(),
+        connectivityRepository: ConnectivityRepository = FakeConnectivityRepository(),
     ) = WeatherRecommendationViewModel(
         savedStateHandle = savedStateHandle,
         getActivityRankingsUseCase = GetActivityRankingsUseCase(
             getForecastUseCase = GetForecastUseCase(FakeWeatherRepository(forecastResults)),
             activitiesRankingCalculator = calculator,
         ),
+        observeConnectivityLossUseCase = ObserveConnectivityLossUseCase(connectivityRepository),
     )
 
     private fun buildSavedStateHandle() = SavedStateHandle(
         mapOf(
-            RouteArgKeys.LOCATION_ID to WeatherActivityViewModelFixture.Paris.ID,
-            RouteArgKeys.LOCATION_NAME to WeatherActivityViewModelFixture.Paris.NAME,
-            RouteArgKeys.LOCATION_COUNTRY to WeatherActivityViewModelFixture.Paris.COUNTRY,
-            RouteArgKeys.LATITUDE to WeatherActivityViewModelFixture.Paris.LATITUDE,
-            RouteArgKeys.LONGITUDE to WeatherActivityViewModelFixture.Paris.LONGITUDE,
+            LocationArgs::locationId.name to WeatherActivityViewModelFixture.Paris.ID,
+            LocationArgs::locationName.name to WeatherActivityViewModelFixture.Paris.NAME,
+            LocationArgs::locationCountry.name to WeatherActivityViewModelFixture.Paris.COUNTRY,
+            LocationArgs::latitude.name to WeatherActivityViewModelFixture.Paris.LATITUDE,
+            LocationArgs::longitude.name to WeatherActivityViewModelFixture.Paris.LONGITUDE,
         ),
     )
 
@@ -352,6 +525,11 @@ class WeatherRecommendationViewModelTest {
                 windGustsMaxKph = WeatherActivityViewModelFixture.Day1.WIND_GUSTS_MAX_KPH,
                 uvIndexMax = WeatherActivityViewModelFixture.Day1.UV_INDEX_MAX,
                 daylightDurationHours = WeatherActivityViewModelFixture.Day1.DAYLIGHT_DURATION_HOURS,
+                nightCloudCoverPercent = WeatherActivityViewModelFixture.Day1.NIGHT_CLOUD_COVER_PERCENT,
+                dawnDuskWindSpeedKph = WeatherActivityViewModelFixture.Day1.DAWN_DUSK_WIND_SPEED_KPH,
+                dawnDuskPrecipitationProbabilityPercent = WeatherActivityViewModelFixture.Day1.DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT,
+                daytimeWindSpeedMaxKph = WeatherActivityViewModelFixture.Day1.DAYTIME_WIND_SPEED_MAX_KPH,
+                daytimeWindGustsMaxKph = WeatherActivityViewModelFixture.Day1.DAYTIME_WIND_GUSTS_MAX_KPH,
                 condition = WeatherCondition.Clear,
             ),
         ),
@@ -364,13 +542,22 @@ class WeatherRecommendationViewModelTest {
         private var callIndex = 0
 
         override suspend fun getForecast(
+            locationId: Long,
             latitude: Double,
             longitude: Double,
+            forceRefresh: Boolean,
         ): Result<Forecast> {
             delay(WeatherActivityViewModelFixture.LOADING_DELAY_MS.milliseconds)
             val result = results[callIndex]
             callIndex = minOf(callIndex + 1, results.size - 1)
             return result
         }
+    }
+
+    private class FakeConnectivityRepository(
+        private val connectivityFlow: Flow<Boolean> = MutableStateFlow(true),
+    ) : ConnectivityRepository {
+
+        override fun isConnected(): Flow<Boolean> = connectivityFlow
     }
 }
