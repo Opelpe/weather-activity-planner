@@ -118,7 +118,7 @@ class LocationSearchViewModel @Inject constructor(
 
     private companion object {
 
-        const val SEARCH_DEBOUNCE_MS = 500L
+        const val SEARCH_DEBOUNCE_MS = 400L
     }
 }
 
