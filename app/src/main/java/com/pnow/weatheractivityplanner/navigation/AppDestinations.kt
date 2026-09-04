@@ -46,7 +46,6 @@ fun SavedStateHandle.toLocationOrNull(): Location? {
         latitude = latitude,
         longitude = longitude,
         country = locationCountry,
-        countryCode = null,
         region = null,
     )
 }

@@ -123,7 +123,6 @@ class GetActivitiesRankingsUseCaseTest {
         latitude = GetActivitiesRankingFixture.Paris.LATITUDE,
         longitude = GetActivitiesRankingFixture.Paris.LONGITUDE,
         country = GetActivitiesRankingFixture.Paris.COUNTRY,
-        countryCode = null,
         region = null,
     )
 

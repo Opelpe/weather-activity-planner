@@ -32,7 +32,6 @@ private object LocationSearchViewModelFixture {
         const val ID = 1L
         const val NAME = "London"
         const val COUNTRY = "United Kingdom"
-        const val COUNTRY_CODE = "GB"
         const val REGION = "England"
         const val LATITUDE = 51.5
         const val LONGITUDE = -0.1
@@ -201,7 +200,6 @@ class LocationSearchViewModelTest {
         latitude = LocationSearchViewModelFixture.London.LATITUDE,
         longitude = LocationSearchViewModelFixture.London.LONGITUDE,
         country = LocationSearchViewModelFixture.London.COUNTRY,
-        countryCode = LocationSearchViewModelFixture.London.COUNTRY_CODE,
         region = LocationSearchViewModelFixture.London.REGION,
     )
 

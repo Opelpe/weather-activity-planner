@@ -20,6 +20,7 @@
     <string name="weather_activity_humidity_format">Humidity %1$d%%</string>
     <string name="weather_activity_wind_format">Wind %1$d km/h</string>
     <string name="weather_activity_city_country_format">%1$s, %2$s</string>
+    <string name="weather_activity_location_coordinates_format">%1$.4f; %2$.4f</string>
     <string name="weather_activity_view_forecast_hint">Tap to view 7-day forecast</string>
     <string name="weather_activity_view_forecast_content_description">View 7-day forecast for %1$s</string>
     <string name="weather_activity_ranking_title">Activity suggestions</string>

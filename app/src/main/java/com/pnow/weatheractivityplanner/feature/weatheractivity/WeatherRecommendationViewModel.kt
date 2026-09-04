@@ -3,6 +3,7 @@ package com.pnow.weatheractivityplanner.feature.weatheractivity
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pnow.weatheractivityplanner.data.di.DefaultDispatcher
 import com.pnow.weatheractivityplanner.domain.model.Location
 import com.pnow.weatheractivityplanner.domain.usecase.GetActivityRankingsUseCase
 import com.pnow.weatheractivityplanner.domain.usecase.ObserveConnectivityLossUseCase
@@ -13,6 +14,7 @@ import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModels
 import com.pnow.weatheractivityplanner.navigation.toLocationOrNull
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,12 +23,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class WeatherRecommendationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getActivityRankingsUseCase: GetActivityRankingsUseCase,
     private val observeConnectivityLossUseCase: ObserveConnectivityLossUseCase,
+    @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val location: Location? = savedStateHandle.toLocationOrNull()
@@ -84,10 +88,14 @@ class WeatherRecommendationViewModel @Inject constructor(
         location: Location,
         forceRefresh: Boolean = false,
     ) {
-        getActivityRankingsUseCase(
-            location = location,
-            forceRefresh = forceRefresh,
-        )
+        val rankingsResult = withContext(defaultDispatcher) {
+            getActivityRankingsUseCase(
+                location = location,
+                forceRefresh = forceRefresh,
+            )
+        }
+
+        rankingsResult
             .onSuccess { result ->
                 _state.update {
                     it.copy(
