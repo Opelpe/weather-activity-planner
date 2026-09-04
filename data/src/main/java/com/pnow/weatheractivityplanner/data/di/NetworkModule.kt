@@ -1,7 +1,9 @@
 package com.pnow.weatheractivityplanner.data.di
 
+import com.pnow.data.BuildConfig
 import com.pnow.weatheractivityplanner.data.remote.api.GeocodingApi
 import com.pnow.weatheractivityplanner.data.remote.api.WeatherApi
+import com.pnow.weatheractivityplanner.data.remote.interceptor.ApiKeyInterceptor
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -16,15 +18,19 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-internal annotation class WeatherRetrofit
+internal annotation class Weather
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-internal annotation class GeocodingRetrofit
+internal annotation class Geocoding
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    private const val WEATHER_BASE_URL = "https://api.open-meteo.com/"
+    private const val GEOCODING_BASE_URL = "https://us1.locationiq.com/"
+    private const val GEOCODING_API_KEY_QUERY_PARAM = "key"
 
     @Provides
     @Singleton
@@ -32,48 +38,66 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient =
+    fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor =
+        HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+    @Provides
+    @Singleton
+    @Weather
+    fun provideWeatherOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
+        OkHttpClient.Builder()
+            .addInterceptor(httpLoggingInterceptor)
+            .build()
+
+    @Provides
+    @Singleton
+    @Geocoding
+    fun provideGeocodingOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(
-                HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
-                },
+                ApiKeyInterceptor(
+                    queryParamName = GEOCODING_API_KEY_QUERY_PARAM,
+                    apiKey = BuildConfig.LOCATIONIQ_API_KEY,
+                ),
             )
+            .addInterceptor(httpLoggingInterceptor)
             .build()
 
     @Provides
     @Singleton
-    @WeatherRetrofit
+    @Weather
     fun provideWeatherRetrofit(
-        okHttpClient: OkHttpClient,
+        @Weather okHttpClient: OkHttpClient,
         moshi: Moshi,
     ): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://api.open-meteo.com/")
+            .baseUrl(WEATHER_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
 
     @Provides
     @Singleton
-    @GeocodingRetrofit
+    @Geocoding
     fun provideGeocodingRetrofit(
-        okHttpClient: OkHttpClient,
+        @Geocoding okHttpClient: OkHttpClient,
         moshi: Moshi,
     ): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://geocoding-api.open-meteo.com/")
+            .baseUrl(GEOCODING_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
 
     @Provides
     @Singleton
-    internal fun provideWeatherApi(@WeatherRetrofit retrofit: Retrofit): WeatherApi =
+    internal fun provideWeatherApi(@Weather retrofit: Retrofit): WeatherApi =
         retrofit.create(WeatherApi::class.java)
 
     @Provides
     @Singleton
-    internal fun provideGeocodingApi(@GeocodingRetrofit retrofit: Retrofit): GeocodingApi =
+    internal fun provideGeocodingApi(@Geocoding retrofit: Retrofit): GeocodingApi =
         retrofit.create(GeocodingApi::class.java)
 }

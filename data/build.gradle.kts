@@ -1,8 +1,18 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
 }
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { load(it) }
+    }
+}
+val locationIqApiKey: String = localProperties.getProperty("LOCATIONIQ_API_KEY", "")
 
 android {
     namespace = "com.pnow.data"
@@ -11,6 +21,8 @@ android {
     defaultConfig {
         minSdk = 29
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField("String", "LOCATIONIQ_API_KEY", "\"$locationIqApiKey\"")
     }
 
     buildFeatures {
