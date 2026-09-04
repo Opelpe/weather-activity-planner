@@ -5,6 +5,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -141,7 +142,7 @@ private fun LocationResultList(
             .padding(vertical = Dimens.Spacing6),
         verticalArrangement = Arrangement.spacedBy(Dimens.Spacing6),
     ) {
-        items(items = locations, key = { it.id }) { location ->
+        items(items = locations) { location ->
             LocationResultItem(
                 location = location,
                 onClick = { onLocationSelected(location) },
@@ -162,12 +163,7 @@ private fun LocationResultItem(
             .clickable(onClick = onClick),
     ) {
         Column(modifier = Modifier.padding(Dimens.Spacing8)) {
-            Text(
-                text = location.name,
-                style = MaterialTheme.typography.bodyLarge,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            LocationNameRow(location = location)
             Text(
                 text = location.country,
                 style = MaterialTheme.typography.bodySmall,
@@ -176,6 +172,36 @@ private fun LocationResultItem(
                 overflow = TextOverflow.Ellipsis,
             )
         }
+    }
+}
+
+@Composable
+private fun LocationNameRow(
+    modifier: Modifier = Modifier,
+    location: LocationUiModel,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing8),
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = location.name,
+            style = MaterialTheme.typography.bodyLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Text(
+            text = stringResource(
+                R.string.weather_activity_location_coordinates_format,
+                location.latitude,
+                location.longitude,
+            ),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 1,
+        )
     }
 }
 
