@@ -486,6 +486,7 @@ class WeatherRecommendationViewModelTest {
             activitiesRankingCalculator = calculator,
         ),
         observeConnectivityLossUseCase = ObserveConnectivityLossUseCase(connectivityRepository),
+        defaultDispatcher = testDispatcher,
     )
 
     private fun buildSavedStateHandle() = SavedStateHandle(
