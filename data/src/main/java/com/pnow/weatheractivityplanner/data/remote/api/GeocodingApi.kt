@@ -19,6 +19,8 @@ internal interface GeocodingApi {
 
         private val PLACE_TAGS = listOf(
             "place:city",
+            "place:town",
+            "place:village",
             "place:state",
             "place:country",
             "natural:peak",
