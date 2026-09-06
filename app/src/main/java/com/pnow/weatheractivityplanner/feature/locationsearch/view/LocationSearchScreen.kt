@@ -13,13 +13,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -28,6 +34,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pnow.weatheractivityplanner.R
 import com.pnow.weatheractivityplanner.feature.common.UiError
+import com.pnow.weatheractivityplanner.feature.common.effect.ObserveSnackbarActions
+import com.pnow.weatheractivityplanner.feature.common.effect.rememberRequestCurrentLocationAccess
 import com.pnow.weatheractivityplanner.feature.common.toMessage
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenError
 import com.pnow.weatheractivityplanner.feature.locationsearch.LocationSearchPreviewData
@@ -38,6 +46,7 @@ import com.pnow.weatheractivityplanner.ui.theme.PreviewLight
 import com.pnow.weatheractivityplanner.ui.theme.PreviewLightDark
 import com.pnow.weatheractivityplanner.ui.theme.WeatherActivityPlannerTheme
 import com.pnow.weatheractivityplanner.util.Dimens
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun LocationSearchScreen(
@@ -46,14 +55,64 @@ fun LocationSearchScreen(
     viewModel: LocationSearchViewModel = hiltViewModel(),
 ) {
     val state by viewModel.searchState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    LocationSearchContent(
-        modifier = modifier,
-        state = state,
-        onQueryChange = viewModel::onQueryChanged,
-        onRetry = viewModel::onRetry,
-        onLocationSelected = onNavigateToRankings,
+    val requestCurrentLocationAccess = rememberRequestCurrentLocationAccess(
+        hasPermission = viewModel::hasLocationPermission,
+        onAccessGranted = viewModel::onCurrentLocationAccessGranted,
+        onPermissionDenied = viewModel::onCurrentLocationPermissionDenied,
+        onSettingsUnavailable = viewModel::onCurrentLocationSettingsUnavailable,
     )
+
+    fun onUseCurrentLocationClick() {
+        if (state.isResolvingCurrentLocation) {
+            viewModel.cancelCurrentLocationRequest()
+        } else if (viewModel.startCurrentLocationRequest()) {
+            requestCurrentLocationAccess()
+        }
+    }
+
+    val context = LocalContext.current
+
+    ObserveSnackbarActions(
+        events = viewModel.locationErrorMessages,
+        snackbarHostState = snackbarHostState,
+        message = { it.toMessage(context) },
+    )
+
+    ObserveCurrentLocationResolved(
+        events = viewModel.currentLocationResolved,
+        onQueryChanged = viewModel::onQueryChanged,
+        onNavigateToRankings = onNavigateToRankings,
+    )
+
+    Scaffold(
+        modifier = modifier,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+    ) { innerPadding ->
+        LocationSearchContent(
+            modifier = Modifier.padding(innerPadding),
+            state = state,
+            onQueryChange = viewModel::onQueryChanged,
+            onRetry = viewModel::onRetry,
+            onLocationSelected = onNavigateToRankings,
+            onUseCurrentLocationClick = ::onUseCurrentLocationClick,
+        )
+    }
+}
+
+@Composable
+private fun ObserveCurrentLocationResolved(
+    events: Flow<LocationUiModel>,
+    onQueryChanged: (String) -> Unit,
+    onNavigateToRankings: (LocationUiModel) -> Unit,
+) {
+    LaunchedEffect(events) {
+        events.collect { location ->
+            onQueryChanged(location.name)
+            onNavigateToRankings(location)
+        }
+    }
 }
 
 @Composable
@@ -63,6 +122,7 @@ private fun LocationSearchContent(
     onQueryChange: (String) -> Unit,
     onRetry: () -> Unit,
     onLocationSelected: (LocationUiModel) -> Unit,
+    onUseCurrentLocationClick: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -78,8 +138,10 @@ private fun LocationSearchContent(
 
         LocationSearchBar(
             query = state.searchQuery,
-            isLoading = state.isLoading,
+            isLoading = state.isLoading || state.isResolvingCurrentLocation,
+            isResolvingCurrentLocation = state.isResolvingCurrentLocation,
             onQueryChange = onQueryChange,
+            onUseCurrentLocationClick = onUseCurrentLocationClick,
         )
 
         LocationSearchResultsContent(
@@ -207,7 +269,7 @@ private fun LocationNameRow(
 
 @Composable
 private fun DefaultSearchContentLabel(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     label: String,
 ) {
     Text(
@@ -230,6 +292,7 @@ private fun LocationSearchScreenPromptPreview() {
             onQueryChange = {},
             onRetry = {},
             onLocationSelected = {},
+            onUseCurrentLocationClick = {},
         )
     }
 }
@@ -246,6 +309,7 @@ private fun LocationSearchScreenSuccessPreview() {
             onQueryChange = {},
             onRetry = {},
             onLocationSelected = {},
+            onUseCurrentLocationClick = {},
         )
     }
 }
@@ -262,6 +326,7 @@ private fun LocationSearchScreenNoResultsPreview() {
             onQueryChange = {},
             onRetry = {},
             onLocationSelected = {},
+            onUseCurrentLocationClick = {},
         )
     }
 }
@@ -279,6 +344,7 @@ private fun LocationSearchScreenErrorPreview() {
                 onQueryChange = {},
                 onRetry = {},
                 onLocationSelected = {},
+                onUseCurrentLocationClick = {},
             )
         }
     }

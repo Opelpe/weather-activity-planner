@@ -10,6 +10,11 @@
 
     <string name="weather_activity_search_label">Wyszukaj miejsce</string>
     <string name="weather_activity_search_clear_content_description">Wyczyść wyszukiwanie</string>
+    <string name="weather_activity_use_current_location_content_description">Użyj bieżącej lokalizacji</string>
+    <string name="weather_activity_cancel_current_location_content_description">Anuluj ustalanie bieżącej lokalizacji</string>
+    <string name="common_error_location_permission_denied">Aby użyć bieżącej lokalizacji, wymagane jest uprawnienie dostępu do lokalizacji</string>
+    <string name="common_error_location_disabled">Włącz usługi lokalizacji, aby użyć bieżącej lokalizacji</string>
+    <string name="common_error_location_unavailable">Nie udało się ustalić Twojej bieżącej lokalizacji</string>
     <string name="weather_activity_no_cities_found">Nie znaleziono żadnych miejsc</string>
     <string name="weather_activity_search_prompt">Wyszukaj miejsce, aby zobaczyć propozycje aktywności</string>
     <string name="weather_activity_retry">Spróbuj ponownie</string>

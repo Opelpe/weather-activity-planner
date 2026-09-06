@@ -84,5 +84,8 @@ class SearchLocationsUseCaseTest {
             lastCount = count
             return result
         }
+
+        override suspend fun reverseGeocode(latitude: Double, longitude: Double): Result<Location> =
+            error("Not used in this test")
     }
 }

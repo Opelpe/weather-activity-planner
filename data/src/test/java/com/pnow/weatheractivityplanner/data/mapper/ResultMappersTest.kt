@@ -89,4 +89,29 @@ class ResultMappersTest {
         val error = mapped.exceptionOrNull() as DomainError.DeserializationError
         assertTrue(error.cause === cause)
     }
+
+    @Test
+    fun `given SecurityException, when toLocationDomainError, then returns LocationPermissionDenied`() {
+        val error = SecurityException(ResultFixture.UNKNOWN_ERROR_MESSAGE).toLocationDomainError()
+
+        assertTrue(error is DomainError.LocationPermissionDenied)
+    }
+
+    @Test
+    fun `given a DomainError, when toLocationDomainError, then returns it unchanged`() {
+        val domainError = DomainError.LocationUnavailable()
+
+        val error = (domainError as Throwable).toLocationDomainError()
+
+        assertTrue(error === domainError)
+    }
+
+    @Test
+    fun `given an unmapped exception, when toLocationDomainError, then returns Unknown with cause`() {
+        val cause = IllegalStateException(ResultFixture.UNKNOWN_ERROR_MESSAGE)
+
+        val error = cause.toLocationDomainError() as DomainError.Unknown
+
+        assertTrue(error.cause === cause)
+    }
 }

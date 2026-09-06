@@ -5,7 +5,7 @@ import com.pnow.weatheractivityplanner.domain.model.Location
 
 internal fun GeocodingResultDto.toDomain(): Location = Location(
     id = placeId.toLong(),
-    name = address?.name ?: displayName.substringBefore(","),
+    name = address?.run { city ?: town ?: village ?: name } ?: displayName.substringBefore(","),
     latitude = latitude.toDouble(),
     longitude = longitude.toDouble(),
     country = address?.country,

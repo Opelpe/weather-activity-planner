@@ -35,10 +35,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pnow.weatheractivityplanner.R
 import com.pnow.weatheractivityplanner.feature.common.UiError
+import com.pnow.weatheractivityplanner.feature.common.effect.ObserveCachedDataNotice
 import com.pnow.weatheractivityplanner.feature.common.toMessage
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenError
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenLoading
-import com.pnow.weatheractivityplanner.feature.common.view.ObserveCachedDataNotice
 import com.pnow.weatheractivityplanner.ui.theme.PreviewLight
 import com.pnow.weatheractivityplanner.ui.theme.PreviewLightDark
 import com.pnow.weatheractivityplanner.ui.theme.WeatherActivityPlannerTheme
@@ -211,7 +211,7 @@ private fun DailyForecastItem(
 
 @Composable
 private fun ForecastItemDateAndCondition(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     date: String,
     @StringRes conditionRes: Int,
 ) {

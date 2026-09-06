@@ -24,6 +24,9 @@ javaxInject = "1"
 retrofit = "3.0.0"
 okhttp = "5.4.0"
 
+# Location
+playServicesLocation = "21.3.0"
+
 # Serialization
 moshi = "1.15.2"
 kotlinxSerialization = "1.11.0"
@@ -76,6 +79,9 @@ retrofit-converter-moshi = { group = "com.squareup.retrofit2", name = "converter
 okhttp-bom = { group = "com.squareup.okhttp3", name = "okhttp-bom", version.ref = "okhttp" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor" }
+
+# ── Location ──────────────────────────────────────────────────────────────────
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 # ── Serialization — Moshi ─────────────────────────────────────────────────────
 moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }

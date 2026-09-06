@@ -20,3 +20,9 @@ internal fun Throwable.toDomainError(): DomainError = when (this) {
     is HttpException -> DomainError.HttpError(code(), message() ?: DEFAULT_HTTP_ERROR_MESSAGE)
     else -> DomainError.Unknown(this)
 }
+
+internal fun Throwable.toLocationDomainError(): DomainError = when (this) {
+    is DomainError -> this
+    is SecurityException -> DomainError.LocationPermissionDenied()
+    else -> DomainError.Unknown(this)
+}
