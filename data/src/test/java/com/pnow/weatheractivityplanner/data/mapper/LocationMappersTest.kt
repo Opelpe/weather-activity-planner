@@ -41,6 +41,13 @@ private object LocationFixture {
         const val DISPLAY_NAME = "Unnamed Place, Nowhere"
         const val FALLBACK_NAME = "Unnamed Place"
     }
+
+    object ReverseGeocodedResidentialAddress {
+
+        const val DISPLAY_NAME = "21, Some Street, Kraków, Poland"
+        const val HOUSE_NUMBER_AS_NAME = "21"
+        const val CITY = "Kraków"
+    }
 }
 
 class LocationMappersTest {
@@ -120,5 +127,23 @@ class LocationMappersTest {
         val location = dto.toDomain()
 
         assertEquals(LocationFixture.MissingAddress.FALLBACK_NAME, location.name)
+    }
+
+    @Test
+    fun `given reverse geocoded address with a house number as name, when toDomain, then name falls back to city`() {
+        val dto = GeocodingResultDto(
+            placeId = LocationFixture.PLACEHOLDER_PLACE_ID,
+            latitude = LocationFixture.PLACEHOLDER_LATITUDE,
+            longitude = LocationFixture.PLACEHOLDER_LONGITUDE,
+            displayName = LocationFixture.ReverseGeocodedResidentialAddress.DISPLAY_NAME,
+            address = GeocodingAddressDto(
+                name = LocationFixture.ReverseGeocodedResidentialAddress.HOUSE_NUMBER_AS_NAME,
+                city = LocationFixture.ReverseGeocodedResidentialAddress.CITY,
+            ),
+        )
+
+        val location = dto.toDomain()
+
+        assertEquals(LocationFixture.ReverseGeocodedResidentialAddress.CITY, location.name)
     }
 }

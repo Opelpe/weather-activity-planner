@@ -37,6 +37,20 @@ internal class GeocodingRepositoryImpl @Inject constructor(
             }.toDomainResult()
         }
 
+    override suspend fun reverseGeocode(
+        latitude: Double,
+        longitude: Double,
+    ): Result<Location> =
+        withContext(ioDispatcher) {
+            runCatching {
+                geocodingApi.reverseGeocode(
+                    latitude = latitude,
+                    longitude = longitude,
+                    acceptLanguage = Locale.getDefault().language,
+                ).toDomain()
+            }.toDomainResult()
+        }
+
     private companion object {
 
         const val HTTP_NOT_FOUND = 404

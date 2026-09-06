@@ -53,6 +53,9 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
 
+    // Location
+    implementation(libs.play.services.location)
+
     // Serialization
     implementation(libs.moshi)
     ksp(libs.moshi.kotlin.codegen)
