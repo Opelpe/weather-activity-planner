@@ -10,4 +10,7 @@ sealed class DomainError : Exception() {
 
     data class DeserializationError(override val cause: Throwable) : DomainError()
     data class Unknown(override val cause: Throwable) : DomainError()
+    class LocationPermissionDenied : DomainError()
+    class LocationDisabled : DomainError()
+    class LocationUnavailable : DomainError()
 }
