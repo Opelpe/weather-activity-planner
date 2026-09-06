@@ -3,7 +3,10 @@ package com.pnow.weatheractivityplanner.feature.locationsearch
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pnow.weatheractivityplanner.data.di.DefaultDispatcher
+import com.pnow.weatheractivityplanner.domain.repository.CurrentLocationRepository
+import com.pnow.weatheractivityplanner.domain.usecase.GetCurrentLocationUseCase
 import com.pnow.weatheractivityplanner.domain.usecase.SearchLocationsUseCase
+import com.pnow.weatheractivityplanner.feature.common.UiError
 import com.pnow.weatheractivityplanner.feature.common.toUiError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -11,12 +14,16 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -24,16 +31,26 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class LocationSearchViewModel @Inject constructor(
     private val searchLocationsUseCase: SearchLocationsUseCase,
+    private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
+    private val currentLocationRepository: CurrentLocationRepository,
     @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val _searchState = MutableStateFlow(LocationSearchUiState())
     val searchState: StateFlow<LocationSearchUiState> = _searchState.asStateFlow()
 
+    private val _currentLocationResolved = Channel<LocationUiModel>(Channel.BUFFERED)
+    val currentLocationResolved: Flow<LocationUiModel> = _currentLocationResolved.receiveAsFlow()
+
+    private val _locationErrorMessages = Channel<UiError>(Channel.BUFFERED)
+    val locationErrorMessages: Flow<UiError> = _locationErrorMessages.receiveAsFlow()
+
     private val queryFlow = MutableStateFlow("")
 
     @Volatile
     private var lastSuccessfulSearch: SearchCache? = null
+
+    private var currentLocationJob: Job? = null
 
     init {
         viewModelScope.launch {
@@ -65,6 +82,9 @@ class LocationSearchViewModel @Inject constructor(
     }
 
     fun onQueryChanged(query: String) {
+        if (_searchState.value.isResolvingCurrentLocation) {
+            cancelCurrentLocationRequest()
+        }
         _searchState.update { it.copy(searchQuery = query, error = null) }
         if (query.isBlank()) {
             _searchState.update { it.copy(isLoading = false, locations = emptyList()) }
@@ -82,6 +102,44 @@ class LocationSearchViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun hasLocationPermission(): Boolean = currentLocationRepository.hasPermission()
+
+    fun startCurrentLocationRequest(): Boolean {
+        if (_searchState.value.isResolvingCurrentLocation) return false
+        _searchState.update { it.copy(isResolvingCurrentLocation = true) }
+        return true
+    }
+
+    fun onCurrentLocationAccessGranted() {
+        currentLocationJob = viewModelScope.launch {
+            getCurrentLocationUseCase()
+                .onSuccess { location ->
+                    _searchState.update { it.copy(isResolvingCurrentLocation = false) }
+                    _currentLocationResolved.send(location.toUiModel())
+                }
+                .onFailure { throwable ->
+                    _searchState.update { it.copy(isResolvingCurrentLocation = false) }
+                    _locationErrorMessages.send(throwable.toUiError())
+                }
+        }
+    }
+
+    fun cancelCurrentLocationRequest() {
+        currentLocationJob?.cancel()
+        currentLocationJob = null
+        _searchState.update { it.copy(isResolvingCurrentLocation = false) }
+    }
+
+    fun onCurrentLocationPermissionDenied() {
+        _searchState.update { it.copy(isResolvingCurrentLocation = false) }
+        _locationErrorMessages.trySend(UiError.LocationPermissionDenied)
+    }
+
+    fun onCurrentLocationSettingsUnavailable() {
+        _searchState.update { it.copy(isResolvingCurrentLocation = false) }
+        _locationErrorMessages.trySend(UiError.LocationDisabled)
     }
 
     private suspend fun searchLocations(

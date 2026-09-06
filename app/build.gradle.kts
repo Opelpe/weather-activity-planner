@@ -93,6 +93,9 @@ dependencies {
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
+    // Location
+    implementation(libs.play.services.location)
+
     // Serialization
     implementation(libs.kotlinx.serialization.core)
 

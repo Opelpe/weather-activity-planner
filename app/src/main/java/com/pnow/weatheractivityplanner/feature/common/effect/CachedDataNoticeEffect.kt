@@ -1,10 +1,8 @@
-package com.pnow.weatheractivityplanner.feature.common.view
+package com.pnow.weatheractivityplanner.feature.common.effect
 
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import com.pnow.weatheractivityplanner.R
 import kotlinx.coroutines.flow.Flow
@@ -18,16 +16,12 @@ fun ObserveCachedDataNotice(
     val message = stringResource(R.string.common_cached_data_notice_message)
     val actionLabel = stringResource(R.string.weather_activity_retry)
 
-    LaunchedEffect(notices, snackbarHostState) {
-        notices.collect {
-            val result = snackbarHostState.showSnackbar(
-                message = message,
-                actionLabel = actionLabel,
-                duration = SnackbarDuration.Long,
-            )
-            if (result == SnackbarResult.ActionPerformed) {
-                onRefresh()
-            }
-        }
-    }
+    ObserveSnackbarActions(
+        events = notices,
+        snackbarHostState = snackbarHostState,
+        message = { message },
+        actionLabel = actionLabel,
+        duration = SnackbarDuration.Long,
+        onActionPerformed = onRefresh,
+    )
 }

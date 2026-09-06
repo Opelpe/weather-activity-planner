@@ -22,10 +22,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pnow.weatheractivityplanner.R
 import com.pnow.weatheractivityplanner.feature.common.UiError
+import com.pnow.weatheractivityplanner.feature.common.effect.ObserveCachedDataNotice
 import com.pnow.weatheractivityplanner.feature.common.toMessage
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenError
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenLoading
-import com.pnow.weatheractivityplanner.feature.common.view.ObserveCachedDataNotice
 import com.pnow.weatheractivityplanner.feature.weatheractivity.WeatherRecommendationPreviewData
 import com.pnow.weatheractivityplanner.feature.weatheractivity.WeatherRecommendationUiState
 import com.pnow.weatheractivityplanner.feature.weatheractivity.WeatherRecommendationViewModel
