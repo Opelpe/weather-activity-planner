@@ -13,13 +13,14 @@ internal interface WeatherApi {
         @Query("current") current: String = CURRENT_FIELDS,
         @Query("daily") daily: String = DAILY_FIELDS,
         @Query("hourly") hourly: String = HOURLY_FIELDS,
-        @Query("forecast_days") forecastDays: Int = 7,
+        @Query("forecast_days") forecastDays: Int = FORECAST_DAYS_MAX,
         @Query("timezone") timezone: String = TIMEZONE_AUTO,
         @Query("wind_speed_unit") windSpeedUnit: String = WIND_SPEED_UNIT_KMH,
     ): ForecastResponseDto
 
     companion object {
 
+        private const val FORECAST_DAYS_MAX = 16
         private const val TIMEZONE_AUTO = "auto"
         private const val WIND_SPEED_UNIT_KMH = "kmh"
 
