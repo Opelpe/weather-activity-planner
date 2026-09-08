@@ -19,6 +19,7 @@ import com.pnow.weatheractivityplanner.domain.ranking.SurfingDayScorer
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -57,6 +58,44 @@ private object GetActivitiesRankingFixture {
         const val DAYTIME_WIND_SPEED_MAX_KPH = 15.0
         const val DAYTIME_WIND_GUSTS_MAX_KPH = 25.0
     }
+
+    object Day2 {
+
+        const val DATE = "2026-06-16"
+        const val MAX_TEMPERATURE_CELSIUS = -5.0
+        const val MIN_TEMPERATURE_CELSIUS = -12.0
+        const val PRECIPITATION_SUM_MM = 15.0
+        const val PRECIPITATION_PROBABILITY_PERCENT = 90
+        const val SNOWFALL_SUM_CM = 20.0
+        const val WIND_SPEED_MAX_KPH = 40.0
+        const val WIND_GUSTS_MAX_KPH = 60.0
+        const val UV_INDEX_MAX = 1.0
+        const val DAYLIGHT_DURATION_HOURS = 8.0
+        const val NIGHT_CLOUD_COVER_PERCENT = 95.0
+        const val DAWN_DUSK_WIND_SPEED_KPH = 35.0
+        const val DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT = 80.0
+        const val DAYTIME_WIND_SPEED_MAX_KPH = 45.0
+        const val DAYTIME_WIND_GUSTS_MAX_KPH = 65.0
+    }
+
+    object Day3 {
+
+        const val DATE = "2026-06-17"
+        const val MAX_TEMPERATURE_CELSIUS = 18.0
+        const val MIN_TEMPERATURE_CELSIUS = 9.0
+        const val PRECIPITATION_SUM_MM = 2.0
+        const val PRECIPITATION_PROBABILITY_PERCENT = 20
+        const val SNOWFALL_SUM_CM = 0.0
+        const val WIND_SPEED_MAX_KPH = 18.0
+        const val WIND_GUSTS_MAX_KPH = 28.0
+        const val UV_INDEX_MAX = 4.0
+        const val DAYLIGHT_DURATION_HOURS = 14.0
+        const val NIGHT_CLOUD_COVER_PERCENT = 60.0
+        const val DAWN_DUSK_WIND_SPEED_KPH = 20.0
+        const val DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT = 25.0
+        const val DAYTIME_WIND_SPEED_MAX_KPH = 22.0
+        const val DAYTIME_WIND_GUSTS_MAX_KPH = 30.0
+    }
 }
 
 class GetActivitiesRankingsUseCaseTest {
@@ -80,7 +119,7 @@ class GetActivitiesRankingsUseCaseTest {
             activitiesRankingCalculator = calculator,
         )
 
-        val result = useCase(buildLocation())
+        val result = useCase(location = buildLocation(), days = 1)
 
         val expected = ActivitiesRankingsResult(
             currentWeather = forecast.current,
@@ -117,6 +156,146 @@ class GetActivitiesRankingsUseCaseTest {
             assertTrue(repository.capturedForceRefresh)
         }
 
+    @Test
+    fun `given days below the forecast length, when invoked, then only scores the requested number of days`() =
+        runTest {
+            val forecast = buildForecast(dayCount = 2)
+            val useCase = GetActivityRankingsUseCase(
+                getForecastUseCase = GetForecastUseCase(
+                    FakeWeatherRepository(
+                        Result.success(
+                            forecast,
+                        ),
+                    ),
+                ),
+                activitiesRankingCalculator = calculator,
+            )
+
+            val result = useCase(location = buildLocation(), days = 1)
+
+            val expected = ActivitiesRankingsResult(
+                currentWeather = forecast.current,
+                rankings = calculator.calculate(forecast.daily.take(1)),
+            )
+            assertEquals(Result.success(expected), result)
+        }
+
+    @Test
+    fun `given days above the maximum, when invoked, then coerces to the maximum day count`() =
+        runTest {
+            val forecast = buildForecast(dayCount = 3)
+            val useCase = GetActivityRankingsUseCase(
+                getForecastUseCase = GetForecastUseCase(
+                    FakeWeatherRepository(
+                        Result.success(
+                            forecast,
+                        ),
+                    ),
+                ),
+                activitiesRankingCalculator = calculator,
+            )
+
+            val result = useCase(location = buildLocation(), days = 10)
+
+            // The fixture forecast only has 3 days, fewer than the coerced 7-day window.
+            val expected = ActivitiesRankingsResult(
+                currentWeather = forecast.current,
+                rankings = calculator.calculate(
+                    forecast.daily.drop(1).take(ActivityRankingDayRange.MAX_DAY_COUNT),
+                ),
+                isIncomplete = true,
+            )
+            assertEquals(Result.success(expected), result)
+        }
+
+    @Test
+    fun `given days above one, when invoked, then excludes today and scores the following days`() =
+        runTest {
+            val forecast = buildForecast(dayCount = 3)
+            val useCase = GetActivityRankingsUseCase(
+                getForecastUseCase = GetForecastUseCase(
+                    FakeWeatherRepository(
+                        Result.success(
+                            forecast,
+                        ),
+                    ),
+                ),
+                activitiesRankingCalculator = calculator,
+            )
+
+            val result = useCase(location = buildLocation(), days = 2)
+
+            val expected = ActivitiesRankingsResult(
+                currentWeather = forecast.current,
+                rankings = calculator.calculate(forecast.daily.drop(1).take(2)),
+            )
+            assertEquals(Result.success(expected), result)
+        }
+
+    @Test
+    fun `given days below the minimum, when invoked, then coerces to the minimum day count`() =
+        runTest {
+            val forecast = buildForecast(dayCount = 2)
+            val useCase = GetActivityRankingsUseCase(
+                getForecastUseCase = GetForecastUseCase(
+                    FakeWeatherRepository(
+                        Result.success(
+                            forecast,
+                        ),
+                    ),
+                ),
+                activitiesRankingCalculator = calculator,
+            )
+
+            val result = useCase(location = buildLocation(), days = 0)
+
+            val expected = ActivitiesRankingsResult(
+                currentWeather = forecast.current,
+                rankings = calculator.calculate(forecast.daily.take(ActivityRankingDayRange.MIN_DAY_COUNT)),
+            )
+            assertEquals(Result.success(expected), result)
+        }
+
+    @Test
+    fun `given forecast shorter than the requested window, when invoked, then result is marked incomplete`() =
+        runTest {
+            val forecast = buildForecast(dayCount = 2)
+            val useCase = GetActivityRankingsUseCase(
+                getForecastUseCase = GetForecastUseCase(
+                    FakeWeatherRepository(
+                        Result.success(
+                            forecast,
+                        ),
+                    ),
+                ),
+                activitiesRankingCalculator = calculator,
+            )
+
+            val result = useCase(location = buildLocation(), days = 3)
+
+            assertTrue(result.getOrNull()!!.isIncomplete)
+        }
+
+    @Test
+    fun `given forecast covers the entire requested window, when invoked, then result is not marked incomplete`() =
+        runTest {
+            val forecast = buildForecast(dayCount = 3)
+            val useCase = GetActivityRankingsUseCase(
+                getForecastUseCase = GetForecastUseCase(
+                    FakeWeatherRepository(
+                        Result.success(
+                            forecast,
+                        ),
+                    ),
+                ),
+                activitiesRankingCalculator = calculator,
+            )
+
+            val result = useCase(location = buildLocation(), days = 2)
+
+            assertFalse(result.getOrNull()!!.isIncomplete)
+        }
+
     private fun buildLocation() = Location(
         id = GetActivitiesRankingFixture.Paris.ID,
         name = GetActivitiesRankingFixture.Paris.NAME,
@@ -126,7 +305,7 @@ class GetActivitiesRankingsUseCaseTest {
         region = null,
     )
 
-    private fun buildForecast() = Forecast(
+    private fun buildForecast(dayCount: Int = 1) = Forecast(
         latitude = GetActivitiesRankingFixture.Paris.LATITUDE,
         longitude = GetActivitiesRankingFixture.Paris.LONGITUDE,
         timezone = GetActivitiesRankingFixture.Paris.TIMEZONE,
@@ -158,7 +337,43 @@ class GetActivitiesRankingsUseCaseTest {
                 daytimeWindGustsMaxKph = GetActivitiesRankingFixture.Day1.DAYTIME_WIND_GUSTS_MAX_KPH,
                 condition = WeatherCondition.Clear,
             ),
-        ),
+            DailyForecast(
+                date = GetActivitiesRankingFixture.Day2.DATE,
+                maxTemperatureCelsius = GetActivitiesRankingFixture.Day2.MAX_TEMPERATURE_CELSIUS,
+                minTemperatureCelsius = GetActivitiesRankingFixture.Day2.MIN_TEMPERATURE_CELSIUS,
+                precipitationSumMm = GetActivitiesRankingFixture.Day2.PRECIPITATION_SUM_MM,
+                precipitationProbabilityMaxPercent = GetActivitiesRankingFixture.Day2.PRECIPITATION_PROBABILITY_PERCENT,
+                snowfallSumCm = GetActivitiesRankingFixture.Day2.SNOWFALL_SUM_CM,
+                windSpeedMaxKph = GetActivitiesRankingFixture.Day2.WIND_SPEED_MAX_KPH,
+                windGustsMaxKph = GetActivitiesRankingFixture.Day2.WIND_GUSTS_MAX_KPH,
+                uvIndexMax = GetActivitiesRankingFixture.Day2.UV_INDEX_MAX,
+                daylightDurationHours = GetActivitiesRankingFixture.Day2.DAYLIGHT_DURATION_HOURS,
+                nightCloudCoverPercent = GetActivitiesRankingFixture.Day2.NIGHT_CLOUD_COVER_PERCENT,
+                dawnDuskWindSpeedKph = GetActivitiesRankingFixture.Day2.DAWN_DUSK_WIND_SPEED_KPH,
+                dawnDuskPrecipitationProbabilityPercent = GetActivitiesRankingFixture.Day2.DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT,
+                daytimeWindSpeedMaxKph = GetActivitiesRankingFixture.Day2.DAYTIME_WIND_SPEED_MAX_KPH,
+                daytimeWindGustsMaxKph = GetActivitiesRankingFixture.Day2.DAYTIME_WIND_GUSTS_MAX_KPH,
+                condition = WeatherCondition.HeavySnow,
+            ),
+            DailyForecast(
+                date = GetActivitiesRankingFixture.Day3.DATE,
+                maxTemperatureCelsius = GetActivitiesRankingFixture.Day3.MAX_TEMPERATURE_CELSIUS,
+                minTemperatureCelsius = GetActivitiesRankingFixture.Day3.MIN_TEMPERATURE_CELSIUS,
+                precipitationSumMm = GetActivitiesRankingFixture.Day3.PRECIPITATION_SUM_MM,
+                precipitationProbabilityMaxPercent = GetActivitiesRankingFixture.Day3.PRECIPITATION_PROBABILITY_PERCENT,
+                snowfallSumCm = GetActivitiesRankingFixture.Day3.SNOWFALL_SUM_CM,
+                windSpeedMaxKph = GetActivitiesRankingFixture.Day3.WIND_SPEED_MAX_KPH,
+                windGustsMaxKph = GetActivitiesRankingFixture.Day3.WIND_GUSTS_MAX_KPH,
+                uvIndexMax = GetActivitiesRankingFixture.Day3.UV_INDEX_MAX,
+                daylightDurationHours = GetActivitiesRankingFixture.Day3.DAYLIGHT_DURATION_HOURS,
+                nightCloudCoverPercent = GetActivitiesRankingFixture.Day3.NIGHT_CLOUD_COVER_PERCENT,
+                dawnDuskWindSpeedKph = GetActivitiesRankingFixture.Day3.DAWN_DUSK_WIND_SPEED_KPH,
+                dawnDuskPrecipitationProbabilityPercent = GetActivitiesRankingFixture.Day3.DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT,
+                daytimeWindSpeedMaxKph = GetActivitiesRankingFixture.Day3.DAYTIME_WIND_SPEED_MAX_KPH,
+                daytimeWindGustsMaxKph = GetActivitiesRankingFixture.Day3.DAYTIME_WIND_GUSTS_MAX_KPH,
+                condition = WeatherCondition.Clear,
+            ),
+        ).take(dayCount),
     )
 
     private class FakeWeatherRepository(

@@ -1,6 +1,7 @@
 package com.pnow.weatheractivityplanner.feature.weatheractivity.model
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import com.pnow.weatheractivityplanner.R
 import com.pnow.weatheractivityplanner.domain.model.Activities
@@ -10,7 +11,7 @@ data class ActivitiesRankingUiModel(
     val activities: Activities,
     val score: Float,
     val isTopRanked: Boolean,
-    @param:StringRes val weeklyReasonRes: Int,
+    @param:PluralsRes val weeklyReasonRes: Int,
     @param:StringRes val dailyReasonRes: Int,
 )
 
@@ -26,7 +27,7 @@ internal fun ActivitiesRanking.toUiModel(isTopRanked: Boolean): ActivitiesRankin
     ActivitiesRankingUiModel(
         activities = activity,
         score = score,
-        weeklyReasonRes = weeklyReason.toStringRes(),
+        weeklyReasonRes = weeklyReason.toPluralsRes(),
         dailyReasonRes = dailyReason.toStringRes(),
         isTopRanked = isTopRanked,
     )
