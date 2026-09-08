@@ -7,6 +7,7 @@
     <string name="common_error_unknown">Something went wrong</string>
     <string name="common_error_invalid_navigation">This screen could not be opened</string>
     <string name="common_cached_data_notice_message">Displaying cached data - couldn\'t refresh</string>
+    <string name="common_incomplete_data_notice_message">Some of the selected days couldn\'t be scored yet</string>
 
     <string name="weather_activity_search_label">Search for a location</string>
     <string name="weather_activity_search_clear_content_description">Clear search</string>
@@ -29,17 +30,8 @@
     <string name="weather_activity_view_forecast_hint">Tap to view 7-day forecast</string>
     <string name="weather_activity_view_forecast_content_description">View 7-day forecast for %1$s</string>
     <string name="weather_activity_ranking_title">Activity suggestions</string>
-    <string name="weather_activity_ranking_subtitle">Ranked using the 7-day weather forecast</string>
-    <string name="weather_activity_best_pick">Best pick for next 7-days</string>
+    <string name="weather_activity_day_selector_field_label">Choose range</string>
     <string name="weather_activity_reason_summary_format">%1$s. Overall, %2$s.</string>
-    <string name="weather_activity_week_reason_mixed">conditions vary a lot this week from day to day</string>
-    <string name="weather_activity_week_reason_improving">conditions are improving as the week goes on</string>
-    <string name="weather_activity_week_reason_declining">conditions are trending downward as the week goes on</string>
-    <string name="weather_activity_week_reason_consistently_great">conditions are fantastic all week</string>
-    <string name="weather_activity_week_reason_consistently_good">conditions are decent this week</string>
-    <string name="weather_activity_week_reason_consistently_average">conditions are middling this week</string>
-    <string name="weather_activity_week_reason_consistently_poor">conditions look rough this week</string>
-    <string name="weather_activity_week_reason_consistently_terrible">conditions are quite poor all week, this one\'s best skipped</string>
     <string name="weather_activity_skiing">Skiing</string>
     <string name="weather_activity_surfing">Surfing</string>
     <string name="weather_activity_outdoor_sightseeing">Outdoor Sightseeing</string>

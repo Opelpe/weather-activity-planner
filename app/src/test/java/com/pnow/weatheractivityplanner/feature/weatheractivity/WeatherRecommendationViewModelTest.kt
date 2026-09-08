@@ -22,6 +22,7 @@ import com.pnow.weatheractivityplanner.domain.ranking.SunbathingDayScorer
 import com.pnow.weatheractivityplanner.domain.ranking.SurfingDayScorer
 import com.pnow.weatheractivityplanner.domain.repository.ConnectivityRepository
 import com.pnow.weatheractivityplanner.domain.repository.WeatherRepository
+import com.pnow.weatheractivityplanner.domain.usecase.ActivityRankingDayRange
 import com.pnow.weatheractivityplanner.domain.usecase.GetActivityRankingsUseCase
 import com.pnow.weatheractivityplanner.domain.usecase.GetForecastUseCase
 import com.pnow.weatheractivityplanner.domain.usecase.ObserveConnectivityLossUseCase
@@ -85,6 +86,25 @@ private object WeatherActivityViewModelFixture {
         const val DAYTIME_WIND_GUSTS_MAX_KPH = 25.0
     }
 
+    object Day2 {
+
+        const val DATE = "2026-06-16"
+        const val MAX_TEMPERATURE_CELSIUS = -5.0
+        const val MIN_TEMPERATURE_CELSIUS = -12.0
+        const val PRECIPITATION_SUM_MM = 15.0
+        const val PRECIPITATION_PROBABILITY_PERCENT = 90
+        const val SNOWFALL_SUM_CM = 20.0
+        const val WIND_SPEED_MAX_KPH = 40.0
+        const val WIND_GUSTS_MAX_KPH = 60.0
+        const val UV_INDEX_MAX = 1.0
+        const val DAYLIGHT_DURATION_HOURS = 8.0
+        const val NIGHT_CLOUD_COVER_PERCENT = 95.0
+        const val DAWN_DUSK_WIND_SPEED_KPH = 35.0
+        const val DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT = 80.0
+        const val DAYTIME_WIND_SPEED_MAX_KPH = 45.0
+        const val DAYTIME_WIND_GUSTS_MAX_KPH = 65.0
+    }
+
     val RANKING_WEEK_REASON = ActivityWeeklyReason.CONSISTENTLY_AVERAGE
     val RANKING_REASON = ActivityDailyReason.Skiing.None
 
@@ -131,7 +151,7 @@ class WeatherRecommendationViewModelTest {
     @Test
     fun `given successful forecast, when initialized, then state emits loading then success`() =
         runTest(testDispatcher) {
-            val forecast = buildForecast()
+            val forecast = buildForecast(dayCount = 2)
             val viewModel = buildViewModel(forecastResults = listOf(Result.success(forecast)))
 
             viewModel.state.test {
@@ -142,7 +162,7 @@ class WeatherRecommendationViewModelTest {
                 assertFalse(success.isLoading)
                 assertEquals(forecast.current.toUiModel(), success.currentWeather)
                 assertEquals(
-                    calculator.calculate(forecast.daily).toUiModels(),
+                    calculator.calculate(forecast.daily.take(1)).toUiModels(),
                     success.ranking,
                 )
 
@@ -373,6 +393,122 @@ class WeatherRecommendationViewModelTest {
         }
 
     @Test
+    fun `given successful forecast, when onDayCountChanged is called, then state recalculates ranking using only the selected days`() =
+        runTest(testDispatcher) {
+            val forecast = buildForecast(dayCount = 2)
+            val viewModel = buildViewModel(forecastResults = listOf(Result.success(forecast)))
+
+            viewModel.state.test {
+                awaitItem() // initial state
+                awaitItem() // loading
+                val success = awaitItem()
+                assertEquals(ActivityRankingDayRange.DEFAULT_DAY_COUNT, success.selectedDayCount)
+
+                viewModel.onDayCountChanged(2)
+
+                assertEquals(2, awaitItem().selectedDayCount) // day count updates immediately
+                val updated = awaitItem() // ranking recalculated once the use case resolves
+                assertEquals(
+                    calculator.calculate(forecast.daily.drop(1).take(2)).toUiModels(),
+                    updated.ranking,
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given forecast shorter than the requested window, when onDayCountChanged is called, then an incomplete data notice is emitted`() =
+        runTest(testDispatcher) {
+            val forecast = buildForecast(dayCount = 2)
+            val viewModel = buildViewModel(forecastResults = listOf(Result.success(forecast)))
+
+            viewModel.incompleteDataNotices.test {
+                viewModel.state.test {
+                    awaitItem() // initial state
+                    awaitItem() // loading
+                    awaitItem() // success
+
+                    viewModel.onDayCountChanged(2)
+
+                    awaitItem() // day count updates immediately
+                    awaitItem() // ranking recalculated once the use case resolves
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+
+                assertEquals(Unit, awaitItem())
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given successful forecast, when initialized, then no incomplete data notice is emitted`() =
+        runTest(testDispatcher) {
+            val viewModel = buildViewModel()
+
+            viewModel.incompleteDataNotices.test {
+                viewModel.state.test {
+                    awaitItem() // initial state
+                    awaitItem() // loading
+                    awaitItem() // success
+
+                    cancelAndIgnoreRemainingEvents()
+                }
+
+                expectNoEvents()
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given days above the maximum, when onDayCountChanged is called, then state coerces to the maximum day count`() =
+        runTest(testDispatcher) {
+            val viewModel = buildViewModel()
+
+            viewModel.state.test {
+                awaitItem() // initial state
+                awaitItem() // loading
+                awaitItem() // success
+
+                viewModel.onDayCountChanged(20)
+
+                assertEquals(
+                    ActivityRankingDayRange.MAX_DAY_COUNT,
+                    awaitItem().selectedDayCount,
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given days below the minimum, when onDayCountChanged is called, then state coerces to the minimum day count`() =
+        runTest(testDispatcher) {
+            val viewModel = buildViewModel()
+
+            viewModel.state.test {
+                awaitItem() // initial state
+                awaitItem() // loading
+                awaitItem() // success
+
+                viewModel.onDayCountChanged(5)
+                awaitItem() // recalculated with 5 days
+
+                viewModel.onDayCountChanged(-5)
+
+                assertEquals(
+                    ActivityRankingDayRange.MIN_DAY_COUNT,
+                    awaitItem().selectedDayCount,
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
     fun `given content already shown, when connectivity is lost, then a cached data notice is emitted`() =
         runTest(testDispatcher) {
             val connectivity = MutableStateFlow(true)
@@ -501,6 +637,7 @@ class WeatherRecommendationViewModelTest {
 
     private fun buildForecast(
         temperatureCelsius: Double = WeatherActivityViewModelFixture.Paris.TEMPERATURE_CELSIUS,
+        dayCount: Int = 1,
     ) = Forecast(
         latitude = WeatherActivityViewModelFixture.Paris.LATITUDE,
         longitude = WeatherActivityViewModelFixture.Paris.LONGITUDE,
@@ -533,7 +670,25 @@ class WeatherRecommendationViewModelTest {
                 daytimeWindGustsMaxKph = WeatherActivityViewModelFixture.Day1.DAYTIME_WIND_GUSTS_MAX_KPH,
                 condition = WeatherCondition.Clear,
             ),
-        ),
+            DailyForecast(
+                date = WeatherActivityViewModelFixture.Day2.DATE,
+                maxTemperatureCelsius = WeatherActivityViewModelFixture.Day2.MAX_TEMPERATURE_CELSIUS,
+                minTemperatureCelsius = WeatherActivityViewModelFixture.Day2.MIN_TEMPERATURE_CELSIUS,
+                precipitationSumMm = WeatherActivityViewModelFixture.Day2.PRECIPITATION_SUM_MM,
+                precipitationProbabilityMaxPercent = WeatherActivityViewModelFixture.Day2.PRECIPITATION_PROBABILITY_PERCENT,
+                snowfallSumCm = WeatherActivityViewModelFixture.Day2.SNOWFALL_SUM_CM,
+                windSpeedMaxKph = WeatherActivityViewModelFixture.Day2.WIND_SPEED_MAX_KPH,
+                windGustsMaxKph = WeatherActivityViewModelFixture.Day2.WIND_GUSTS_MAX_KPH,
+                uvIndexMax = WeatherActivityViewModelFixture.Day2.UV_INDEX_MAX,
+                daylightDurationHours = WeatherActivityViewModelFixture.Day2.DAYLIGHT_DURATION_HOURS,
+                nightCloudCoverPercent = WeatherActivityViewModelFixture.Day2.NIGHT_CLOUD_COVER_PERCENT,
+                dawnDuskWindSpeedKph = WeatherActivityViewModelFixture.Day2.DAWN_DUSK_WIND_SPEED_KPH,
+                dawnDuskPrecipitationProbabilityPercent = WeatherActivityViewModelFixture.Day2.DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT,
+                daytimeWindSpeedMaxKph = WeatherActivityViewModelFixture.Day2.DAYTIME_WIND_SPEED_MAX_KPH,
+                daytimeWindGustsMaxKph = WeatherActivityViewModelFixture.Day2.DAYTIME_WIND_GUSTS_MAX_KPH,
+                condition = WeatherCondition.HeavySnow,
+            ),
+        ).take(dayCount),
     )
 
     private class FakeWeatherRepository(

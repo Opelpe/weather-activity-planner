@@ -7,6 +7,7 @@
     <string name="common_error_unknown">Coś poszło nie tak</string>
     <string name="common_error_invalid_navigation">Nie można otworzyć tego ekranu</string>
     <string name="common_cached_data_notice_message">Wyświetlamy zapisane dane, nie udało się ich odświeżyć</string>
+    <string name="common_incomplete_data_notice_message">Niektórych z wybranych dni nie udało się jeszcze ocenić</string>
 
     <string name="weather_activity_search_label">Wyszukaj miejsce</string>
     <string name="weather_activity_search_clear_content_description">Wyczyść wyszukiwanie</string>
@@ -29,17 +30,8 @@
     <string name="weather_activity_view_forecast_hint">Dotknij, aby zobaczyć prognozę na 7 dni</string>
     <string name="weather_activity_view_forecast_content_description">Zobacz 7-dniową prognozę dla %1$s</string>
     <string name="weather_activity_ranking_title">Propozycje aktywności</string>
-    <string name="weather_activity_ranking_subtitle">Ranking na podstawie prognozy pogody na najbliższe 7 dni</string>
-    <string name="weather_activity_best_pick">Najlepszy wybór na najbliższe 7 dni</string>
+    <string name="weather_activity_day_selector_field_label">Wybierz zakres</string>
     <string name="weather_activity_reason_summary_format">%1$s. Ogólnie %2$s</string>
-    <string name="weather_activity_week_reason_mixed">pogoda w tym tygodniu mocno się zmienia z dnia na dzień</string>
-    <string name="weather_activity_week_reason_improving">pogoda z każdym dniem się poprawia</string>
-    <string name="weather_activity_week_reason_declining">pogoda z każdym dniem się pogarsza</string>
-    <string name="weather_activity_week_reason_consistently_great">pogoda przez cały tydzień zapowiada się świetnie</string>
-    <string name="weather_activity_week_reason_consistently_good">pogoda w tym tygodniu zapowiada się dobrze</string>
-    <string name="weather_activity_week_reason_consistently_average">pogoda w tym tygodniu zapowiada się przeciętnie</string>
-    <string name="weather_activity_week_reason_consistently_poor">pogoda w tym tygodniu nie zapowiada się najlepiej</string>
-    <string name="weather_activity_week_reason_consistently_terrible">pogoda przez cały tydzień zapowiada się bardzo słabo, tym razem lepiej odpuścić</string>
 
     <string name="weather_activity_skiing">Narciarstwo</string>
     <string name="weather_activity_surfing">Surfing</string>
