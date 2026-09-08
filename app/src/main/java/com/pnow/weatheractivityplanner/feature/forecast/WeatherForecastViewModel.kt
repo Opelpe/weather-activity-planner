@@ -88,7 +88,9 @@ class WeatherForecastViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         isRefreshing = false,
-                        dailyForecast = forecast.daily.map { daily -> daily.toUiModel() },
+                        dailyForecast = forecast.daily.drop(SKIPPED_CURRENT_DAY_COUNT)
+                            .take(DISPLAYED_DAY_COUNT)
+                            .mapIndexed { index, daily -> daily.toUiModel(isTomorrow = index == 0) },
                     )
                 }
                 if (forecast.isCached) {
@@ -100,5 +102,11 @@ class WeatherForecastViewModel @Inject constructor(
                     it.copy(isLoading = false, isRefreshing = false, error = throwable.toUiError())
                 }
             }
+    }
+
+    private companion object {
+
+        const val SKIPPED_CURRENT_DAY_COUNT = 1
+        const val DISPLAYED_DAY_COUNT = 7
     }
 }

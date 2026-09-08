@@ -1,5 +1,6 @@
 package com.pnow.weatheractivityplanner.feature.forecast
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,7 +31,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pnow.weatheractivityplanner.R
@@ -128,6 +131,8 @@ private fun TopBarTitle(
             text = title,
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
         )
     }
 }
@@ -192,13 +197,17 @@ private fun DailyForecastItem(
                 .fillMaxWidth()
                 .padding(Dimens.Spacing16),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing12),
         ) {
+
+            ForecastItemIcon(iconRes = day.conditionIconRes)
 
             ForecastItemDateAndCondition(
                 modifier = Modifier.weight(1f),
-                date = day.date,
+                displayDate = day.displayDate,
+                isTomorrow = day.isTomorrow,
                 conditionRes = day.conditionDisplayNameRes,
+                precipitationProbabilityPercent = day.precipitationProbabilityPercent,
             )
 
             ForecastItemTemperature(
@@ -210,37 +219,136 @@ private fun DailyForecastItem(
 }
 
 @Composable
+private fun ForecastItemIcon(
+    modifier: Modifier = Modifier,
+    @DrawableRes iconRes: Int,
+) {
+    Image(
+        modifier = modifier.size(Dimens.IconSizeLarge),
+        painter = painterResource(iconRes),
+        contentDescription = null,
+        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+    )
+}
+
+@Composable
 private fun ForecastItemDateAndCondition(
     modifier: Modifier = Modifier,
-    date: String,
+    displayDate: String,
+    isTomorrow: Boolean,
     @StringRes conditionRes: Int,
+    precipitationProbabilityPercent: Int,
 ) {
     Column(modifier = modifier) {
-        Text(
-            text = date,
-            style = MaterialTheme.typography.titleMedium,
+        if (isTomorrow) {
+            ForecastItemTomorrowTag()
+        }
+        ForecastItemDate(displayDate = displayDate)
+        ForecastItemCondition(conditionRes = conditionRes)
+        if (precipitationProbabilityPercent > 0) {
+            ForecastItemPrecipitation(precipitationProbabilityPercent = precipitationProbabilityPercent)
+        }
+    }
+}
+
+@Composable
+private fun ForecastItemTomorrowTag(modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = stringResource(R.string.weather_forecast_tomorrow_label),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.primary,
+    )
+}
+
+@Composable
+private fun ForecastItemDate(
+    modifier: Modifier = Modifier,
+    displayDate: String,
+) {
+    Text(
+        modifier = modifier,
+        text = displayDate,
+        style = MaterialTheme.typography.titleMedium,
+    )
+}
+
+@Composable
+private fun ForecastItemCondition(
+    modifier: Modifier = Modifier,
+    @StringRes conditionRes: Int,
+) {
+    Text(
+        modifier = modifier,
+        text = stringResource(conditionRes),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+@Composable
+private fun ForecastItemPrecipitation(
+    modifier: Modifier = Modifier,
+    precipitationProbabilityPercent: Int,
+) {
+    Text(
+        modifier = modifier,
+        text = pluralStringResource(
+            R.plurals.weather_forecast_precipitation_probability,
+            precipitationProbabilityPercent,
+            precipitationProbabilityPercent,
+        ),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
+}
+
+@Composable
+private fun ForecastItemTemperature(
+    modifier: Modifier = Modifier,
+    minTemperature: Int,
+    maxTemperature: Int,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(Dimens.Spacing4),
+    ) {
+        ForecastItemTemperatureValue(
+            iconRes = R.drawable.ic_indicator_day,
+            iconContentDescriptionRes = R.string.weather_forecast_day_temperature_content_description,
+            temperature = maxTemperature,
         )
-        Text(
-            text = stringResource(conditionRes),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        ForecastItemTemperatureValue(
+            iconRes = R.drawable.ic_indicator_night,
+            iconContentDescriptionRes = R.string.weather_forecast_night_temperature_content_description,
+            temperature = minTemperature,
         )
     }
 }
 
 @Composable
-private fun ForecastItemTemperature(
-    minTemperature: Int,
-    maxTemperature: Int,
+private fun ForecastItemTemperatureValue(
+    modifier: Modifier = Modifier,
+    @DrawableRes iconRes: Int,
+    @StringRes iconContentDescriptionRes: Int,
+    temperature: Int,
 ) {
-    Text(
-        text = stringResource(
-            R.string.weather_forecast_temperature_range_format,
-            maxTemperature,
-            minTemperature,
-        ),
-        style = MaterialTheme.typography.bodyLarge,
-    )
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing4),
+    ) {
+        Image(
+            modifier = Modifier.size(Dimens.IconSizeSmall),
+            painter = painterResource(iconRes),
+            contentDescription = stringResource(iconContentDescriptionRes),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
+        )
+        Text(
+            text = stringResource(R.string.weather_forecast_temperature_value_format, temperature),
+            style = MaterialTheme.typography.bodyLarge,
+        )
+    }
 }
 
 @PreviewLightDark
@@ -327,21 +435,33 @@ private object WeatherForecastPreviewData {
     val DailyForecasts = listOf(
         DailyForecastUiModel(
             date = "2026-06-12",
+            displayDate = "Fri, Jun 12",
+            isTomorrow = true,
             conditionDisplayNameRes = R.string.weather_condition_clear,
+            conditionIconRes = R.drawable.ic_weather_clear,
             maxTemperatureCelsius = 24.0,
             minTemperatureCelsius = 14.0,
+            precipitationProbabilityPercent = 0,
         ),
         DailyForecastUiModel(
             date = "2026-06-13",
+            displayDate = "Sat, Jun 13",
+            isTomorrow = false,
             conditionDisplayNameRes = R.string.weather_condition_light_rain,
+            conditionIconRes = R.drawable.ic_weather_rain,
             maxTemperatureCelsius = 21.0,
             minTemperatureCelsius = 12.0,
+            precipitationProbabilityPercent = 60,
         ),
         DailyForecastUiModel(
             date = "2026-06-14",
+            displayDate = "Sun, Jun 14",
+            isTomorrow = false,
             conditionDisplayNameRes = R.string.weather_condition_partly_cloudy,
+            conditionIconRes = R.drawable.ic_weather_partly_cloudy,
             maxTemperatureCelsius = 19.0,
             minTemperatureCelsius = 10.0,
+            precipitationProbabilityPercent = 20,
         ),
     )
 

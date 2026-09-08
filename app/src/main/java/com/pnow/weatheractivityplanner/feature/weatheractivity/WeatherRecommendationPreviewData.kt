@@ -14,6 +14,7 @@ internal object WeatherRecommendationPreviewData {
         temperatureCelsius = 18.0,
         apparentTemperatureCelsius = 16.0,
         conditionDisplayNameRes = R.string.weather_condition_partly_cloudy,
+        conditionIconRes = R.drawable.ic_weather_partly_cloudy,
         humidityPercent = 64,
         windSpeedKph = 14.0,
     )

@@ -65,4 +65,10 @@
         <item quantity="many">pogoda przez najbliższe %1$d dni zapowiada się bardzo słabo, tym razem lepiej odpuścić</item>
         <item quantity="other">pogoda przez najbliższe %1$d dni zapowiada się bardzo słabo, tym razem lepiej odpuścić</item>
     </plurals>
+    <plurals name="weather_forecast_precipitation_probability">
+        <item quantity="one">%1$d%% szansy na deszcz</item>
+        <item quantity="few">%1$d%% szans na deszcz</item>
+        <item quantity="many">%1$d%% szans na deszcz</item>
+        <item quantity="other">%1$d%% szans na deszcz</item>
+    </plurals>
 </resources>

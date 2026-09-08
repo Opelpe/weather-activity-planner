@@ -1,5 +1,6 @@
 package com.pnow.weatheractivityplanner.feature.common
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.pnow.weatheractivityplanner.R
 import com.pnow.weatheractivityplanner.domain.model.WeatherCondition
@@ -31,4 +32,45 @@ internal fun WeatherCondition.toDisplayNameRes(): Int = when (this) {
     WeatherCondition.ThunderstormWithSlightHail -> R.string.weather_condition_thunderstorm_slight_hail
     WeatherCondition.ThunderstormWithHeavyHail -> R.string.weather_condition_thunderstorm_heavy_hail
     is WeatherCondition.Unknown -> R.string.weather_condition_unknown
+}
+
+@DrawableRes
+internal fun WeatherCondition.toIconRes(): Int = when (this) {
+    WeatherCondition.Clear,
+    WeatherCondition.MainlyClear,
+        -> R.drawable.ic_weather_clear
+
+    WeatherCondition.PartlyCloudy -> R.drawable.ic_weather_partly_cloudy
+
+    WeatherCondition.Overcast -> R.drawable.ic_weather_cloudy
+
+    WeatherCondition.Fog,
+    WeatherCondition.DepositingRimeFog,
+        -> R.drawable.ic_weather_fog
+
+    WeatherCondition.LightDrizzle,
+    WeatherCondition.ModerateDrizzle,
+    WeatherCondition.DenseDrizzle,
+    WeatherCondition.LightRain,
+    WeatherCondition.ModerateRain,
+    WeatherCondition.HeavyRain,
+    WeatherCondition.SlightRainShowers,
+    WeatherCondition.ModerateRainShowers,
+    WeatherCondition.ViolentRainShowers,
+        -> R.drawable.ic_weather_rain
+
+    WeatherCondition.LightSnow,
+    WeatherCondition.ModerateSnow,
+    WeatherCondition.HeavySnow,
+    WeatherCondition.SnowGrains,
+    WeatherCondition.SlightSnowShowers,
+    WeatherCondition.HeavySnowShowers,
+        -> R.drawable.ic_weather_snow
+
+    WeatherCondition.Thunderstorm,
+    WeatherCondition.ThunderstormWithSlightHail,
+    WeatherCondition.ThunderstormWithHeavyHail,
+        -> R.drawable.ic_weather_thunderstorm
+
+    is WeatherCondition.Unknown -> R.drawable.ic_weather_cloudy
 }

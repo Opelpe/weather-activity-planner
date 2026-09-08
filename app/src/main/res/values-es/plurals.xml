@@ -54,4 +54,9 @@
         <item quantity="many">el tiempo va a estar bastante malo durante los próximos %1$d días, mejor dejarlo para otra ocasión</item>
         <item quantity="other">el tiempo va a estar bastante malo durante los próximos %1$d días, mejor dejarlo para otra ocasión</item>
     </plurals>
+    <plurals name="weather_forecast_precipitation_probability">
+        <item quantity="one">%1$d%% de probabilidad de lluvia</item>
+        <item quantity="many">%1$d%% de probabilidad de lluvia</item>
+        <item quantity="other">%1$d%% de probabilidad de lluvia</item>
+    </plurals>
 </resources>
