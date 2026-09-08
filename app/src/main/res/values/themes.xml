@@ -1,0 +1,6 @@
+<resources>
+    <!-- windowBackground must match ui.theme.Color.Neutral98 (light background) -->
+    <style name="Theme.WeatherActivityPlanner" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">#FFFAFAFA</item>
+    </style>
+</resources>

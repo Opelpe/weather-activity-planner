@@ -33,6 +33,8 @@ import org.junit.Test
 private object WeatherForecastViewModelFixture {
 
     const val LOADING_DELAY_MS = 1L
+    const val SKIPPED_CURRENT_DAY_COUNT = 1
+    const val DISPLAYED_DAY_COUNT = 7
 
     object Paris {
 
@@ -116,7 +118,37 @@ class WeatherForecastViewModelTest {
 
                 val success = awaitItem() // success
                 assertFalse(success.isLoading)
-                assertEquals(forecast.daily.map { it.toUiModel() }, success.dailyForecast)
+                assertEquals(
+                    forecast.daily.drop(WeatherForecastViewModelFixture.SKIPPED_CURRENT_DAY_COUNT)
+                        .take(WeatherForecastViewModelFixture.DISPLAYED_DAY_COUNT)
+                        .mapIndexed { index, it -> it.toUiModel(isTomorrow = index == 0) },
+                    success.dailyForecast,
+                )
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        }
+
+    @Test
+    fun `given forecast longer than the displayed window, when initialized, then trims to the window excluding today`() =
+        runTest(testDispatcher) {
+            val dayCount = WeatherForecastViewModelFixture.DISPLAYED_DAY_COUNT + 2
+            val daily =
+                (0 until dayCount).map { offset -> buildDailyForecast(date = "2026-06-${12 + offset}") }
+            val forecast = buildForecast().copy(daily = daily)
+            val viewModel = buildViewModel(forecastResults = listOf(Result.success(forecast)))
+
+            viewModel.forecastState.test {
+                awaitItem() // initial state
+                awaitItem() // loading
+
+                val success = awaitItem() // success
+                assertEquals(
+                    daily.drop(WeatherForecastViewModelFixture.SKIPPED_CURRENT_DAY_COUNT)
+                        .take(WeatherForecastViewModelFixture.DISPLAYED_DAY_COUNT)
+                        .mapIndexed { index, it -> it.toUiModel(isTomorrow = index == 0) },
+                    success.dailyForecast,
+                )
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -135,7 +167,12 @@ class WeatherForecastViewModelTest {
 
                     val success = awaitItem() // success
                     assertFalse(success.isLoading)
-                    assertEquals(cachedForecast.daily.map { it.toUiModel() }, success.dailyForecast)
+                    assertEquals(
+                        cachedForecast.daily.drop(WeatherForecastViewModelFixture.SKIPPED_CURRENT_DAY_COUNT)
+                            .take(WeatherForecastViewModelFixture.DISPLAYED_DAY_COUNT)
+                            .mapIndexed { index, it -> it.toUiModel(isTomorrow = index == 0) },
+                        success.dailyForecast,
+                    )
                     assertEquals(null, success.error)
 
                     cancelAndIgnoreRemainingEvents()
@@ -205,7 +242,12 @@ class WeatherForecastViewModelTest {
                 assertTrue(awaitItem().isLoading) // loading after retry
                 val success = awaitItem() // success after retry
                 assertFalse(success.isLoading)
-                assertEquals(forecast.daily.map { it.toUiModel() }, success.dailyForecast)
+                assertEquals(
+                    forecast.daily.drop(WeatherForecastViewModelFixture.SKIPPED_CURRENT_DAY_COUNT)
+                        .take(WeatherForecastViewModelFixture.DISPLAYED_DAY_COUNT)
+                        .mapIndexed { index, it -> it.toUiModel(isTomorrow = index == 0) },
+                    success.dailyForecast,
+                )
 
                 cancelAndIgnoreRemainingEvents()
             }
@@ -240,7 +282,9 @@ class WeatherForecastViewModelTest {
                 assertFalse(refreshed.isRefreshing)
                 assertFalse(refreshed.isLoading)
                 assertEquals(
-                    refreshedForecast.daily.map { it.toUiModel() },
+                    refreshedForecast.daily.drop(WeatherForecastViewModelFixture.SKIPPED_CURRENT_DAY_COUNT)
+                        .take(WeatherForecastViewModelFixture.DISPLAYED_DAY_COUNT)
+                        .mapIndexed { index, it -> it.toUiModel(isTomorrow = index == 0) },
                     refreshed.dailyForecast,
                 )
 
@@ -302,7 +346,9 @@ class WeatherForecastViewModelTest {
                     val refreshed = awaitItem() // success after refresh
                     assertFalse(refreshed.isRefreshing)
                     assertEquals(
-                        cachedForecast.daily.map { it.toUiModel() },
+                        cachedForecast.daily.drop(WeatherForecastViewModelFixture.SKIPPED_CURRENT_DAY_COUNT)
+                            .take(WeatherForecastViewModelFixture.DISPLAYED_DAY_COUNT)
+                            .mapIndexed { index, it -> it.toUiModel(isTomorrow = index == 0) },
                         refreshed.dailyForecast,
                     )
                     assertEquals(null, refreshed.error)
@@ -483,6 +529,26 @@ class WeatherForecastViewModelTest {
                 condition = WeatherCondition.LightRain,
             ),
         ),
+    )
+
+    private fun buildDailyForecast(date: String) = DailyForecast(
+        date = date,
+        maxTemperatureCelsius = WeatherForecastViewModelFixture.Day1.MAX_TEMPERATURE_CELSIUS,
+        minTemperatureCelsius = WeatherForecastViewModelFixture.Day1.MIN_TEMPERATURE_CELSIUS,
+        precipitationSumMm = WeatherForecastViewModelFixture.Day1.PRECIPITATION_SUM_MM,
+        precipitationProbabilityMaxPercent = WeatherForecastViewModelFixture.Day1.PRECIPITATION_PROBABILITY_PERCENT,
+        snowfallSumCm = WeatherForecastViewModelFixture.Day1.SNOWFALL_SUM_CM,
+        windSpeedMaxKph = WeatherForecastViewModelFixture.Day1.WIND_SPEED_MAX_KPH,
+        windGustsMaxKph = WeatherForecastViewModelFixture.Day1.WIND_GUSTS_MAX_KPH,
+        uvIndexMax = WeatherForecastViewModelFixture.Day1.UV_INDEX_MAX,
+        daylightDurationHours = WeatherForecastViewModelFixture.Day1.DAYLIGHT_DURATION_HOURS,
+        nightCloudCoverPercent = WeatherForecastViewModelFixture.Day1.NIGHT_CLOUD_COVER_PERCENT,
+        dawnDuskWindSpeedKph = WeatherForecastViewModelFixture.Day1.DAWN_DUSK_WIND_SPEED_KPH,
+        dawnDuskPrecipitationProbabilityPercent =
+            WeatherForecastViewModelFixture.Day1.DAWN_DUSK_PRECIPITATION_PROBABILITY_PERCENT,
+        daytimeWindSpeedMaxKph = WeatherForecastViewModelFixture.Day1.DAYTIME_WIND_SPEED_MAX_KPH,
+        daytimeWindGustsMaxKph = WeatherForecastViewModelFixture.Day1.DAYTIME_WIND_GUSTS_MAX_KPH,
+        condition = WeatherCondition.Clear,
     )
 
     private class FakeWeatherRepository(

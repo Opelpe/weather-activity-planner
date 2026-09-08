@@ -22,9 +22,12 @@
     <string name="weather_activity_score_label">Wynik</string>
     <string name="weather_activity_score_value_format">%1$.1f/100</string>
     <string name="weather_activity_temperature_format">%.1f°C</string>
-    <string name="weather_activity_feels_like_format">Odczuwalna: %1$d°C</string>
-    <string name="weather_activity_humidity_format">Wilgotność: %1$d%%</string>
-    <string name="weather_activity_wind_format">Wiatr: %1$d km/h</string>
+    <string name="weather_activity_feels_like_label">Odczuwalna:</string>
+    <string name="weather_activity_feels_like_value_format">%1$d°C</string>
+    <string name="weather_activity_humidity_label">Wilgotność:</string>
+    <string name="weather_activity_humidity_value_format">%1$d%%</string>
+    <string name="weather_activity_wind_label">Wiatr:</string>
+    <string name="weather_activity_wind_value_format">%1$d km/h</string>
     <string name="weather_activity_city_country_format">%1$s, %2$s</string>
     <string name="weather_activity_location_coordinates_format">%1$.4f; %2$.4f</string>
     <string name="weather_activity_view_forecast_hint">Dotknij, aby zobaczyć prognozę na 7 dni</string>
@@ -100,7 +103,10 @@
     <string name="weather_activity_reason_fishing_waters_calming">Woda się uspokaja, więc warunki na ryby wyglądają coraz lepiej</string>
     <string name="weather_activity_reason_fishing_none">Warunki są przeciętne, ale kto wie, może coś złapiesz</string>
 
-    <string name="weather_forecast_temperature_range_format">%1$d° / %2$d°</string>
+    <string name="weather_forecast_temperature_value_format">%1$d°</string>
+    <string name="weather_forecast_tomorrow_label">Jutro</string>
+    <string name="weather_forecast_day_temperature_content_description">Dzień</string>
+    <string name="weather_forecast_night_temperature_content_description">Noc</string>
 
     <string name="weather_condition_clear">Bezchmurnie</string>
     <string name="weather_condition_mainly_clear">Przeważnie bezchmurnie</string>

@@ -22,9 +22,12 @@
     <string name="weather_activity_score_label">Score</string>
     <string name="weather_activity_score_value_format">%1$.1f/100</string>
     <string name="weather_activity_temperature_format">%.1f°C</string>
-    <string name="weather_activity_feels_like_format">Feels like %1$d°C</string>
-    <string name="weather_activity_humidity_format">Humidity %1$d%%</string>
-    <string name="weather_activity_wind_format">Wind %1$d km/h</string>
+    <string name="weather_activity_feels_like_label">Feels like</string>
+    <string name="weather_activity_feels_like_value_format">%1$d°C</string>
+    <string name="weather_activity_humidity_label">Humidity</string>
+    <string name="weather_activity_humidity_value_format">%1$d%%</string>
+    <string name="weather_activity_wind_label">Wind</string>
+    <string name="weather_activity_wind_value_format">%1$d km/h</string>
     <string name="weather_activity_city_country_format">%1$s, %2$s</string>
     <string name="weather_activity_location_coordinates_format">%1$.4f; %2$.4f</string>
     <string name="weather_activity_view_forecast_hint">Tap to view 7-day forecast</string>
@@ -92,7 +95,10 @@
     <string name="weather_activity_reason_fishing_waters_calming">The waters are calming down, making for a promising spot to fish</string>
     <string name="weather_activity_reason_fishing_none">Fishing looks fairly average, but still worth casting a line</string>
 
-    <string name="weather_forecast_temperature_range_format">%1$d° / %2$d°</string>
+    <string name="weather_forecast_temperature_value_format">%1$d°</string>
+    <string name="weather_forecast_tomorrow_label">Tomorrow</string>
+    <string name="weather_forecast_day_temperature_content_description">Day</string>
+    <string name="weather_forecast_night_temperature_content_description">Night</string>
 
     <string name="weather_condition_clear">Clear sky</string>
     <string name="weather_condition_mainly_clear">Mainly clear</string>
