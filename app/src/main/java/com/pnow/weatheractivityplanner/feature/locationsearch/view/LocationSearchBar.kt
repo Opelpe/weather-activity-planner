@@ -2,6 +2,8 @@ package com.pnow.weatheractivityplanner.feature.locationsearch.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +13,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -39,7 +42,9 @@ fun LocationSearchBar(
     modifier: Modifier = Modifier,
     query: String,
     isLoading: Boolean,
+    isResolvingCurrentLocation: Boolean,
     onQueryChange: (String) -> Unit,
+    onUseCurrentLocationClick: () -> Unit,
 ) {
     var textFieldValue by remember {
         mutableStateOf(TextFieldValue(text = query, selection = TextRange(query.length)))
@@ -61,6 +66,12 @@ fun LocationSearchBar(
         },
         label = { Text(stringResource(R.string.weather_activity_search_label)) },
         singleLine = true,
+        leadingIcon = {
+            UseCurrentLocationIcon(
+                isActive = isResolvingCurrentLocation,
+                onClick = onUseCurrentLocationClick,
+            )
+        },
         trailingIcon = {
             SearchTrailingIcon(
                 isLoading = showLoadingIndicator,
@@ -72,6 +83,57 @@ fun LocationSearchBar(
             )
         },
     )
+}
+
+@Composable
+private fun UseCurrentLocationIcon(
+    modifier: Modifier = Modifier,
+    isActive: Boolean,
+    onClick: () -> Unit,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val tint = if (isActive || isPressed) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.secondary
+    }
+
+    val contentDescription = if (isActive) {
+        stringResource(R.string.weather_activity_cancel_current_location_content_description)
+    } else {
+        stringResource(R.string.weather_activity_use_current_location_content_description)
+    }
+
+    Image(
+        modifier = modifier
+            .size(Dimens.IconSize)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = ripple(bounded = false),
+                onClick = onClick,
+            ),
+        colorFilter = ColorFilter.tint(tint),
+        painter = painterResource(R.drawable.ic_my_location),
+        contentDescription = contentDescription,
+    )
+}
+
+@PreviewLightDark
+@Composable
+private fun UseCurrentLocationIconIdlePreview() {
+    WeatherActivityPlannerTheme {
+        UseCurrentLocationIcon(isActive = false, onClick = {})
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun UseCurrentLocationIconActivePreview() {
+    WeatherActivityPlannerTheme {
+        UseCurrentLocationIcon(isActive = true, onClick = {})
+    }
 }
 
 @Composable
@@ -136,7 +198,9 @@ private fun LocationSearchBarDefaultPreview() {
         LocationSearchBar(
             query = "",
             isLoading = false,
+            isResolvingCurrentLocation = false,
             onQueryChange = {},
+            onUseCurrentLocationClick = {},
         )
     }
 }
@@ -148,7 +212,9 @@ private fun LocationSearchBarWithQueryPreview() {
         LocationSearchBar(
             query = LocationSearchPreviewData.SEARCH_QUERY,
             isLoading = false,
+            isResolvingCurrentLocation = false,
             onQueryChange = {},
+            onUseCurrentLocationClick = {},
         )
     }
 }

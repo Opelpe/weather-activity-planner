@@ -20,7 +20,6 @@ private object SearchLocationsFixture {
         const val LATITUDE = 51.5
         const val LONGITUDE = -0.1
         const val COUNTRY = "United Kingdom"
-        const val COUNTRY_CODE = "GB"
         const val REGION = "England"
     }
 }
@@ -36,7 +35,6 @@ class SearchLocationsUseCaseTest {
                 latitude = SearchLocationsFixture.London.LATITUDE,
                 longitude = SearchLocationsFixture.London.LONGITUDE,
                 country = SearchLocationsFixture.London.COUNTRY,
-                countryCode = SearchLocationsFixture.London.COUNTRY_CODE,
                 region = SearchLocationsFixture.London.REGION,
             ),
         )
@@ -86,5 +84,8 @@ class SearchLocationsUseCaseTest {
             lastCount = count
             return result
         }
+
+        override suspend fun reverseGeocode(latitude: Double, longitude: Double): Result<Location> =
+            error("Not used in this test")
     }
 }

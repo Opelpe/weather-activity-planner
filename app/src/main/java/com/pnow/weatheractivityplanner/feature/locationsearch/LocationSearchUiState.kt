@@ -7,4 +7,5 @@ data class LocationSearchUiState(
     val isLoading: Boolean = false,
     val locations: List<LocationUiModel> = emptyList(),
     val error: UiError? = null,
+    val isResolvingCurrentLocation: Boolean = false,
 )

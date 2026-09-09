@@ -1,0 +1,74 @@
+<resources>
+    <plurals name="weather_activity_ranking_subtitle">
+        <item quantity="one">Ranking na podstawie prognozy pogody na dzisiaj</item>
+        <item quantity="few">Ranking na podstawie prognozy pogody na najbliższe %1$d dni</item>
+        <item quantity="many">Ranking na podstawie prognozy pogody na najbliższe %1$d dni</item>
+        <item quantity="other">Ranking na podstawie prognozy pogody na najbliższe %1$d dni</item>
+    </plurals>
+    <plurals name="weather_activity_best_pick">
+        <item quantity="one">Najlepszy wybór na najbliższy dzień</item>
+        <item quantity="few">Najlepszy wybór na najbliższe %1$d dni</item>
+        <item quantity="many">Najlepszy wybór na najbliższe %1$d dni</item>
+        <item quantity="other">Najlepszy wybór na najbliższe %1$d dni</item>
+    </plurals>
+    <plurals name="weather_activity_day_selector_value">
+        <item quantity="one">Dzisiaj</item>
+        <item quantity="few">Najbliższe %1$d dni</item>
+        <item quantity="many">Najbliższe %1$d dni</item>
+        <item quantity="other">Najbliższe %1$d dni</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_mixed">
+        <item quantity="one">pogoda mocno się zmienia z dnia na dzień</item>
+        <item quantity="few">pogoda mocno się zmienia z dnia na dzień</item>
+        <item quantity="many">pogoda mocno się zmienia z dnia na dzień</item>
+        <item quantity="other">pogoda mocno się zmienia z dnia na dzień</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_improving">
+        <item quantity="one">pogoda z każdym dniem się poprawia</item>
+        <item quantity="few">pogoda z każdym dniem się poprawia</item>
+        <item quantity="many">pogoda z każdym dniem się poprawia</item>
+        <item quantity="other">pogoda z każdym dniem się poprawia</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_declining">
+        <item quantity="one">pogoda z każdym dniem się pogarsza</item>
+        <item quantity="few">pogoda z każdym dniem się pogarsza</item>
+        <item quantity="many">pogoda z każdym dniem się pogarsza</item>
+        <item quantity="other">pogoda z każdym dniem się pogarsza</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_great">
+        <item quantity="one">pogoda zapowiada się dzisiaj świetnie</item>
+        <item quantity="few">pogoda przez najbliższe %1$d dni zapowiada się świetnie</item>
+        <item quantity="many">pogoda przez najbliższe %1$d dni zapowiada się świetnie</item>
+        <item quantity="other">pogoda przez najbliższe %1$d dni zapowiada się świetnie</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_good">
+        <item quantity="one">pogoda zapowiada się dzisiaj dobrze</item>
+        <item quantity="few">pogoda przez najbliższe %1$d dni zapowiada się dobrze</item>
+        <item quantity="many">pogoda przez najbliższe %1$d dni zapowiada się dobrze</item>
+        <item quantity="other">pogoda przez najbliższe %1$d dni zapowiada się dobrze</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_average">
+        <item quantity="one">pogoda zapowiada się dzisiaj przeciętnie</item>
+        <item quantity="few">pogoda przez najbliższe %1$d dni zapowiada się przeciętnie</item>
+        <item quantity="many">pogoda przez najbliższe %1$d dni zapowiada się przeciętnie</item>
+        <item quantity="other">pogoda przez najbliższe %1$d dni zapowiada się przeciętnie</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_poor">
+        <item quantity="one">pogoda nie zapowiada się dzisiaj najlepiej</item>
+        <item quantity="few">pogoda przez najbliższe %1$d dni nie zapowiada się najlepiej</item>
+        <item quantity="many">pogoda przez najbliższe %1$d dni nie zapowiada się najlepiej</item>
+        <item quantity="other">pogoda przez najbliższe %1$d dni nie zapowiada się najlepiej</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_terrible">
+        <item quantity="one">pogoda zapowiada się dzisiaj bardzo słabo, tym razem lepiej odpuścić</item>
+        <item quantity="few">pogoda przez najbliższe %1$d dni zapowiada się bardzo słabo, tym razem lepiej odpuścić</item>
+        <item quantity="many">pogoda przez najbliższe %1$d dni zapowiada się bardzo słabo, tym razem lepiej odpuścić</item>
+        <item quantity="other">pogoda przez najbliższe %1$d dni zapowiada się bardzo słabo, tym razem lepiej odpuścić</item>
+    </plurals>
+    <plurals name="weather_forecast_precipitation_probability">
+        <item quantity="one">%1$d%% szansy na deszcz</item>
+        <item quantity="few">%1$d%% szans na deszcz</item>
+        <item quantity="many">%1$d%% szans na deszcz</item>
+        <item quantity="other">%1$d%% szans na deszcz</item>
+    </plurals>
+</resources>

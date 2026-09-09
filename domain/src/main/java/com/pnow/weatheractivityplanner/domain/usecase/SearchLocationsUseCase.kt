@@ -10,7 +10,7 @@ class SearchLocationsUseCase @Inject constructor(
 
     suspend operator fun invoke(
         query: String,
-        count: Int = 20,
+        count: Int = GeocodingRepository.DEFAULT_RESULT_LIMIT,
     ): Result<List<Location>> =
         geocodingRepository.searchLocations(query = query, count = count)
 }

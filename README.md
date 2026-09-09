@@ -1,14 +1,42 @@
 # Weather Activity Planner
 
+[![Get it on Google Play](https://img.shields.io/badge/Google_Play-live-brightgreen.svg?logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.pnow.weatheractivityplanner)
 [![Tests](https://github.com/Opelpe/weather-activity-planner/actions/workflows/android-tests.yml/badge.svg)](https://github.com/Opelpe/weather-activity-planner/actions/workflows/android-tests.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Min SDK 29](https://img.shields.io/badge/minSdk-29-brightgreen.svg)](https://developer.android.com/about/versions/10)
 [![Kotlin](https://img.shields.io/badge/kotlin-2.3.21-blue.svg?logo=kotlin)](https://kotlinlang.org)
 
-A native Android app that lets you search for a city and see a **ranked list of activities**
-(Skiing, Surfing, Outdoor Sightseeing, Indoor Sightseeing, Cycling, Sunbathing, Stargazing,
-Fishing) suitable for that location over the **next 7 days**, based on live weather forecast data
-from [Open-Meteo](https://open-meteo.com/).
+A native Android app that lets you search for a city (or use your current location) and see a
+**ranked list of activities** (Skiing, Surfing, Outdoor Sightseeing, Indoor Sightseeing, Cycling,
+Sunbathing, Stargazing, Fishing) suitable for that location, based on live weather forecast data
+from [Open-Meteo](https://open-meteo.com/). You can pick how many of the next 1–7 days to score,
+and the app shows the current conditions plus a day-by-day forecast breakdown with weather
+condition icons and day/night temperature indicators.
+
+**Live on Google Play** as `v1.0.0`:
+[play.google.com/store/apps/details?id=com.pnow.weatheractivityplanner](https://play.google.com/store/apps/details?id=com.pnow.weatheractivityplanner).
+Everything described below that isn't in that release (current-location search, the day-count
+selector, weather icons/day-night indicators, and Spanish/Polish localization) has landed on
+`master` since and is slated to ship as **`v1.1.0`** - see [Release Notes](#release-notes).
+
+---
+
+## Release Notes
+
+### `v1.1.0` (live on Google Play soon)
+
+- Current-location search - "use my current location" resolves the device's coordinates via Play
+  Services and reverse-geocodes them through LocationIQ.
+- Multi-day activity ranking - a 1-7 day selector controls how much of the week each activity is
+  scored over, instead of always ranking the full 7 days.
+- Weather condition icons and day/night temperature indicators on the current-weather card and the
+  7-day forecast screen.
+- Spanish (`es`) and Polish (`pl`) localization.
+
+### `v1.0.0` (live on Google Play)
+
+- Initial release: city search, 7-day activity rankings for all eight activities, current
+  conditions plus a 7-day forecast breakdown, pull-to-refresh, and offline/stale-data resilience.
 
 ---
 
@@ -40,8 +68,11 @@ from [Open-Meteo](https://open-meteo.com/).
 </table>
 
 <p align="center">
-  <video src="https://github.com/user-attachments/assets/b4a500a5-7a16-4938-ba3b-cad5265f67b1" width="360" controls></video>
+ 
+https://github.com/user-attachments/assets/17539c7e-17fa-4924-8d0b-93d2ba89b9db
+
 </p>
+
 
 ---
 
@@ -49,18 +80,23 @@ from [Open-Meteo](https://open-meteo.com/).
 
 The app has three screens:
 
-1. **Location Search** - debounced search-as-you-type against the Open-Meteo Geocoding API,
-   returning up to 20 matching cities with country/region.
-2. **Activity Recommendations** - for the selected city: current weather conditions plus all
-   eight activities ranked best-to-worst for the coming week, each with a 0–100 score (shown to
-   one decimal) and a combined weekly + daily reason. Pull-to-refresh and a "stale data" snack bar
-   (with a retry action) surface when a cached forecast is shown because of a network failure or
-   lost connectivity.
-3. **7-Day Forecast** - a day-by-day breakdown of the forecast used to compute the rankings
-   (condition, temperature range, etc.), reached by tapping the current-weather card.
+1. **Location Search** - debounced search-as-you-type against the LocationIQ Autocomplete API,
+   returning up to 20 matching cities/towns/villages with country/region, plus a "use my current
+   location" action that requests location permission, prompts to enable location settings if
+   needed, and reverse-geocodes the device's coordinates via LocationIQ.
+2. **Activity Recommendations** - for the selected location: current weather conditions plus all
+   eight activities ranked best-to-worst, each with a 0–100 score (shown to one decimal) and a
+   combined weekly + daily reason. A day-count selector (1–7 days) lets the user choose how much
+   of the week to score, with a snack bar notice if the forecast doesn't cover the full selected
+   window yet. Pull-to-refresh and a "stale data" snack bar (with a retry action) surface when a
+   cached forecast is shown because of a network failure or lost connectivity.
+3. **7-Day Forecast** - a day-by-day breakdown of the **upcoming** week (tomorrow through day 7,
+   deliberately excluding today - shown separately on the current-weather card), with a condition
+   icon, day/night temperature indicators, and precipitation probability per day. Reached by
+   tapping the current-weather card.
 
 Both the recommendations and forecast screens support pull-to-refresh, retry-on-error, and
-light/dark themes.
+light/dark themes. The app is localized in English, Spanish, and Polish.
 
 ---
 
@@ -78,6 +114,7 @@ light/dark themes.
 | Networking                         | Retrofit 3 + OkHttp 5 + Moshi (kotlin codegen)                             |
 | Async                              | Kotlin Coroutines & Flow                                                   |
 | Navigation                         | Jetpack Navigation Compose with type-safe (`kotlinx.serialization`) routes |
+| Device location                    | Google Play Services Location (`FusedLocationProviderClient`)             |
 | Testing                            | JUnit4, MockK, Turbine, kotlinx-coroutines-test                            |
 
 All dependency versions are centralized in `gradle/libs.versions.toml` (version catalog) - no
@@ -94,10 +131,12 @@ hardcoded versions in module `build.gradle.kts` files.
   `ActivitiesRankingCalculator`), and `DomainError`. It has no Android, Retrofit, or Moshi imports
   - it is unit-testable on the plain JVM with zero mocking of the framework.
 - **`:data`** implements the domain repository interfaces using Retrofit/Moshi, an in-memory LRU
-  forecast cache, and a `ConnectivityManager`-backed connectivity repository. DTOs and the
-  Retrofit service interfaces are `internal` - they never leak outside this module. Mapper
-  extension functions (`toDomain()`) convert DTOs to domain models, and `toDomainError()`/
-  `toDomainResult()` convert exceptions to `DomainError`.
+  forecast cache, a `ConnectivityManager`-backed connectivity repository, and a
+  `FusedLocationProviderClient`-backed current-location repository (`LocationAvailabilityChecker`
+  checks runtime permission before requesting a fix). DTOs and the Retrofit service interfaces are
+  `internal` - they never leak outside this module. Mapper extension functions (`toDomain()`)
+  convert DTOs to domain models, and `toDomainError()`/`toDomainResult()` convert exceptions to
+  `DomainError`.
 - **`:app`** contains Compose screens, ViewModels, Hilt setup, navigation, theme, and string
   resources. It depends on `:domain` directly for models/use cases, and on `:data` only via Hilt
   bindings (it never instantiates a repository implementation directly).
@@ -154,6 +193,30 @@ out of date.
 - `ConnectivityModule` provides the Android `ConnectivityManager`, and `TimeModule` provides a
   `TimeSource` abstraction over `System.currentTimeMillis()` so the forecast cache's TTL logic is
   deterministically testable.
+- `LocationModule` binds `CurrentLocationRepository` to its Play-Services-backed implementation.
+
+### Current location
+
+`GetCurrentLocationUseCase` composes two repositories: `CurrentLocationRepository` (Play Services'
+`FusedLocationProviderClient`, gated by `LocationAvailabilityChecker.hasPermission()`) resolves
+device coordinates, then `GeocodingRepository.reverseGeocode(...)` turns them into a named
+`Location` via LocationIQ. On the UI side, `rememberRequestCurrentLocationAccess` (a Compose
+effect) requests the runtime permission if missing, then uses `LocationServices.SettingsClient` to
+prompt the user to enable location settings if they're off, before the ViewModel calls the use
+case - so permission-denied and settings-unavailable are distinct, user-facing outcomes rather
+than a generic failure.
+
+### Multi-day activity ranking
+
+`GetActivityRankingsUseCase` scores a caller-supplied window of `days` (1–7, coerced by
+`ActivityRankingDayRange`) instead of always scoring the full week: it slices the forecast's daily
+list to that window before handing it to `ActivitiesRankingCalculator`, and flags
+`ActivitiesRankingsResult.isIncomplete` when the forecast has fewer days available than requested.
+The `WeatherRecommendationUiState.selectedDayCount`
+is exposed as a `FilterChip` row (`ActivitiesRankingDaySelector`); changing it re-fetches through
+`GetActivityRankingsUseCase` with `forceRefresh = false`, so it usually resolves from the
+2-minute forecast cache rather than a fresh network call. An incomplete window surfaces a one-shot
+snack bar via the same `Channel`-based pattern used for the stale-data notice.
 
 ### Forecast caching and offline resilience
 
@@ -176,8 +239,18 @@ out of date.
 ## d. How to Build and Run the App
 
 **Prerequisites:** Android Studio (a recent version supporting AGP 9.2.1 / Kotlin 2.3.21) or a
-JDK 17 + Android SDK (compileSdk/buildTools 37) command-line setup. **No API key or config is
-required** - the Open-Meteo APIs used are free and unauthenticated.
+JDK 17 + Android SDK (compileSdk/buildTools 37) command-line setup. The Open-Meteo forecast API is
+free and unauthenticated, but location search/reverse-geocoding goes through
+[LocationIQ](https://locationiq.com/) and **does** require a free API key:
+
+1. Sign up for a free LocationIQ account and grab an access token.
+2. Add it to `local.properties` (gitignored, created if missing) at the project root:
+   ```properties
+   LOCATIONIQ_API_KEY=your_key_here
+   ```
+   `:data`'s `build.gradle.kts` reads this into `BuildConfig.LOCATIONIQ_API_KEY` at build time; if
+   it's missing, the app still builds but location search/current-location resolution will fail
+   with an HTTP error at runtime.
 
 **Via Android Studio:**
 
@@ -261,26 +334,44 @@ wrapper-jar workaround with the desired test task in place of `assembleDebug`.
 
 ## f. API Usage Notes
 
-Both Open-Meteo endpoints are called unauthenticated, over HTTPS.
+The forecast API is unauthenticated; the geocoding APIs require the LocationIQ key described in
+[section d](#d-how-to-build-and-run-the-app). Both are called over HTTPS.
 
-### Geocoding - `GET https://geocoding-api.open-meteo.com/v1/search`
+### Location search - `GET https://us1.locationiq.com/v1/autocomplete`
 
-| Query param   | Value                    |
-|---------------|--------------------------|
-| `name`        | the user's search text   |
-| `count`       | 20                       |
-| `language`    | `en`                     |
-| `format`      | `json`                   |
+| Query param        | Value                                                       |
+|---------------------|--------------------------------------------------------------|
+| `q`                 | the user's search text                                       |
+| `limit`             | 20                                                            |
+| `accept-language`   | the device's current locale language                         |
+| `tag`               | `place:city,place:town,place:village,place:state,place:country,natural:peak` |
+| `format`            | `json`                                                       |
+| `key`               | the LocationIQ API key (injected by `ApiKeyInterceptor`)     |
 
-Returns candidate cities with `id`, `name`, `latitude`, `longitude`, `country`, `country_code`,
-`admin1` (mapped to `region`).
+The `tag` filter is what keeps results to real places (and notable natural landmarks) rather than
+streets/POIs. LocationIQ returns HTTP 404 ("Unable to geocode") for zero matches - the repository
+treats that as an empty result list, not an error.
+
+### Reverse geocoding - `GET https://us1.locationiq.com/v1/reverse`
+
+| Query param        | Value                                                  |
+|---------------------|---------------------------------------------------------|
+| `lat` / `lon`       | the device's resolved coordinates                       |
+| `accept-language`   | the device's current locale language                    |
+| `format`            | `json`                                                  |
+| `key`               | the LocationIQ API key                                  |
+
+Both endpoints return `place_id`, `lat`, `lon`, `display_name`, and a structured `address` object
+(`city`/`town`/`village`/`state`/`country`); `toDomain()` prefers the first populated
+city/town/village name, falling back to the text before the first comma in `display_name`.
+`place_id` becomes the domain `Location.id` used for navigation args and the forecast cache key.
 
 ### Forecast - `GET https://api.open-meteo.com/v1/forecast`
 
 | Query param               | Value                                              |
 |---------------------------|----------------------------------------------------|
 | `latitude` / `longitude`  | from the selected location                         |
-| `forecast_days`           | 7                                                  |
+| `forecast_days`           | 16 (Open-Meteo's max; the app scores/displays a subset - see [section g](#g-activity-recommendation-logic)) |
 | `timezone`                | `auto` (resolves to the location's local timezone) |
 | `wind_speed_unit`         | `kmh`                                              |
 
@@ -310,15 +401,18 @@ interface (`Clear`, `PartlyCloudy`, `LightRain`, `HeavySnow`, `Thunderstorm`, ..
 
 ## g. Activity Recommendation Logic
 
-For each of the 8 activities, an `ActivityDayScorer` scores **each of the 7 forecast days
-independently** on a 0–100 scale (clamped), starting from a base score and applying additive
-bonuses/penalties for relevant conditions - many thresholds use a gradual `fractionBetween(...)`
-ramp (e.g. "starting to feel warm" partway to "fully warm") rather than a hard cutoff, so scores
-change smoothly across a threshold instead of jumping. The `ActivitiesRankingCalculator` then:
+For each of the 8 activities, an `ActivityDayScorer` scores **each forecast day in the selected
+1–7 day window independently** on a 0–100 scale (clamped), starting from a base score and applying
+additive bonuses/penalties for relevant conditions - many thresholds use a gradual
+`fractionBetween(...)` ramp (e.g. "starting to feel warm" partway to "fully warm") rather than a
+hard cutoff, so scores change smoothly across a threshold instead of jumping. `GetActivityRankingsUseCase`
+picks that window (today, or today plus up to 6 more days, per `selectedDayCount` - see
+[Multi-day activity ranking](#multi-day-activity-ranking)) before the `ActivitiesRankingCalculator`:
 
-1. **Weights and averages** the 7 daily scores, with **today weighted most heavily** and each
-   subsequent day weighted slightly less (linearly decreasing weights), so imminent days matter
-   more than the end of the week.
+1. **Weights and averages** the window's daily scores geometrically (`0.85^index`), with **today
+   weighted most heavily** and each subsequent day weighted less, so imminent days matter more
+   than the end of the window - this naturally degrades to a single day's score when only today is
+   selected.
 2. **Promotes** Outdoor and Indoor Sightseeing (the two "generic, always somewhat viable" fallback
    activities) by a flat `+10` bonus, clamped to 100, so a middling week doesn't unfairly bury them
    under more niche, weather-dependent activities.

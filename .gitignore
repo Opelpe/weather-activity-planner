@@ -37,7 +37,9 @@ keystore.properties
 .idea/modules.xml
 .idea/deploymentTargetSelector.xml
 .idea/markdown.xml
+.idea/appInsightsSettings.xml
 .idea/deviceManager.xml
+.idea/dictionaries/
 
 # macOS
 .DS_Store

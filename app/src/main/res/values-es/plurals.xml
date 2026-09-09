@@ -1,0 +1,62 @@
+<resources>
+    <plurals name="weather_activity_ranking_subtitle">
+        <item quantity="one">Ordenadas según el pronóstico del tiempo de hoy</item>
+        <item quantity="many">Ordenadas según el pronóstico del tiempo a %1$d días</item>
+        <item quantity="other">Ordenadas según el pronóstico del tiempo a %1$d días</item>
+    </plurals>
+    <plurals name="weather_activity_best_pick">
+        <item quantity="one">Mejor opción para el próximo día</item>
+        <item quantity="many">Mejor opción para los próximos %1$d días</item>
+        <item quantity="other">Mejor opción para los próximos %1$d días</item>
+    </plurals>
+    <plurals name="weather_activity_day_selector_value">
+        <item quantity="one">Hoy</item>
+        <item quantity="many">Próximos %1$d días</item>
+        <item quantity="other">Próximos %1$d días</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_mixed">
+        <item quantity="one">el tiempo va a cambiar bastante de un día para otro</item>
+        <item quantity="many">el tiempo va a cambiar bastante de un día para otro</item>
+        <item quantity="other">el tiempo va a cambiar bastante de un día para otro</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_improving">
+        <item quantity="one">el tiempo va a ir mejorando con el paso de los días</item>
+        <item quantity="many">el tiempo va a ir mejorando con el paso de los días</item>
+        <item quantity="other">el tiempo va a ir mejorando con el paso de los días</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_declining">
+        <item quantity="one">el tiempo va a ir empeorando con el paso de los días</item>
+        <item quantity="many">el tiempo va a ir empeorando con el paso de los días</item>
+        <item quantity="other">el tiempo va a ir empeorando con el paso de los días</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_great">
+        <item quantity="one">el tiempo va a estar buenísimo hoy</item>
+        <item quantity="many">el tiempo va a estar buenísimo durante los próximos %1$d días</item>
+        <item quantity="other">el tiempo va a estar buenísimo durante los próximos %1$d días</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_good">
+        <item quantity="one">el tiempo va a estar bastante bien hoy</item>
+        <item quantity="many">el tiempo va a estar bastante bien durante los próximos %1$d días</item>
+        <item quantity="other">el tiempo va a estar bastante bien durante los próximos %1$d días</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_average">
+        <item quantity="one">el tiempo va a estar bastante normalito hoy</item>
+        <item quantity="many">el tiempo va a estar bastante normalito durante los próximos %1$d días</item>
+        <item quantity="other">el tiempo va a estar bastante normalito durante los próximos %1$d días</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_poor">
+        <item quantity="one">el tiempo no pinta muy bien hoy</item>
+        <item quantity="many">el tiempo no pinta muy bien durante los próximos %1$d días</item>
+        <item quantity="other">el tiempo no pinta muy bien durante los próximos %1$d días</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_terrible">
+        <item quantity="one">el tiempo va a estar bastante malo hoy, mejor dejarlo para otra ocasión</item>
+        <item quantity="many">el tiempo va a estar bastante malo durante los próximos %1$d días, mejor dejarlo para otra ocasión</item>
+        <item quantity="other">el tiempo va a estar bastante malo durante los próximos %1$d días, mejor dejarlo para otra ocasión</item>
+    </plurals>
+    <plurals name="weather_forecast_precipitation_probability">
+        <item quantity="one">%1$d%% de probabilidad de lluvia</item>
+        <item quantity="many">%1$d%% de probabilidad de lluvia</item>
+        <item quantity="other">%1$d%% de probabilidad de lluvia</item>
+    </plurals>
+</resources>

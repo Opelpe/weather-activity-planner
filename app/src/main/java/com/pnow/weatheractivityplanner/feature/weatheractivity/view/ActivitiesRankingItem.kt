@@ -1,5 +1,6 @@
 package com.pnow.weatheractivityplanner.feature.weatheractivity.view
 
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -18,9 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.pnow.weatheractivityplanner.R
 import com.pnow.weatheractivityplanner.domain.model.Activities
+import com.pnow.weatheractivityplanner.domain.usecase.ActivityRankingDayRange
 import com.pnow.weatheractivityplanner.feature.weatheractivity.WeatherRecommendationPreviewData
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.ActivitiesRankingUiModel
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toDisplayNameRes
@@ -33,6 +36,7 @@ import com.pnow.weatheractivityplanner.util.Dimens
 fun ActivitiesRankingItem(
     modifier: Modifier = Modifier,
     ranking: ActivitiesRankingUiModel,
+    selectedDayCount: Int,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -59,6 +63,7 @@ fun ActivitiesRankingItem(
             ActivitiesRankingDetails(
                 modifier = Modifier.weight(1f),
                 ranking = ranking,
+                selectedDayCount = selectedDayCount,
             )
 
             ActivitiesRankingScore(
@@ -85,10 +90,11 @@ private fun ActivitiesRankingIcon(
 private fun ActivitiesRankingDetails(
     modifier: Modifier = Modifier,
     ranking: ActivitiesRankingUiModel,
+    selectedDayCount: Int,
 ) {
     Column(modifier = modifier) {
         if (ranking.isTopRanked) {
-            ActivitiesRankingBestPickTag()
+            ActivitiesRankingBestPickTag(selectedDayCount = selectedDayCount)
         }
 
         ActivitiesRankingTitle(
@@ -99,15 +105,23 @@ private fun ActivitiesRankingDetails(
         ActivitiesRankingReason(
             weeklyReasonRes = ranking.weeklyReasonRes,
             dailyReasonRes = ranking.dailyReasonRes,
+            selectedDayCount = selectedDayCount,
         )
     }
 }
 
 @Composable
-private fun ActivitiesRankingBestPickTag(modifier: Modifier = Modifier) {
+private fun ActivitiesRankingBestPickTag(
+    modifier: Modifier = Modifier,
+    selectedDayCount: Int,
+) {
     Text(
         modifier = modifier,
-        text = stringResource(R.string.weather_activity_best_pick),
+        text = pluralStringResource(
+            R.plurals.weather_activity_best_pick,
+            selectedDayCount,
+            selectedDayCount,
+        ),
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.primary,
     )
@@ -116,15 +130,16 @@ private fun ActivitiesRankingBestPickTag(modifier: Modifier = Modifier) {
 @Composable
 private fun ActivitiesRankingReason(
     modifier: Modifier = Modifier,
-    @StringRes weeklyReasonRes: Int,
+    @PluralsRes weeklyReasonRes: Int,
     @StringRes dailyReasonRes: Int,
+    selectedDayCount: Int,
 ) {
     Text(
         modifier = modifier,
         text = stringResource(
             R.string.weather_activity_reason_summary_format,
             stringResource(dailyReasonRes),
-            stringResource(weeklyReasonRes),
+            pluralStringResource(weeklyReasonRes, selectedDayCount, selectedDayCount),
         ),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -179,9 +194,11 @@ private fun ActivitiesRankingItemPreview() {
             ) {
                 ActivitiesRankingItem(
                     ranking = WeatherRecommendationPreviewData.Rankings.first(),
+                    selectedDayCount = ActivityRankingDayRange.DEFAULT_DAY_COUNT,
                 )
                 ActivitiesRankingItem(
                     ranking = WeatherRecommendationPreviewData.Rankings.last(),
+                    selectedDayCount = ActivityRankingDayRange.DEFAULT_DAY_COUNT,
                 )
             }
         }

@@ -27,6 +27,12 @@ private object ActivityRankingCalculatorFixture {
     const val DEFAULT_DAYTIME_WIND_GUSTS_MAX_KPH = 25.0
     const val GENERIC_ACTIVITY_BONUS = 10f
 
+    // Mirrors ActivitiesRankingCalculator's exponential day-weight decay (rate 0.85) so expected
+    // weighted averages below use the exact same weights as production.
+    const val DAY1_WEIGHT = 1f
+    const val DAY2_WEIGHT = 0.85f
+    const val DAY3_WEIGHT = 0.7225f
+
     object SnowyAndFreezing {
 
         const val TEMPERATURE_CELSIUS = -5.0
@@ -73,8 +79,14 @@ private object ActivityRankingCalculatorFixture {
     object MixedSkiWeek {
 
         const val EXPECTED_WEIGHTED_AVERAGE_SKIING_SCORE =
-            (SnowyAndFreezing.EXPECTED_SKIING_SCORE * 3f + SnowOnly.EXPECTED_SKIING_SCORE * 2f + MildAndDry.EXPECTED_SKIING_SCORE * 1f) / 6f
+            (
+                SnowyAndFreezing.EXPECTED_SKIING_SCORE * DAY1_WEIGHT +
+                    SnowOnly.EXPECTED_SKIING_SCORE * DAY2_WEIGHT +
+                    MildAndDry.EXPECTED_SKIING_SCORE * DAY3_WEIGHT
+                ) / (DAY1_WEIGHT + DAY2_WEIGHT + DAY3_WEIGHT)
 
+        // Each of the 3 days has a distinct reason (no majority), so the tie is broken by
+        // whichever day's score sits closest to the weighted average.
         val EXPECTED_SPECIFIC_REASON = ActivityDailyReason.Skiing.SnowOnly
     }
 
@@ -82,9 +94,9 @@ private object ActivityRankingCalculatorFixture {
 
         object Day1 {
 
-            const val TEMPERATURE_CELSIUS = -1.0
+            const val TEMPERATURE_CELSIUS = -0.5
             val CONDITION = WeatherCondition.Clear
-            const val EXPECTED_SKIING_SCORE = 17f
+            const val EXPECTED_SKIING_SCORE = 13.5f
         }
 
         object Day2 {
@@ -96,16 +108,21 @@ private object ActivityRankingCalculatorFixture {
 
         object Day3 {
 
-            const val TEMPERATURE_CELSIUS = -2.0
+            const val TEMPERATURE_CELSIUS = -1.6
             val CONDITION = WeatherCondition.Clear
-            const val EXPECTED_SKIING_SCORE = 24f
+            const val EXPECTED_SKIING_SCORE = 21.2f
         }
 
         const val EXPECTED_WEIGHTED_AVERAGE_SKIING_SCORE =
-            (Day1.EXPECTED_SKIING_SCORE * 3f + Day2.EXPECTED_SKIING_SCORE * 2f + Day3.EXPECTED_SKIING_SCORE * 1f) / 6f
+            (
+                Day1.EXPECTED_SKIING_SCORE * DAY1_WEIGHT +
+                    Day2.EXPECTED_SKIING_SCORE * DAY2_WEIGHT +
+                    Day3.EXPECTED_SKIING_SCORE * DAY3_WEIGHT
+                ) / (DAY1_WEIGHT + DAY2_WEIGHT + DAY3_WEIGHT)
         val EXPECTED_REASON = ActivityWeeklyReason.CONSISTENTLY_TERRIBLE
 
-        // Day2's raw score (20.5) is closest to the weighted average (~19.33), so its reason represents the week.
+        // GettingColder is the most common reason across the 3 days (Day2 and Day3), so it
+        // represents the whole window.
         val EXPECTED_SPECIFIC_REASON = ActivityDailyReason.Skiing.GettingColder
     }
 
@@ -133,10 +150,15 @@ private object ActivityRankingCalculatorFixture {
         }
 
         const val EXPECTED_WEIGHTED_AVERAGE_SKIING_SCORE =
-            (Day1.EXPECTED_SKIING_SCORE * 3f + Day2.EXPECTED_SKIING_SCORE * 2f + Day3.EXPECTED_SKIING_SCORE * 1f) / 6f
+            (
+                Day1.EXPECTED_SKIING_SCORE * DAY1_WEIGHT +
+                    Day2.EXPECTED_SKIING_SCORE * DAY2_WEIGHT +
+                    Day3.EXPECTED_SKIING_SCORE * DAY3_WEIGHT
+                ) / (DAY1_WEIGHT + DAY2_WEIGHT + DAY3_WEIGHT)
 
-        // For an improving trend, the last day's reason represents the week, not the closest-to-average day.
-        val EXPECTED_SPECIFIC_REASON = ActivityDailyReason.Skiing.GettingColder
+        // Each of the 3 days has a distinct reason (no majority), so the tie is broken by
+        // whichever day's score sits closest to the weighted average (~14.33) - Day2 (17).
+        val EXPECTED_SPECIFIC_REASON = ActivityDailyReason.Skiing.None
     }
 
     object DecliningSkiWeek {
@@ -163,10 +185,15 @@ private object ActivityRankingCalculatorFixture {
         }
 
         const val EXPECTED_WEIGHTED_AVERAGE_SKIING_SCORE =
-            (Day1.EXPECTED_SKIING_SCORE * 3f + Day2.EXPECTED_SKIING_SCORE * 2f + Day3.EXPECTED_SKIING_SCORE * 1f) / 6f
+            (
+                Day1.EXPECTED_SKIING_SCORE * DAY1_WEIGHT +
+                    Day2.EXPECTED_SKIING_SCORE * DAY2_WEIGHT +
+                    Day3.EXPECTED_SKIING_SCORE * DAY3_WEIGHT
+                ) / (DAY1_WEIGHT + DAY2_WEIGHT + DAY3_WEIGHT)
 
-        // For a declining trend, the last day's reason represents the week, not the closest-to-average day.
-        val EXPECTED_SPECIFIC_REASON = ActivityDailyReason.Skiing.TooWarm
+        // Each of the 3 days has a distinct reason (no majority), so the tie is broken by
+        // whichever day's score sits closest to the weighted average (~17.67) - Day2 (17).
+        val EXPECTED_SPECIFIC_REASON = ActivityDailyReason.Skiing.None
     }
 }
 

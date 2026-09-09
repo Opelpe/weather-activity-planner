@@ -1,20 +1,21 @@
 package com.pnow.weatheractivityplanner.feature.weatheractivity.model
 
+import androidx.annotation.PluralsRes
 import androidx.annotation.StringRes
 import com.pnow.weatheractivityplanner.R
 import com.pnow.weatheractivityplanner.domain.model.ActivityDailyReason
 import com.pnow.weatheractivityplanner.domain.model.ActivityWeeklyReason
 
-@StringRes
-internal fun ActivityWeeklyReason.toStringRes(): Int = when (this) {
-    ActivityWeeklyReason.MIXED -> R.string.weather_activity_week_reason_mixed
-    ActivityWeeklyReason.IMPROVING -> R.string.weather_activity_week_reason_improving
-    ActivityWeeklyReason.DECLINING -> R.string.weather_activity_week_reason_declining
-    ActivityWeeklyReason.CONSISTENTLY_GREAT -> R.string.weather_activity_week_reason_consistently_great
-    ActivityWeeklyReason.CONSISTENTLY_GOOD -> R.string.weather_activity_week_reason_consistently_good
-    ActivityWeeklyReason.CONSISTENTLY_AVERAGE -> R.string.weather_activity_week_reason_consistently_average
-    ActivityWeeklyReason.CONSISTENTLY_POOR -> R.string.weather_activity_week_reason_consistently_poor
-    ActivityWeeklyReason.CONSISTENTLY_TERRIBLE -> R.string.weather_activity_week_reason_consistently_terrible
+@PluralsRes
+internal fun ActivityWeeklyReason.toPluralsRes(): Int = when (this) {
+    ActivityWeeklyReason.MIXED -> R.plurals.weather_activity_week_reason_mixed
+    ActivityWeeklyReason.IMPROVING -> R.plurals.weather_activity_week_reason_improving
+    ActivityWeeklyReason.DECLINING -> R.plurals.weather_activity_week_reason_declining
+    ActivityWeeklyReason.CONSISTENTLY_GREAT -> R.plurals.weather_activity_week_reason_consistently_great
+    ActivityWeeklyReason.CONSISTENTLY_GOOD -> R.plurals.weather_activity_week_reason_consistently_good
+    ActivityWeeklyReason.CONSISTENTLY_AVERAGE -> R.plurals.weather_activity_week_reason_consistently_average
+    ActivityWeeklyReason.CONSISTENTLY_POOR -> R.plurals.weather_activity_week_reason_consistently_poor
+    ActivityWeeklyReason.CONSISTENTLY_TERRIBLE -> R.plurals.weather_activity_week_reason_consistently_terrible
 }
 
 @StringRes

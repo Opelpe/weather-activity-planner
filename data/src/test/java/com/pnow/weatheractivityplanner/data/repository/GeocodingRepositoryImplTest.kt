@@ -1,7 +1,7 @@
 package com.pnow.weatheractivityplanner.data.repository
 
 import com.pnow.weatheractivityplanner.data.remote.api.GeocodingApi
-import com.pnow.weatheractivityplanner.data.remote.dto.geocoding.GeocodingResponseDto
+import com.pnow.weatheractivityplanner.data.remote.dto.geocoding.GeocodingAddressDto
 import com.pnow.weatheractivityplanner.data.remote.dto.geocoding.GeocodingResultDto
 import com.pnow.weatheractivityplanner.domain.error.DomainError
 import com.pnow.weatheractivityplanner.domain.model.Location
@@ -24,15 +24,17 @@ private object GeocodingRepositoryFixture {
     const val NETWORK_ERROR_MESSAGE = "No network"
     const val HTTP_ERROR_CODE = 500
     const val HTTP_ERROR_BODY = "Internal Server Error"
+    const val HTTP_NOT_FOUND_CODE = 404
+    const val HTTP_NOT_FOUND_BODY = """{"error":"Unable to geocode"}"""
 
     object London {
 
-        const val ID = 1L
+        const val PLACE_ID = "1"
         const val NAME = "London"
-        const val LATITUDE = 51.5
-        const val LONGITUDE = -0.1
+        const val LATITUDE = "51.5"
+        const val LONGITUDE = "-0.1"
+        const val DISPLAY_NAME = "London, England, United Kingdom"
         const val COUNTRY = "United Kingdom"
-        const val COUNTRY_CODE = "GB"
         const val REGION = "England"
     }
 }
@@ -49,31 +51,31 @@ class GeocodingRepositoryImplTest {
     @Test
     fun `given results in response, when searchLocations, then returns mapped locations`() =
         runTest(testDispatcher) {
-            coEvery { geocodingApi.searchLocations(any(), any(), any(), any()) } returns
-                GeocodingResponseDto(
-                    results = listOf(
-                        GeocodingResultDto(
-                            id = GeocodingRepositoryFixture.London.ID,
+            stubSearchLocations(
+                returns = listOf(
+                    GeocodingResultDto(
+                        placeId = GeocodingRepositoryFixture.London.PLACE_ID,
+                        latitude = GeocodingRepositoryFixture.London.LATITUDE,
+                        longitude = GeocodingRepositoryFixture.London.LONGITUDE,
+                        displayName = GeocodingRepositoryFixture.London.DISPLAY_NAME,
+                        address = GeocodingAddressDto(
                             name = GeocodingRepositoryFixture.London.NAME,
-                            latitude = GeocodingRepositoryFixture.London.LATITUDE,
-                            longitude = GeocodingRepositoryFixture.London.LONGITUDE,
+                            state = GeocodingRepositoryFixture.London.REGION,
                             country = GeocodingRepositoryFixture.London.COUNTRY,
-                            countryCode = GeocodingRepositoryFixture.London.COUNTRY_CODE,
-                            admin1 = GeocodingRepositoryFixture.London.REGION,
                         ),
                     ),
-                )
+                ),
+            )
 
             val result = repository.searchLocations(query = GeocodingRepositoryFixture.SEARCH_QUERY)
 
             val expectedLocations = listOf(
                 Location(
-                    id = GeocodingRepositoryFixture.London.ID,
+                    id = GeocodingRepositoryFixture.London.PLACE_ID.toLong(),
                     name = GeocodingRepositoryFixture.London.NAME,
-                    latitude = GeocodingRepositoryFixture.London.LATITUDE,
-                    longitude = GeocodingRepositoryFixture.London.LONGITUDE,
+                    latitude = GeocodingRepositoryFixture.London.LATITUDE.toDouble(),
+                    longitude = GeocodingRepositoryFixture.London.LONGITUDE.toDouble(),
                     country = GeocodingRepositoryFixture.London.COUNTRY,
-                    countryCode = GeocodingRepositoryFixture.London.COUNTRY_CODE,
                     region = GeocodingRepositoryFixture.London.REGION,
                 ),
             )
@@ -83,10 +85,9 @@ class GeocodingRepositoryImplTest {
         }
 
     @Test
-    fun `given null results in response, when searchLocations, then returns empty list`() =
+    fun `given empty response, when searchLocations, then returns empty list`() =
         runTest(testDispatcher) {
-            coEvery { geocodingApi.searchLocations(any(), any(), any(), any()) } returns
-                GeocodingResponseDto(results = null)
+            stubSearchLocations(returns = emptyList())
 
             val result =
                 repository.searchLocations(query = GeocodingRepositoryFixture.UNKNOWN_QUERY)
@@ -98,8 +99,7 @@ class GeocodingRepositoryImplTest {
     @Test
     fun `given IOException, when searchLocations, then returns NetworkUnavailable`() =
         runTest(testDispatcher) {
-            coEvery { geocodingApi.searchLocations(any(), any(), any(), any()) } throws
-                IOException(GeocodingRepositoryFixture.NETWORK_ERROR_MESSAGE)
+            stubSearchLocations(throws = IOException(GeocodingRepositoryFixture.NETWORK_ERROR_MESSAGE))
 
             val result = repository.searchLocations(query = GeocodingRepositoryFixture.SEARCH_QUERY)
 
@@ -108,16 +108,33 @@ class GeocodingRepositoryImplTest {
         }
 
     @Test
+    fun `given HttpException 404, when searchLocations, then returns empty list`() =
+        runTest(testDispatcher) {
+            val httpException = HttpException(
+                Response.error<List<GeocodingResultDto>>(
+                    GeocodingRepositoryFixture.HTTP_NOT_FOUND_CODE,
+                    GeocodingRepositoryFixture.HTTP_NOT_FOUND_BODY.toResponseBody(),
+                ),
+            )
+            stubSearchLocations(throws = httpException)
+
+            val result =
+                repository.searchLocations(query = GeocodingRepositoryFixture.UNKNOWN_QUERY)
+
+            assertTrue(result.isSuccess)
+            assertEquals(emptyList<Location>(), result.getOrNull())
+        }
+
+    @Test
     fun `given HttpException 500, when searchLocations, then returns HttpError`() =
         runTest(testDispatcher) {
             val httpException = HttpException(
-                Response.error<GeocodingResponseDto>(
+                Response.error<List<GeocodingResultDto>>(
                     GeocodingRepositoryFixture.HTTP_ERROR_CODE,
                     GeocodingRepositoryFixture.HTTP_ERROR_BODY.toResponseBody(),
                 ),
             )
-            coEvery { geocodingApi.searchLocations(any(), any(), any(), any()) } throws
-                httpException
+            stubSearchLocations(throws = httpException)
 
             val result = repository.searchLocations(query = GeocodingRepositoryFixture.SEARCH_QUERY)
 
@@ -125,4 +142,110 @@ class GeocodingRepositoryImplTest {
             val error = result.exceptionOrNull() as DomainError.HttpError
             assertEquals(GeocodingRepositoryFixture.HTTP_ERROR_CODE, error.code)
         }
+
+    @Test
+    fun `given result in response, when reverseGeocode, then returns mapped location`() =
+        runTest(testDispatcher) {
+            stubReverseGeocode(
+                returns = GeocodingResultDto(
+                    placeId = GeocodingRepositoryFixture.London.PLACE_ID,
+                    latitude = GeocodingRepositoryFixture.London.LATITUDE,
+                    longitude = GeocodingRepositoryFixture.London.LONGITUDE,
+                    displayName = GeocodingRepositoryFixture.London.DISPLAY_NAME,
+                    address = GeocodingAddressDto(
+                        name = GeocodingRepositoryFixture.London.NAME,
+                        state = GeocodingRepositoryFixture.London.REGION,
+                        country = GeocodingRepositoryFixture.London.COUNTRY,
+                    ),
+                ),
+            )
+
+            val result = repository.reverseGeocode(
+                latitude = GeocodingRepositoryFixture.London.LATITUDE.toDouble(),
+                longitude = GeocodingRepositoryFixture.London.LONGITUDE.toDouble(),
+            )
+
+            val expectedLocation = Location(
+                id = GeocodingRepositoryFixture.London.PLACE_ID.toLong(),
+                name = GeocodingRepositoryFixture.London.NAME,
+                latitude = GeocodingRepositoryFixture.London.LATITUDE.toDouble(),
+                longitude = GeocodingRepositoryFixture.London.LONGITUDE.toDouble(),
+                country = GeocodingRepositoryFixture.London.COUNTRY,
+                region = GeocodingRepositoryFixture.London.REGION,
+            )
+
+            assertTrue(result.isSuccess)
+            assertEquals(expectedLocation, result.getOrNull())
+        }
+
+    @Test
+    fun `given IOException, when reverseGeocode, then returns NetworkUnavailable`() =
+        runTest(testDispatcher) {
+            stubReverseGeocode(throws = IOException(GeocodingRepositoryFixture.NETWORK_ERROR_MESSAGE))
+
+            val result = repository.reverseGeocode(
+                latitude = GeocodingRepositoryFixture.London.LATITUDE.toDouble(),
+                longitude = GeocodingRepositoryFixture.London.LONGITUDE.toDouble(),
+            )
+
+            assertTrue(result.isFailure)
+            assertTrue(result.exceptionOrNull() is DomainError.NetworkUnavailable)
+        }
+
+    @Test
+    fun `given HttpException 500, when reverseGeocode, then returns HttpError`() =
+        runTest(testDispatcher) {
+            val httpException = HttpException(
+                Response.error<GeocodingResultDto>(
+                    GeocodingRepositoryFixture.HTTP_ERROR_CODE,
+                    GeocodingRepositoryFixture.HTTP_ERROR_BODY.toResponseBody(),
+                ),
+            )
+            stubReverseGeocode(throws = httpException)
+
+            val result = repository.reverseGeocode(
+                latitude = GeocodingRepositoryFixture.London.LATITUDE.toDouble(),
+                longitude = GeocodingRepositoryFixture.London.LONGITUDE.toDouble(),
+            )
+
+            assertTrue(result.isFailure)
+            val error = result.exceptionOrNull() as DomainError.HttpError
+            assertEquals(GeocodingRepositoryFixture.HTTP_ERROR_CODE, error.code)
+        }
+
+    private fun stubSearchLocations(returns: List<GeocodingResultDto>) {
+        coEvery {
+            geocodingApi.searchLocations(
+                query = any(),
+                limit = any(),
+                acceptLanguage = any(),
+                tag = any(),
+                format = any(),
+            )
+        } returns returns
+    }
+
+    private fun stubSearchLocations(throws: Throwable) {
+        coEvery {
+            geocodingApi.searchLocations(
+                query = any(),
+                limit = any(),
+                acceptLanguage = any(),
+                tag = any(),
+                format = any(),
+            )
+        } throws throws
+    }
+
+    private fun stubReverseGeocode(returns: GeocodingResultDto) {
+        coEvery {
+            geocodingApi.reverseGeocode(latitude = any(), longitude = any(), acceptLanguage = any(), format = any())
+        } returns returns
+    }
+
+    private fun stubReverseGeocode(throws: Throwable) {
+        coEvery {
+            geocodingApi.reverseGeocode(latitude = any(), longitude = any(), acceptLanguage = any(), format = any())
+        } throws throws
+    }
 }

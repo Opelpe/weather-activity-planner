@@ -3,7 +3,9 @@ package com.pnow.weatheractivityplanner.feature.weatheractivity
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pnow.weatheractivityplanner.data.di.DefaultDispatcher
 import com.pnow.weatheractivityplanner.domain.model.Location
+import com.pnow.weatheractivityplanner.domain.usecase.ActivityRankingDayRange
 import com.pnow.weatheractivityplanner.domain.usecase.GetActivityRankingsUseCase
 import com.pnow.weatheractivityplanner.domain.usecase.ObserveConnectivityLossUseCase
 import com.pnow.weatheractivityplanner.feature.common.UiError
@@ -13,6 +15,7 @@ import com.pnow.weatheractivityplanner.feature.weatheractivity.model.toUiModels
 import com.pnow.weatheractivityplanner.navigation.toLocationOrNull
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,12 +24,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class WeatherRecommendationViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getActivityRankingsUseCase: GetActivityRankingsUseCase,
     private val observeConnectivityLossUseCase: ObserveConnectivityLossUseCase,
+    @param:DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val location: Location? = savedStateHandle.toLocationOrNull()
@@ -43,6 +48,9 @@ class WeatherRecommendationViewModel @Inject constructor(
     private val _cachedDataNotices = Channel<Unit>(Channel.BUFFERED)
     val cachedDataNotices: Flow<Unit> = _cachedDataNotices.receiveAsFlow()
 
+    private val _incompleteDataNotices = Channel<Unit>(Channel.BUFFERED)
+    val incompleteDataNotices: Flow<Unit> = _incompleteDataNotices.receiveAsFlow()
+
     init {
         location?.let(::loadRankings)
         observeConnectivity()
@@ -54,6 +62,17 @@ class WeatherRecommendationViewModel @Inject constructor(
 
     fun onRefresh() {
         location?.let(::refreshRankings)
+    }
+
+    fun onDayCountChanged(days: Int) {
+        val currentLocation = location ?: return
+        val coercedDays = ActivityRankingDayRange.coerce(days)
+        if (coercedDays == _state.value.selectedDayCount) return
+
+        _state.update { it.copy(selectedDayCount = coercedDays) }
+        viewModelScope.launch {
+            fetchRankings(location = currentLocation, days = coercedDays)
+        }
     }
 
     private fun loadRankings(location: Location) {
@@ -83,11 +102,17 @@ class WeatherRecommendationViewModel @Inject constructor(
     private suspend fun fetchRankings(
         location: Location,
         forceRefresh: Boolean = false,
+        days: Int = _state.value.selectedDayCount,
     ) {
-        getActivityRankingsUseCase(
-            location = location,
-            forceRefresh = forceRefresh,
-        )
+        val rankingsResult = withContext(defaultDispatcher) {
+            getActivityRankingsUseCase(
+                location = location,
+                days = days,
+                forceRefresh = forceRefresh,
+            )
+        }
+
+        rankingsResult
             .onSuccess { result ->
                 _state.update {
                     it.copy(
@@ -99,6 +124,9 @@ class WeatherRecommendationViewModel @Inject constructor(
                 }
                 if (result.isCached) {
                     _cachedDataNotices.trySend(Unit)
+                }
+                if (result.isIncomplete) {
+                    _incompleteDataNotices.trySend(Unit)
                 }
             }
             .onFailure { throwable ->

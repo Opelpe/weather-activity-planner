@@ -19,5 +19,19 @@ internal object LocationSearchPreviewData {
             latitude = 42.9849,
             longitude = -81.2453,
         ),
+        LocationUiModel(
+            id = 3L,
+            name = "Georgia Mountain",
+            country = "United States of America",
+            latitude = 43.4803,
+            longitude = -74.1643,
+        ),
+        LocationUiModel(
+            id = 3L,
+            name = "Georgia Mountain",
+            country = "United States of America",
+            latitude = 34.4731,
+            longitude = -86.6425,
+        ),
     )
 }

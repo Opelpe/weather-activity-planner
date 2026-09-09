@@ -17,15 +17,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.pnow.weatheractivityplanner.R
 import com.pnow.weatheractivityplanner.feature.common.UiError
+import com.pnow.weatheractivityplanner.feature.common.effect.ObserveCachedDataNotice
+import com.pnow.weatheractivityplanner.feature.common.effect.ObserveSnackbarActions
 import com.pnow.weatheractivityplanner.feature.common.toMessage
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenError
 import com.pnow.weatheractivityplanner.feature.common.view.FullScreenLoading
-import com.pnow.weatheractivityplanner.feature.common.view.ObserveCachedDataNotice
 import com.pnow.weatheractivityplanner.feature.weatheractivity.WeatherRecommendationPreviewData
 import com.pnow.weatheractivityplanner.feature.weatheractivity.WeatherRecommendationUiState
 import com.pnow.weatheractivityplanner.feature.weatheractivity.WeatherRecommendationViewModel
@@ -42,6 +44,13 @@ fun WeatherRecommendationScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val incompleteDataNoticeMessage = stringResource(R.string.common_incomplete_data_notice_message)
+
+    ObserveSnackbarActions(
+        events = viewModel.incompleteDataNotices,
+        snackbarHostState = snackbarHostState,
+        message = { incompleteDataNoticeMessage },
+    )
 
     ObserveCachedDataNotice(
         notices = viewModel.cachedDataNotices,
@@ -59,6 +68,7 @@ fun WeatherRecommendationScreen(
             onRetry = viewModel::onRetry,
             onRefresh = viewModel::onRefresh,
             onWeatherCardClick = onNavigateToForecast,
+            onDayCountChanged = viewModel::onDayCountChanged,
         )
     }
 }
@@ -70,6 +80,7 @@ private fun WeatherRecommendationContent(
     onRetry: () -> Unit,
     onRefresh: () -> Unit,
     onWeatherCardClick: () -> Unit,
+    onDayCountChanged: (Int) -> Unit,
 ) {
     when {
         state.isLoading ->
@@ -88,6 +99,7 @@ private fun WeatherRecommendationContent(
                 state = state,
                 onRefresh = onRefresh,
                 onWeatherCardClick = onWeatherCardClick,
+                onDayCountChanged = onDayCountChanged,
             )
 
     }
@@ -99,6 +111,7 @@ private fun WeatherRecommendationResultsContent(
     state: WeatherRecommendationUiState,
     onRefresh: () -> Unit,
     onWeatherCardClick: () -> Unit,
+    onDayCountChanged: (Int) -> Unit,
 ) {
     PullToRefreshBox(
         modifier = modifier.fillMaxSize(),
@@ -123,14 +136,17 @@ private fun WeatherRecommendationResultsContent(
             }
 
             item {
-                ActivitiesRankingHeader()
+                ActivitiesRankingHeader(
+                    selectedDayCount = state.selectedDayCount,
+                    onDayCountChanged = onDayCountChanged,
+                )
             }
 
             items(
                 items = state.ranking,
                 key = { ranking -> ranking.activities.name },
             ) { ranking ->
-                ActivitiesRankingItem(ranking = ranking)
+                ActivitiesRankingItem(ranking = ranking, selectedDayCount = state.selectedDayCount)
             }
 
         }
@@ -138,19 +154,67 @@ private fun WeatherRecommendationResultsContent(
 }
 
 @Composable
-private fun ActivitiesRankingHeader(modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        Text(
-            text = stringResource(R.string.weather_activity_ranking_title),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
+private fun ActivitiesRankingHeader(
+    modifier: Modifier = Modifier,
+    selectedDayCount: Int,
+    onDayCountChanged: (Int) -> Unit,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(Dimens.Spacing6),
+    ) {
+        RankingHeaderTitle()
+        RankingHeaderDaySelector(
+            selectedDayCount = selectedDayCount,
+            onDayCountChanged = onDayCountChanged,
         )
+        RankingHeaderSubtitle(selectedDayCount = selectedDayCount)
+    }
+}
+
+@Composable
+private fun RankingHeaderTitle(modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = stringResource(R.string.weather_activity_ranking_title),
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurface,
+    )
+}
+
+@Composable
+private fun RankingHeaderDaySelector(
+    modifier: Modifier = Modifier,
+    selectedDayCount: Int,
+    onDayCountChanged: (Int) -> Unit,
+) {
+    Column(
+        modifier = modifier,
+    ) {
         Text(
-            text = stringResource(R.string.weather_activity_ranking_subtitle),
-            style = MaterialTheme.typography.bodySmall,
+            text = stringResource(R.string.weather_activity_day_selector_field_label),
+            style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        ActivitiesRankingDaySelector(
+            selectedDays = selectedDayCount,
+            onDaysChanged = onDayCountChanged,
+        )
     }
+}
+
+@Composable
+private fun RankingHeaderSubtitle(modifier: Modifier = Modifier, selectedDayCount: Int) {
+    Text(
+        modifier = modifier,
+        text = pluralStringResource(
+            R.plurals.weather_activity_ranking_subtitle,
+            selectedDayCount,
+            selectedDayCount,
+        ),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 @PreviewLightDark
@@ -163,6 +227,7 @@ private fun WeatherRecommendationContentSuccessPreview() {
                 onRetry = {},
                 onRefresh = {},
                 onWeatherCardClick = {},
+                onDayCountChanged = {},
             )
         }
     }
@@ -181,6 +246,7 @@ private fun WeatherRecommendationContentErrorPreview() {
             onRetry = {},
             onRefresh = {},
             onWeatherCardClick = {},
+            onDayCountChanged = {},
         )
     }
 }
@@ -196,6 +262,7 @@ private fun WeatherRecommendationContentLoadingPreview() {
             onRetry = {},
             onRefresh = {},
             onWeatherCardClick = {},
+            onDayCountChanged = {},
         )
     }
 }

@@ -1,20 +1,26 @@
 package com.pnow.weatheractivityplanner.feature.weatheractivity.view
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
 import com.pnow.weatheractivityplanner.R
 import com.pnow.weatheractivityplanner.feature.weatheractivity.WeatherRecommendationPreviewData
 import com.pnow.weatheractivityplanner.feature.weatheractivity.model.CurrentWeatherUiModel
@@ -44,14 +50,15 @@ fun CurrentWeatherCard(
     ) {
         Column(modifier = Modifier.padding(Dimens.Spacing16)) {
 
-            CurrentWeatherSummary(
+            CurrentWeatherLocationTitle(
                 cityName = locationName,
                 cityCountry = locationCountry,
-                currentWeather = currentWeather,
             )
 
+            CurrentWeatherSummary(currentWeather = currentWeather)
+
             CurrentWeatherDetails(
-                modifier = Modifier.padding(top = 2.dp),
+                modifier = Modifier.padding(top = Dimens.Spacing2),
                 currentWeather = currentWeather,
             )
 
@@ -65,19 +72,32 @@ fun CurrentWeatherCard(
 @Composable
 private fun CurrentWeatherSummary(
     modifier: Modifier = Modifier,
-    cityName: String,
-    cityCountry: String,
     currentWeather: CurrentWeatherUiModel,
 ) {
-    Column(modifier = modifier) {
-
-        WeatherSummaryLocationTitle(
-            cityName = cityName,
-            cityCountry = cityCountry,
-        )
-        WeatherSummaryTemperature(currentWeather.temperatureCelsius)
-        WeatherSummaryCondition(currentWeather.conditionDisplayNameRes)
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing32),
+    ) {
+        Column {
+            WeatherSummaryTemperature(currentWeather.temperatureCelsius)
+            WeatherSummaryCondition(currentWeather.conditionDisplayNameRes)
+        }
+        WeatherSummaryIcon(iconRes = currentWeather.conditionIconRes)
     }
+}
+
+@Composable
+private fun WeatherSummaryIcon(
+    modifier: Modifier = Modifier,
+    @DrawableRes iconRes: Int,
+) {
+    Image(
+        modifier = modifier.size(Dimens.IconSizeXLarge),
+        painter = painterResource(iconRes),
+        contentDescription = null,
+        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+    )
 }
 
 @Composable
@@ -85,6 +105,8 @@ private fun WeatherSummaryCondition(@StringRes conditionRes: Int) {
     Text(
         text = stringResource(conditionRes),
         style = MaterialTheme.typography.bodyLarge,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
     )
 }
 
@@ -100,7 +122,7 @@ private fun WeatherSummaryTemperature(currentTemperature: Double) {
 }
 
 @Composable
-private fun WeatherSummaryLocationTitle(
+private fun CurrentWeatherLocationTitle(
     modifier: Modifier = Modifier,
     cityName: String,
     cityCountry: String,
@@ -127,19 +149,22 @@ private fun CurrentWeatherDetails(
     ) {
         WeatherDetailsScore(
             modifier = Modifier.weight(1f),
-            titleId = R.string.weather_activity_feels_like_format,
+            labelRes = R.string.weather_activity_feels_like_label,
+            valueFormatRes = R.string.weather_activity_feels_like_value_format,
             value = currentWeather.apparentTemperatureCelsius.roundToInt(),
         )
 
         WeatherDetailsScore(
             modifier = Modifier.weight(1f),
-            titleId = R.string.weather_activity_humidity_format,
+            labelRes = R.string.weather_activity_humidity_label,
+            valueFormatRes = R.string.weather_activity_humidity_value_format,
             value = currentWeather.humidityPercent,
         )
 
         WeatherDetailsScore(
             modifier = Modifier.weight(1f),
-            titleId = R.string.weather_activity_wind_format,
+            labelRes = R.string.weather_activity_wind_label,
+            valueFormatRes = R.string.weather_activity_wind_value_format,
             value = currentWeather.windSpeedKph.roundToInt(),
         )
     }
@@ -148,17 +173,27 @@ private fun CurrentWeatherDetails(
 @Composable
 private fun WeatherDetailsScore(
     modifier: Modifier = Modifier,
-    @StringRes titleId: Int,
+    @StringRes labelRes: Int,
+    @StringRes valueFormatRes: Int,
     value: Int,
 ) {
-    Text(
+    Row(
         modifier = modifier,
-        text = stringResource(
-            titleId,
-            value,
-        ),
-        style = MaterialTheme.typography.bodyMedium,
-    )
+        horizontalArrangement = Arrangement.spacedBy(Dimens.Spacing4),
+    ) {
+        Text(
+            modifier = Modifier.weight(1f, fill = false),
+            text = stringResource(labelRes),
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Text(
+            text = stringResource(valueFormatRes, value),
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 1,
+        )
+    }
 }
 
 

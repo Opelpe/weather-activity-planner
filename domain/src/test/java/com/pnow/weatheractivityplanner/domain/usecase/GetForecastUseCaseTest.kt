@@ -84,7 +84,6 @@ class GetForecastUseCaseTest {
         latitude = GetForecastFixture.LATITUDE,
         longitude = GetForecastFixture.LONGITUDE,
         country = "United Kingdom",
-        countryCode = null,
         region = null,
     )
 

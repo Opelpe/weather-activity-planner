@@ -8,6 +8,7 @@ import com.pnow.weatheractivityplanner.domain.model.DailyForecast
 import com.pnow.weatheractivityplanner.domain.model.DayScore
 import javax.inject.Inject
 import kotlin.math.abs
+import kotlin.math.pow
 import kotlin.math.sqrt
 
 class ActivitiesRankingCalculator @Inject constructor(
@@ -34,7 +35,7 @@ class ActivitiesRankingCalculator @Inject constructor(
     private fun Activities.toRanking(daily: List<DailyForecast>): ActivitiesRanking {
         val scorer = scorerFor(this)
         val dayScores = daily.map { day -> scorer.score(day) }
-        val weights = dayScores.indices.map { index -> (dayScores.size - index).toFloat() }
+        val weights = dayScores.indices.map { index -> DAY_WEIGHT_DECAY_RATE.pow(index) }
         val weightedAverage = dayScores.zip(weights) { dayScore, weight -> dayScore.score * weight }
             .sum() / weights.sum()
         val promotedAverage = if (this in GENERIC_ACTIVITIES) {
@@ -43,7 +44,7 @@ class ActivitiesRankingCalculator @Inject constructor(
             weightedAverage
         }
         val weekReason = weekReasonFor(dayScores, promotedAverage)
-        val reason = dayScores.representativeReason(weekReason, weightedAverage)
+        val reason = dayScores.representativeReason(weightedAverage)
 
         return ActivitiesRanking(
             activity = this,
@@ -53,12 +54,16 @@ class ActivitiesRankingCalculator @Inject constructor(
         )
     }
 
-    private fun List<DayScore>.representativeReason(
-        weekReason: ActivityWeeklyReason,
-        weightedAverage: Float,
-    ): ActivityDailyReason = when (weekReason) {
-        ActivityWeeklyReason.IMPROVING, ActivityWeeklyReason.DECLINING -> last().reason
-        else -> minBy { abs(it.score - weightedAverage) }.reason
+    private fun List<DayScore>.representativeReason(weightedAverage: Float): ActivityDailyReason {
+        if (size == 1) return single().reason
+
+        val reasonCounts = groupingBy { it.reason }.eachCount()
+        val maxCount = reasonCounts.values.max()
+        val mostCommonReasons = reasonCounts.filterValues { it == maxCount }.keys
+
+        return filter { it.reason in mostCommonReasons }
+            .minBy { abs(it.score - weightedAverage) }
+            .reason
     }
 
     private fun weekReasonFor(
@@ -110,6 +115,7 @@ class ActivitiesRankingCalculator @Inject constructor(
 
     private companion object {
 
+        const val DAY_WEIGHT_DECAY_RATE = 0.85f
         const val MIXED_WEEK_VARIABILITY_THRESHOLD = 25f
         const val TREND_THRESHOLD = 15f
         const val GREAT_SCORE_THRESHOLD = 80f

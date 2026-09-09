@@ -6,6 +6,5 @@ data class Location(
     val latitude: Double,
     val longitude: Double,
     val country: String?,
-    val countryCode: String?,
     val region: String?,
 )

@@ -24,8 +24,8 @@ android {
         applicationId = AppConfig.APPLICATION_ID
         minSdk = 29
         targetSdk = 37
-        versionCode = 10000
-        versionName = "1.0.0"
+        versionCode = 10100
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "com.google.dagger.hilt.android.testing.HiltTestRunner"
     }
@@ -92,6 +92,9 @@ dependencies {
 
     // Navigation
     implementation(libs.androidx.navigation.compose)
+
+    // Location
+    implementation(libs.play.services.location)
 
     // Serialization
     implementation(libs.kotlinx.serialization.core)

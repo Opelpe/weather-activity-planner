@@ -1,0 +1,50 @@
+<resources>
+    <plurals name="weather_activity_ranking_subtitle">
+        <item quantity="one">Ranked using today\'s weather forecast</item>
+        <item quantity="other">Ranked using the %1$d-day weather forecast</item>
+    </plurals>
+    <plurals name="weather_activity_best_pick">
+        <item quantity="one">Best pick for the next day</item>
+        <item quantity="other">Best pick for the next %1$d days</item>
+    </plurals>
+    <plurals name="weather_activity_day_selector_value">
+        <item quantity="one">Today</item>
+        <item quantity="other">Next %1$d days</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_mixed">
+        <item quantity="one">conditions vary a lot from day to day</item>
+        <item quantity="other">conditions vary a lot from day to day</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_improving">
+        <item quantity="one">conditions are improving as the days go on</item>
+        <item quantity="other">conditions are improving as the days go on</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_declining">
+        <item quantity="one">conditions are trending downward as the days go on</item>
+        <item quantity="other">conditions are trending downward as the days go on</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_great">
+        <item quantity="one">conditions are fantastic today</item>
+        <item quantity="other">conditions are fantastic over the next %1$d days</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_good">
+        <item quantity="one">conditions are decent today</item>
+        <item quantity="other">conditions are decent over the next %1$d days</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_average">
+        <item quantity="one">conditions are middling today</item>
+        <item quantity="other">conditions are middling over the next %1$d days</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_poor">
+        <item quantity="one">conditions look rough today</item>
+        <item quantity="other">conditions look rough over the next %1$d days</item>
+    </plurals>
+    <plurals name="weather_activity_week_reason_consistently_terrible">
+        <item quantity="one">conditions are quite poor today, this one\'s best skipped</item>
+        <item quantity="other">conditions are quite poor over the next %1$d days, this one\'s best skipped</item>
+    </plurals>
+    <plurals name="weather_forecast_precipitation_probability">
+        <item quantity="one">%1$d%% chance of rain</item>
+        <item quantity="other">%1$d%% chance of rain</item>
+    </plurals>
+</resources>

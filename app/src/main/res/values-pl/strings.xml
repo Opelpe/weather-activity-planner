@@ -1,0 +1,137 @@
+<resources>
+    <string name="app_name">Weather Activity Planner</string>
+
+    <string name="common_error_network_unavailable">Brak połączenia z internetem</string>
+    <string name="common_error_http_format">Błąd serwera (%1$d)</string>
+    <string name="common_error_deserialization">Nie udało się odczytać odpowiedzi serwera</string>
+    <string name="common_error_unknown">Coś poszło nie tak</string>
+    <string name="common_error_invalid_navigation">Nie można otworzyć tego ekranu</string>
+    <string name="common_cached_data_notice_message">Wyświetlamy zapisane dane, nie udało się ich odświeżyć</string>
+    <string name="common_incomplete_data_notice_message">Niektórych z wybranych dni nie udało się jeszcze ocenić</string>
+
+    <string name="weather_activity_search_label">Wyszukaj miejsce</string>
+    <string name="weather_activity_search_clear_content_description">Wyczyść wyszukiwanie</string>
+    <string name="weather_activity_use_current_location_content_description">Użyj bieżącej lokalizacji</string>
+    <string name="weather_activity_cancel_current_location_content_description">Anuluj ustalanie bieżącej lokalizacji</string>
+    <string name="common_error_location_permission_denied">Aby użyć bieżącej lokalizacji, wymagane jest uprawnienie dostępu do lokalizacji</string>
+    <string name="common_error_location_disabled">Włącz usługi lokalizacji, aby użyć bieżącej lokalizacji</string>
+    <string name="common_error_location_unavailable">Nie udało się ustalić Twojej bieżącej lokalizacji</string>
+    <string name="weather_activity_no_cities_found">Nie znaleziono żadnych miejsc</string>
+    <string name="weather_activity_search_prompt">Wyszukaj miejsce, aby zobaczyć propozycje aktywności</string>
+    <string name="weather_activity_retry">Spróbuj ponownie</string>
+    <string name="weather_activity_score_label">Wynik</string>
+    <string name="weather_activity_score_value_format">%1$.1f/100</string>
+    <string name="weather_activity_temperature_format">%.1f°C</string>
+    <string name="weather_activity_feels_like_label">Odczuwalna:</string>
+    <string name="weather_activity_feels_like_value_format">%1$d°C</string>
+    <string name="weather_activity_humidity_label">Wilgotność:</string>
+    <string name="weather_activity_humidity_value_format">%1$d%%</string>
+    <string name="weather_activity_wind_label">Wiatr:</string>
+    <string name="weather_activity_wind_value_format">%1$d km/h</string>
+    <string name="weather_activity_city_country_format">%1$s, %2$s</string>
+    <string name="weather_activity_location_coordinates_format">%1$.4f; %2$.4f</string>
+    <string name="weather_activity_view_forecast_hint">Dotknij, aby zobaczyć prognozę na 7 dni</string>
+    <string name="weather_activity_view_forecast_content_description">Zobacz 7-dniową prognozę dla %1$s</string>
+    <string name="weather_activity_ranking_title">Propozycje aktywności</string>
+    <string name="weather_activity_day_selector_field_label">Wybierz zakres</string>
+    <string name="weather_activity_reason_summary_format">%1$s. Ogólnie %2$s</string>
+
+    <string name="weather_activity_skiing">Narciarstwo</string>
+    <string name="weather_activity_surfing">Surfing</string>
+    <string name="weather_activity_outdoor_sightseeing">Zwiedzanie na świeżym powietrzu</string>
+    <string name="weather_activity_indoor_sightseeing">Zwiedzanie pod dachem</string>
+    <string name="weather_activity_cycling">Jazda na rowerze</string>
+    <string name="weather_activity_sunbathing">Plażowanie</string>
+    <string name="weather_activity_stargazing">Obserwowanie gwiazd</string>
+    <string name="weather_activity_fishing">Wędkowanie</string>
+
+    <string name="weather_activity_reason_skiing_snow_and_freezing">Świeży śnieg i mróz, czyli warunki idealne na narty</string>
+    <string name="weather_activity_reason_skiing_freezing_only">Jest wystarczająco zimno na narty, choć na świeży puch raczej nie ma co liczyć</string>
+    <string name="weather_activity_reason_skiing_snow_only">Zapowiada się śnieg, ale może być za ciepło, żeby długo się utrzymał</string>
+    <string name="weather_activity_reason_skiing_rain">Zapowiada się deszcz, więc stoki mogą nie być w najlepszym stanie</string>
+    <string name="weather_activity_reason_skiing_too_warm">Jest trochę za ciepło na dobre warunki na nartach, może lepiej spróbować innym razem</string>
+    <string name="weather_activity_reason_skiing_getting_colder">Temperatura spada, więc warunki na narty mogą się wkrótce poprawić</string>
+    <string name="weather_activity_reason_skiing_none">Śniegu na razie nie widać w prognozie, ale wszystko może się jeszcze zmienić</string>
+
+    <string name="weather_activity_reason_surfing_thunderstorm">Zapowiadają się burze, więc lepiej trzymać się z dala od wody</string>
+    <string name="weather_activity_reason_surfing_rain">Może trochę popadać, ale surferom odrobina deszczu niestraszna</string>
+    <string name="weather_activity_reason_surfing_warm_and_windy">Ciepło i wietrznie, czyli warunki idealne na łapanie fal</string>
+    <string name="weather_activity_reason_surfing_windy_only">Wieje całkiem mocno, więc pianka i można ruszać</string>
+    <string name="weather_activity_reason_surfing_warm_only">Ciepło i przyjemnie, choć na duże fale raczej nie ma co liczyć</string>
+    <string name="weather_activity_reason_surfing_building_conditions">Warunki zapowiadają się coraz lepiej, więc szykuje się udana sesja</string>
+    <string name="weather_activity_reason_surfing_none">Chłodno i spokojnie, na większe fale raczej nie ma co liczyć</string>
+
+    <string name="weather_activity_reason_outdoor_clear_and_comfortable">Bezchmurne niebo i przyjemna temperatura, idealna pogoda na zwiedzanie</string>
+    <string name="weather_activity_reason_outdoor_rain">Może lekko popadać, więc parasol może się przydać</string>
+    <string name="weather_activity_reason_outdoor_fog">Może pojawić się mgła, która doda widokom trochę tajemniczego klimatu</string>
+    <string name="weather_activity_reason_outdoor_clear_only">Niebo będzie bezchmurne, ale warto ubrać się odpowiednio do temperatury</string>
+    <string name="weather_activity_reason_outdoor_warming_up">Robi się coraz cieplej, więc pogoda sprzyja zwiedzaniu na zewnątrz</string>
+    <string name="weather_activity_reason_outdoor_none">Trochę chmur, ale spokojnie można ruszać na zwiedzanie</string>
+
+    <string name="weather_activity_reason_indoor_poor_outdoor">Na zewnątrz pogoda nie zachwyca, więc lepiej postawić na atrakcje pod dachem</string>
+    <string name="weather_activity_reason_indoor_extreme_temp">Na zewnątrz temperatury są dość ekstremalne, dlatego pod dachem będzie znacznie przyjemniej</string>
+    <string name="weather_activity_reason_indoor_great_outdoor">Na zewnątrz jest pięknie, choć atrakcje pod dachem zawsze są dobrą opcją</string>
+    <string name="weather_activity_reason_indoor_none">Dobry wybór niezależnie od pogody</string>
+
+    <string name="weather_activity_reason_cycling_rain">Zapowiada się deszcz, więc szykuj się na mokrą przejażdżkę</string>
+    <string name="weather_activity_reason_cycling_gusty">Mogą pojawić się silne porywy wiatru, dlatego jedź ostrożnie</string>
+    <string name="weather_activity_reason_cycling_comfortable">Przyjemna temperatura i lekki wiatr, idealna pogoda na rower</string>
+    <string name="weather_activity_reason_cycling_cold">Jest chłodno, więc przed wyjazdem warto ubrać się cieplej</string>
+    <string name="weather_activity_reason_cycling_wind_picking_up">Wiatr się nasila, podczas jazdy możesz więc poczuć trochę większy opór</string>
+    <string name="weather_activity_reason_cycling_none">Pogoda całkiem w porządku na rower, choć bez większych rewelacji</string>
+
+    <string name="weather_activity_reason_sunbathing_rain">Zapowiada się deszcz, więc lepiej zaplanować coś pod dachem</string>
+    <string name="weather_activity_reason_sunbathing_windy">Trochę mocniej wieje, więc pilnuj ręcznika, żeby nie odleciał</string>
+    <string name="weather_activity_reason_sunbathing_warm_and_sunny">Ciepło i słonecznie, czyli idealna pogoda na plażę</string>
+    <string name="weather_activity_reason_sunbathing_sunny_only">Dużo słońca, choć na kąpiel może być trochę za chłodno</string>
+    <string name="weather_activity_reason_sunbathing_warm_only">Ciepło i przyjemnie, nawet jeśli słońca nie będzie zbyt dużo</string>
+    <string name="weather_activity_reason_sunbathing_warming_up">Na plaży robi się coraz cieplej, więc coś jeszcze z tego będzie</string>
+    <string name="weather_activity_reason_sunbathing_none">Pogoda na plażę całkiem w porządku, choć bez większych rewelacji</string>
+
+    <string name="weather_activity_reason_stargazing_rain">Zapowiada się deszcz, więc gwiazdy mogą być dziś niewidoczne</string>
+    <string name="weather_activity_reason_stargazing_fog">Mgła może zasłonić widok na gwiazdy</string>
+    <string name="weather_activity_reason_stargazing_clear_and_long_night">Bezchmurne niebo i długa noc, czyli idealne warunki do oglądania gwiazd</string>
+    <string name="weather_activity_reason_stargazing_clear_only">Niebo będzie bezchmurne, choć na obserwację gwiazd będzie trochę mniej czasu</string>
+    <string name="weather_activity_reason_stargazing_long_night_only">Noc będzie długa, ale mogą pojawić się chmury</string>
+    <string name="weather_activity_reason_stargazing_none">Warunki nie są idealne, ale i tak warto czasem spojrzeć w niebo</string>
+
+    <string name="weather_activity_reason_fishing_thunderstorm">Zapowiadają się burze, więc lepiej trzymać się z dala od wody</string>
+    <string name="weather_activity_reason_fishing_windy">Wiatr się nasila, przez co woda może być bardziej wzburzona</string>
+    <string name="weather_activity_reason_fishing_calm_and_dry">Spokojna woda i mała szansa na deszcz, świetne warunki na ryby</string>
+    <string name="weather_activity_reason_fishing_calm_only">Woda będzie spokojna, choć może pojawić się deszcz</string>
+    <string name="weather_activity_reason_fishing_dry_only">Deszczu raczej nie będzie, ale może trochę powiać</string>
+    <string name="weather_activity_reason_fishing_waters_calming">Woda się uspokaja, więc warunki na ryby wyglądają coraz lepiej</string>
+    <string name="weather_activity_reason_fishing_none">Warunki są przeciętne, ale kto wie, może coś złapiesz</string>
+
+    <string name="weather_forecast_temperature_value_format">%1$d°</string>
+    <string name="weather_forecast_tomorrow_label">Jutro</string>
+    <string name="weather_forecast_day_temperature_content_description">Dzień</string>
+    <string name="weather_forecast_night_temperature_content_description">Noc</string>
+
+    <string name="weather_condition_clear">Bezchmurnie</string>
+    <string name="weather_condition_mainly_clear">Przeważnie bezchmurnie</string>
+    <string name="weather_condition_partly_cloudy">Częściowe zachmurzenie</string>
+    <string name="weather_condition_overcast">Pochmurno</string>
+    <string name="weather_condition_fog">Mgła</string>
+    <string name="weather_condition_depositing_rime_fog">Mgła z szadzią</string>
+    <string name="weather_condition_light_drizzle">Lekka mżawka</string>
+    <string name="weather_condition_moderate_drizzle">Umiarkowana mżawka</string>
+    <string name="weather_condition_dense_drizzle">Gęsta mżawka</string>
+    <string name="weather_condition_light_rain">Lekki deszcz</string>
+    <string name="weather_condition_moderate_rain">Umiarkowany deszcz</string>
+    <string name="weather_condition_heavy_rain">Silny deszcz</string>
+    <string name="weather_condition_light_snow">Lekki śnieg</string>
+    <string name="weather_condition_moderate_snow">Umiarkowany śnieg</string>
+    <string name="weather_condition_heavy_snow">Silny śnieg</string>
+    <string name="weather_condition_snow_grains">Ziarnisty śnieg</string>
+    <string name="weather_condition_slight_rain_showers">Lekkie przelotne opady deszczu</string>
+    <string name="weather_condition_moderate_rain_showers">Umiarkowane przelotne opady deszczu</string>
+    <string name="weather_condition_violent_rain_showers">Gwałtowne przelotne opady deszczu</string>
+    <string name="weather_condition_slight_snow_showers">Lekkie przelotne opady śniegu</string>
+    <string name="weather_condition_heavy_snow_showers">Silne przelotne opady śniegu</string>
+    <string name="weather_condition_thunderstorm">Burza</string>
+    <string name="weather_condition_thunderstorm_slight_hail">Burza z lekkim gradem</string>
+    <string name="weather_condition_thunderstorm_heavy_hail">Burza z silnym gradem</string>
+    <string name="weather_condition_unknown">Nieznana pogoda</string>
+
+</resources>

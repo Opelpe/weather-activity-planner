@@ -105,6 +105,15 @@ private object ForecastFixture {
     // Mirrors the private NEUTRAL_NIGHT_CLOUD_COVER_PERCENT defensive default in ForecastMappers.kt;
     // there's no daily-level cloud cover field to fall back to instead.
     const val DEFENSIVE_DEFAULT_NIGHT_CLOUD_COVER_PERCENT = 50.0
+
+    // Mirrors Open-Meteo's real behavior at the edge of an extended forecast window: the date is
+    // present, but most model-dependent fields for that day come back null.
+    object IncompleteDay {
+
+        const val DATE = "2026-01-03"
+        const val PRECIPITATION_PROBABILITY_PERCENT = 35
+        const val DAYLIGHT_DURATION_SECONDS = 31_800.0
+    }
 }
 
 class ForecastMappersTest {
@@ -233,6 +242,34 @@ class ForecastMappersTest {
             assertEquals(expectedDailyWindSpeedMaxKph[index], day.daytimeWindSpeedMaxKph, DELTA)
             assertEquals(expectedDailyWindGustsMaxKph[index], day.daytimeWindGustsMaxKph, DELTA)
         }
+    }
+
+    @Test
+    fun `given a trailing day with null fields, when toDomain, then that day is dropped and earlier days are kept`() {
+        val dto = buildForecastResponseDto()
+        val dailyWithIncompleteTrailingDay = dto.daily.copy(
+            time = dto.daily.time + ForecastFixture.IncompleteDay.DATE,
+            weatherCode = dto.daily.weatherCode + null,
+            maxTemperatureCelsius = dto.daily.maxTemperatureCelsius + null,
+            minTemperatureCelsius = dto.daily.minTemperatureCelsius + null,
+            precipitationSumMm = dto.daily.precipitationSumMm + null,
+            precipitationProbabilityMaxPercent = dto.daily.precipitationProbabilityMaxPercent +
+                ForecastFixture.IncompleteDay.PRECIPITATION_PROBABILITY_PERCENT,
+            snowfallSumCm = dto.daily.snowfallSumCm + null,
+            windSpeedMaxKph = dto.daily.windSpeedMaxKph + null,
+            windGustsMaxKph = dto.daily.windGustsMaxKph + null,
+            uvIndexMax = dto.daily.uvIndexMax + null,
+            daylightDurationSeconds = dto.daily.daylightDurationSeconds +
+                ForecastFixture.IncompleteDay.DAYLIGHT_DURATION_SECONDS,
+        )
+
+        val forecast = dto.copy(daily = dailyWithIncompleteTrailingDay).toDomain()
+
+        assertEquals(ForecastFixture.DAYS_COUNT, forecast.daily.size)
+        assertEquals(
+            listOf(ForecastFixture.Day1.DATE, ForecastFixture.Day2.DATE),
+            forecast.daily.map { it.date },
+        )
     }
 
     @Test
