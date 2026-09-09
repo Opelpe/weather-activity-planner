@@ -68,8 +68,11 @@ selector, weather icons/day-night indicators, and Spanish/Polish localization) h
 </table>
 
 <p align="center">
-  <video src="PASTE_NEW_USER_ATTACHMENTS_URL_HERE" width="360" controls></video>
+ 
+https://github.com/user-attachments/assets/17539c7e-17fa-4924-8d0b-93d2ba89b9db
+
 </p>
+
 
 ---
 
